@@ -25,9 +25,8 @@ abstract class SimpleCommand implements CommandExecutor {
             execute(sender, args);
         } catch (CommandException ex) {
             sender.sendMessage(ChatColor.RED + ex.getMessage());
-            return true;
         }
-        return false;
+        return true;
     }
 
     abstract void execute(CommandSender sender, String[] args) throws CommandException;
