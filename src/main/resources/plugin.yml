@@ -1,0 +1,37 @@
+name: MongoAuth
+main: ru.gtncraft.MongoAuth
+author: Maxim Varentsov <admin@gtn-craft.ru>
+version: 1.6
+commands:
+   login:
+      description: Авторизоваться на сервере
+      usage: /login пароль
+      alias: [l]
+   logout:
+      description: Завершить игровую сессию
+      usage: /logout
+      permission: mongoauth.user
+   register:
+      description: Регистрация на сервере
+      usage: /register пароль
+   unregister:
+      description: Удалить игровой аккаунт
+      usage: /unregister пароль
+      permission: mongoauth.user
+   cpw:
+      description: Сменить пароль
+      usage: /cpw пароль новый_пароль
+      permission: mongoauth.user
+   authadmin:
+      description: Управление учетными записями
+      usage: /admin [register|unregister|cpw] [playername] (newpassword)
+      permission: mongoauth.admin
+permissions:
+   mongoauth.admin:
+      description: Gives an admin access
+      default: op
+      children:
+         mongoauth.user: true
+   mongoauth.user:
+      description: Allows the use of plugin to players
+      default: true
