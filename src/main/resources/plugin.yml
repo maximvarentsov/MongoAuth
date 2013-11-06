@@ -6,7 +6,7 @@ commands:
    login:
       description: Авторизоваться на сервере
       usage: /login пароль
-      alias: [l]
+      aliases: [l]
    logout:
       description: Завершить игровую сессию
       usage: /logout
