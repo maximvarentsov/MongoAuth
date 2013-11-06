@@ -67,7 +67,6 @@ public class Listener implements org.bukkit.event.Listener {
 		String command = event.getMessage().substring(1);
 		String rootCommand = command.split(" ")[0];
 		if (plugin.getCommand(rootCommand) != null && !plugin.getCommand(rootCommand).equals(plugin.getCommand("mongoauth"))) {
-            player.sendMessage(Message.REGISTER_OR_LOGIN);
             return;
 		}
 		if (!sm.contains(player.getName())) {
