@@ -1,7 +1,7 @@
 name: MongoAuth
 main: ru.gtncraft.MongoAuth
 author: Maxim Varentsov <admin@gtn-craft.ru>
-version: 1.6
+version: ${version}
 commands:
    login:
       description: Авторизоваться на сервере
