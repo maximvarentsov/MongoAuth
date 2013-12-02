@@ -17,7 +17,6 @@ public class Listener implements org.bukkit.event.Listener {
 	private MongoAuth plugin;
 	private Sessions sm;
 
-    final private boolean silentMode;
     final private boolean whiteList;
     final private Pattern pattern;
 
@@ -29,7 +28,6 @@ public class Listener implements org.bukkit.event.Listener {
 
         ConfigurationSection config = instance.getConfig().getConfigurationSection("general");
 
-        this.silentMode = config.getBoolean("silentMode");
         this.whiteList = config.getBoolean("whitelist");
         this.pattern = Pattern.compile(config.getString("playernamePattern"));
 	}
@@ -89,9 +87,6 @@ public class Listener implements org.bukkit.event.Listener {
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (silentMode) {
-            event.setJoinMessage(null);
-        }
         Player player = event.getPlayer();
 
         Account account = storage.get(player.getName());
@@ -106,9 +101,6 @@ public class Listener implements org.bukkit.event.Listener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if (silentMode) {
-            event.setQuitMessage(null);
-        }
         if (sm.contains(player.getName())) {
             sm.remove(player.getName());
             plugin.getLogger().info("Account " + player.getName() + " logged out.");

@@ -4,7 +4,6 @@ database:
     name: minecraft
     collection: players
 general:
-    silentMode: true
     restoreSessions: true
     whitelist: false
     playernamePattern: ^[a-zA-Z0-9_]+$
