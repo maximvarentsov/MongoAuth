@@ -9,14 +9,14 @@ import java.util.Map;
 
 public class Account extends BasicDBObject {
 
-    public Account(Player player) {
+    public Account(final Player player) {
         this.setName(player.getName());
         this.setIP(player.getAddress().getAddress().getHostAddress());
         this.setAllowed(true);
     }
 
-    public Account(Map map) {
-        putAll(map);
+    public Account(final Map map) {
+        this.putAll(map);
     }
 
     public String getName() {
@@ -31,7 +31,7 @@ public class Account extends BasicDBObject {
         return getInt("ip");
     }
 
-    public void setIP(String value) {
+    public void setIP(final String value) {
         put("ip", dot2LongIP(value));
     }
 
@@ -47,15 +47,15 @@ public class Account extends BasicDBObject {
         return getBoolean("allowed");
     }
 
-    public void setAllowed(boolean value) {
+    public void setAllowed(final boolean value) {
         put("allowed", value);
     }
 
-    public boolean checkPassword(String password) {
-        return getPassword().equals(encryptPassword(password));
+    public boolean checkPassword(final String password) {
+        return encryptPassword(password).equals(getPassword());
     }
 
-    private String encryptPassword(String password) {
+    private static String encryptPassword(final String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] hash = md.digest(password.getBytes("UTF-8"));
@@ -73,7 +73,7 @@ public class Account extends BasicDBObject {
         }
     }
 
-    private long dot2LongIP(String dottedIP) {
+    private static long dot2LongIP(final String dottedIP) {
         String[] addrArray = dottedIP.split("\\.");
         long num = 0;
         for (int i = 0; i < addrArray.length; i++) {

@@ -1,54 +1,67 @@
 package ru.gtncraft.commands;
 
-import org.bukkit.command.CommandException;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import ru.gtncraft.*;
-import ru.gtncraft.Storage;
 
-public class Register extends SimpleCommand {
-    private MongoAuth plugin;
-	private Storage storage;
-    private Sessions sessions;
-    final private int maxPerIp;
+public class Register implements CommandExecutor {
+
+    private final MongoAuth plugin;
+	private final Storage storage;
+    private final SessionManager sessionManager;
+    private final int maxPerIp;
 	
-	public Register(MongoAuth instance, Storage storage, Sessions sessions) {
-        super("mongoauth.user");
+	public Register(final MongoAuth instance) {
         this.plugin = instance;
-        this.storage = storage;
-        this.sessions = sessions;
-        this.maxPerIp = instance.getConfig().getConfigurationSection("general").getInt("maxPerIp");
+        this.storage = instance.getStorage();
+        this.sessionManager = instance.getSessionManager();
+        this.maxPerIp = instance.getConfig().getInt("general.maxPerIp", 0);
+        this.plugin.getCommand("register").setExecutor(this);
 	}
 
     @Override
-    void execute(CommandSender sender, String[] args) throws CommandException {
+    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+
+        if (!sender.hasPermission("mongoauth.user")) {
+            sender.sendMessage(Message.PERMISSION_FORBIDDEN);
+            return true;
+        }
+
         if (!(sender instanceof Player)) {
-            throw new CommandException(Message.SENDER_NOT_VALID);
+            sender.sendMessage(Message.SENDER_NOT_VALID);
+            return true;
         }
 
         Account account = new Account((Player) sender);
 
-        if (sessions.contains(account.getName())) {
-            throw new CommandException(Message.PLAYER_IS_LOGGED);
+        if (sessionManager.contains(account.getName())) {
+            sender.sendMessage(Message.PLAYER_IS_LOGGED);
+            return true;
         }
 
         if (storage.get(account.getName()) != null) {
-            throw new CommandException(Message.PLAYER_ALREADY_REGISTERED);
+            sender.sendMessage(Message.PLAYER_ALREADY_REGISTERED);
+            return true;
         }
 
         long total = storage.countIp(account.getIP());
         if (maxPerIp > 0 && total >= maxPerIp) {
-            throw new CommandException(Message.REGISTER_LIMIT_REACHED);
+            sender.sendMessage(Message.REGISTER_LIMIT_REACHED);
+            return true;
         }
 
         try {
             account.setPassword(args[0]);
             storage.save(account);
-            sessions.add(account.getName());
+            sessionManager.add(account.getName());
             plugin.getLogger().info("New player " + account + " registered.");
             sender.sendMessage(Message.REGISTER_SUCCESS);
         } catch (ArrayIndexOutOfBoundsException ex) {
-            throw new CommandException(Message.REGISTER_COMMAND_HINT + "\n" + Message.PASSWORD_MISSING);
+            sender.sendMessage(Message.REGISTER_COMMAND_HINT);
+            sender.sendMessage(Message.PASSWORD_MISSING);
         }
+        return true;
     }
 }

@@ -1,38 +1,42 @@
 package ru.gtncraft;
 
 import com.mongodb.*;
-import org.bukkit.configuration.ConfigurationSection;
+
+import java.io.IOException;
 
 public class Storage {
 
-    private DBCollection players;
+    private final DBCollection players;
 
-	public Storage(ConfigurationSection config) throws Exception {
-        MongoClient mongoClient = new MongoClient(config.getString("host"), config.getInt("port"));
-        DB db = mongoClient.getDB(config.getString("name"));
-        players = db.getCollection(config.getString("collection"));
+	public Storage(final MongoAuth plugin) throws IOException {
+        MongoClient mongoClient = new MongoClient(
+                plugin.getConfig().getString("database.host", "localhost"),
+                plugin.getConfig().getInt("database.port", 27017)
+        );
+        DB db = mongoClient.getDB(plugin.getConfig().getString("database.name", "minecraft"));
+        players = db.getCollection(plugin.getConfig().getString("database.collection", "players"));
         if (players.count() < 1) {
             ensureIndex();
         }
 	}
 
-    public Account get(String playername) {
+    public Account get(final String playername) {
         DBObject obj = players.findOne(new BasicDBObject("playername", playername.toLowerCase()));
-        if (obj != null) {
-            return new Account(obj.toMap());
+        if (obj == null) {
+            return null;
         }
-        return null;
+        return new Account(obj.toMap());
     }
 
-    public void remove(Account account) {
-        players.remove(new BasicDBObject("playername", account.getName()));
+    public void remove(final Account document) {
+        players.remove(new BasicDBObject("playername", document.getName()));
     }
 
-    public void save(Account account) {
-        players.findAndModify(new BasicDBObject("playername", account.getName()), null, null, false, account, false, true);
+    public void save(final Account document) {
+        players.update(new BasicDBObject("playername", document.getName()), document, true, false);
     }
 
-    public int countIp(int ip) {
+    public int countIp(final int ip) {
         return players.find(new BasicDBObject("ip", ip)).count();
     }
 

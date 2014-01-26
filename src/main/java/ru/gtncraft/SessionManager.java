@@ -3,21 +3,24 @@ package ru.gtncraft;
 import org.bukkit.Bukkit;
 
 import java.io.*;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
-public class Sessions {
+public class SessionManager {
 
-    private HashSet<String> sessions = new HashSet<>();
-    private File file;
+    private final Set<String> sessions;
+    private final File file;
 
-    public Sessions(MongoAuth instance) {
+    public SessionManager(final MongoAuth instance) {
         this.file = new File(instance.getDataFolder() + File.separator + "sessions.dat");
+        this.sessions = Collections.synchronizedSet(new HashSet<String>());
     }
 
     public void load() {
         try (FileInputStream fis = new FileInputStream(file)) {
             ObjectInputStream ois = new ObjectInputStream(fis);
-            for (String player : (HashSet<String>) ois.readObject()) {
+            for (String player : (Set<String>) ois.readObject()) {
                 if (Bukkit.getServer().getPlayer(player) != null) {
                     sessions.add(player);
                 }
@@ -35,15 +38,15 @@ public class Sessions {
         } catch (IOException ex) {}
     }
 
-    public boolean contains(String o) {
+    public boolean contains(final String o) {
         return sessions.contains(o.toLowerCase());
     }
 
-    synchronized public void add(String e) {
+    public void add(final String e) {
         sessions.add(e.toLowerCase());
     }
 
-    synchronized public void remove(String o) {
-        sessions.remove(o.toLowerCase());
+    public boolean remove(final String o) {
+        return sessions.remove(o.toLowerCase());
     }
 }

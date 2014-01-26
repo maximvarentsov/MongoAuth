@@ -1,4 +1,4 @@
-name: MongoAuth
+name: ${artifactId}
 main: ru.gtncraft.MongoAuth
 author: Maxim Varentsov <admin@gtn-craft.ru>
 version: ${version}
@@ -22,7 +22,7 @@ commands:
       description: Сменить пароль
       usage: /cpw пароль новый_пароль
       permission: mongoauth.user
-   authadmin:
+   create:
       description: Управление учетными записями
       usage: /admin [register|unregister|cpw] [playername] (newpassword)
       permission: mongoauth.admin
@@ -30,8 +30,6 @@ permissions:
    mongoauth.admin:
       description: Gives an admin access
       default: op
-      children:
-         mongoauth.user: true
    mongoauth.user:
       description: Allows the use of plugin to players
       default: true

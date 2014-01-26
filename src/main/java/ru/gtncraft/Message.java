@@ -20,7 +20,7 @@ final public class Message {
     public static final String LOGIN_SUCCESS = ChatColor.GREEN + "Вы успешно авторизованы";
     public static final String CPW_COMMAND_HINT = ChatColor.GREEN + "Сменить пароль можно коммандой " + ChatColor.DARK_PURPLE + "/cpw пароль новый_пароль";
     public static final String CPW_SUCCESS = ChatColor.GREEN + "Ваш пароль был изменен";
-    public static final String SENDER_NOT_VALID = ChatColor.RED + "SimpleCommand sender not valid";
+    public static final String SENDER_NOT_VALID = ChatColor.RED + "Эта комманда работает только для игроков";
     public static final String PERMISSION_FORBIDDEN = ChatColor.RED + "У вас недостаточно прав для выполнения этой комманды";
     public static final String PLAYER_ALREADY_ONLINE = "Игрок с ником %s сейчас находится в игре.";
     public static final String REGISTER_OR_LOGIN = ChatColor.DARK_RED + "Пожалуйста зарегистрируйтесь /register или авторизуйтесь /login";

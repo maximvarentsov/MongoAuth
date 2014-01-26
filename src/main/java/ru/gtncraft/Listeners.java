@@ -1,39 +1,35 @@
 package ru.gtncraft;
 
-import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
+
 import java.util.regex.Pattern;
 
-public class Listener implements org.bukkit.event.Listener {
+public class Listeners implements Listener {
 
-    private Storage storage;
-	private MongoAuth plugin;
-	private Sessions sm;
+    private final Storage storage;
+	private final MongoAuth plugin;
+	private final SessionManager sm;
+    private final boolean whiteList;
+    private final Pattern pattern;
 
-    final private boolean whiteList;
-    final private Pattern pattern;
-
-	public Listener(MongoAuth instance, Storage storage, Sessions sm) {
-        instance.getServer().getPluginManager().registerEvents(this, instance);
+	public Listeners(final MongoAuth instance) {
         this.plugin = instance;
-        this.sm = sm;
-        this.storage = storage;
-
-        ConfigurationSection config = instance.getConfig().getConfigurationSection("general");
-
-        this.whiteList = config.getBoolean("whitelist");
-        this.pattern = Pattern.compile(config.getString("playernamePattern"));
+        this.plugin.getServer().getPluginManager().registerEvents(this, instance);
+        this.sm = instance.getSessionManager();
+        this.storage = instance.getStorage();
+        this.whiteList = instance.getConfig().getBoolean("general.whitelist", false);
+        this.pattern = Pattern.compile(instance.getConfig().getString("general.playernamePattern", "*"));
 	}
 
     @EventHandler (priority = EventPriority.LOWEST)
-	public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
+	public void onPlayerPreLogin(final AsyncPlayerPreLoginEvent event) {
 		String playername = event.getName();
 
         if (!pattern.matcher(playername).matches()) {
@@ -60,7 +56,7 @@ public class Listener implements org.bukkit.event.Listener {
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void onCommand(PlayerCommandPreprocessEvent event) {
+	public void onCommand(final PlayerCommandPreprocessEvent event) {
 		Player player =  event.getPlayer();
 		String command = event.getMessage().substring(1);
 		String rootCommand = command.split(" ")[0];
@@ -74,19 +70,15 @@ public class Listener implements org.bukkit.event.Listener {
 	}
 
     @EventHandler(priority=EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerMove(PlayerMoveEvent event) {
+    public void onPlayerMove(final PlayerMoveEvent event) {
         Player player = event.getPlayer();
         if (!sm.contains(player.getName())) {
-            Location from = event.getFrom();
-            Location to = new Location(from.getWorld(), from.getX(), from.getY(), from.getZ());
-            to.setPitch(from.getPitch());
-            to.setYaw(from.getYaw());
-            player.teleport(to);
+            player.teleport(event.getFrom());
         }
     }
 
     @EventHandler(priority=EventPriority.HIGH)
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
         Account account = storage.get(player.getName());
@@ -99,7 +91,7 @@ public class Listener implements org.bukkit.event.Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerQuitEvent(PlayerQuitEvent event) {
+    public void onPlayerQuitEvent(final PlayerQuitEvent event) {
         Player player = event.getPlayer();
         if (sm.contains(player.getName())) {
             sm.remove(player.getName());
@@ -108,7 +100,7 @@ public class Listener implements org.bukkit.event.Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onChat(AsyncPlayerChatEvent event) {
+    public void onChat(final AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         if (!sm.contains(player.getName())) {
             player.sendMessage(Message.REGISTER_OR_LOGIN);
@@ -117,7 +109,7 @@ public class Listener implements org.bukkit.event.Listener {
     }
 
     @EventHandler (ignoreCancelled = true)
-    public void onEntityDamage(EntityDamageEvent event) {
+    public void onEntityDamage(final EntityDamageEvent event) {
         Entity entity = event.getEntity();
         if (entity instanceof Player) {
             Player player = (Player) entity;
@@ -128,35 +120,35 @@ public class Listener implements org.bukkit.event.Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onInventoryInteract(InventoryClickEvent event) {
+    public void onInventoryInteract(final InventoryClickEvent event) {
         if (!sm.contains(event.getWhoClicked().getName())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true)
-	public void onItemDrop(PlayerDropItemEvent event) {
+	public void onItemDrop(final PlayerDropItemEvent event) {
 		if (!sm.contains(event.getPlayer().getName())) {
             event.setCancelled(true);
         }
 	}
 
     @EventHandler(ignoreCancelled = true)
-	public void onInteract(PlayerInteractEvent event) {
+	public void onInteract(final PlayerInteractEvent event) {
 		if (!sm.contains(event.getPlayer().getName())) {
             event.setCancelled(true);
         }
 	}
 
     @EventHandler(ignoreCancelled = true)
-	public void onEntityInteract(PlayerInteractEntityEvent event) {
+	public void onEntityInteract(final PlayerInteractEntityEvent event) {
 		if (!sm.contains(event.getPlayer().getName())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onPlayerPickUp(PlayerPickupItemEvent event) {
+    public void onPlayerPickupItem(final PlayerPickupItemEvent event) {
         if (!sm.contains(event.getPlayer().getName())) {
             event.setCancelled(true);
         }
