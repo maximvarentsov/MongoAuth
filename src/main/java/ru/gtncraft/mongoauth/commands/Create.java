@@ -5,6 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 import ru.gtncraft.mongoauth.*;
 
@@ -67,7 +68,11 @@ public class Create implements CommandExecutor {
                     }
                     account.setPassword(args[2]);
                     account.setAllowed(true);
-                    account.setIP("127.0.0.1");
+                    if (sender instanceof Player) {
+                        account.setIP(((Player) sender).getAddress().getAddress().getHostAddress());
+                    } else {
+                        account.setIP("127.0.0.1");
+                    }
                     sender.sendMessage(String.format(Message.ADMIN_SUCCESS_REGISTER_PLAYER, account.getName()));
                     plugin.getLogger().info(String.format("Account %s success register by %s.", account.getName(), sender.getName()));
                 } catch (ArrayIndexOutOfBoundsException ex) {
