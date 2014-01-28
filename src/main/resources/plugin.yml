@@ -25,7 +25,7 @@ commands:
       aliases: [changepass, cpw]
    mongoauth:
       description: Управление учетными записями.
-      usage: /<command> <playername> <password> - Создать игровой аккаунт.
+      usage: |
          /<command> register <playername> <password> - Создать аккаунт.
          /<command> unregister <playername> - Удалить аккаунт.
          /<command> changepassword <playername> <password> - Сменить пароль.
