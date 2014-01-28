@@ -1,10 +1,14 @@
 package ru.gtncraft.mongoauth.commands;
 
+import com.google.common.collect.ImmutableList;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
+
+import java.util.List;
 
 public class ChangePassword implements CommandExecutor {
 
@@ -17,6 +21,12 @@ public class ChangePassword implements CommandExecutor {
 		this.storage = plugin.getStorage();
         this.sessionManager = plugin.getSessionManager();
         this.plugin.getCommand("cpw").setExecutor(this);
+        this.plugin.getCommand("cpw").setTabCompleter(new TabCompleter() {
+            @Override
+            public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
+                return ImmutableList.of();
+            }
+        });
 	}
 
     @Override

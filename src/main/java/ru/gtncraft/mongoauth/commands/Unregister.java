@@ -1,10 +1,14 @@
 package ru.gtncraft.mongoauth.commands;
 
+import com.google.common.collect.ImmutableList;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
+
+import java.util.List;
 
 public class Unregister implements CommandExecutor {
 
@@ -17,6 +21,12 @@ public class Unregister implements CommandExecutor {
 		this.storage = instance.getStorage();
 		this.sessionManager = instance.getSessionManager();
         this.plugin.getCommand("unregister").setExecutor(this);
+        this.plugin.getCommand("unregister").setTabCompleter(new TabCompleter() {
+            @Override
+            public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
+                return ImmutableList.of();
+            }
+        });
 	}
 
     @Override

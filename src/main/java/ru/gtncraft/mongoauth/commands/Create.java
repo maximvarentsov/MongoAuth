@@ -1,9 +1,16 @@
 package ru.gtncraft.mongoauth.commands;
 
+import com.google.common.collect.ImmutableList;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
+import org.bukkit.util.StringUtil;
 import ru.gtncraft.mongoauth.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class Create implements CommandExecutor {
 
@@ -16,6 +23,26 @@ public class Create implements CommandExecutor {
         this.storage = instance.getStorage();
         this.sessionManager = instance.getSessionManager();
         this.plugin.getCommand("create").setExecutor(this);
+        this.plugin.getCommand("unregister").setTabCompleter(new TabCompleter() {
+
+            private final List<String> subs = ImmutableList.of("register", "unregister", "cpw");
+
+            @Override
+            public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
+
+                if (args.length <= 1) {
+                    return partial(args[0], subs);
+                } else if (args.length == 2) {
+                    return null;
+                }
+
+                return ImmutableList.of();
+            }
+
+            private List<String> partial(String token, Collection<String> from) {
+                return StringUtil.copyPartialMatches(token, from, new ArrayList<String>(from.size()));
+            }
+        });
     }
 
     @Override

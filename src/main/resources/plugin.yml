@@ -25,7 +25,10 @@ commands:
       aliases: [changepass]
    create:
       description: Управление учетными записями
-      usage: /admin [register|unregister|cpw] [playername] (newpassword)
+      usage: |
+         /<command> register <playername> <password> - Создать аккаунт.
+         /<command> unregister <playername> - Удалить аккаунт.
+         /<command> cpw <playername> <password> - Сменить пароль.
       permission: mongoauth.admin
 permissions:
    mongoauth.admin:

@@ -1,13 +1,17 @@
 package ru.gtncraft.mongoauth.commands;
 
+import com.google.common.collect.ImmutableList;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.Account;
 import ru.gtncraft.mongoauth.Message;
 import ru.gtncraft.mongoauth.MongoAuth;
 import ru.gtncraft.mongoauth.SessionManager;
+
+import java.util.List;
 
 public class Logout implements CommandExecutor {
 
@@ -18,6 +22,12 @@ public class Logout implements CommandExecutor {
         this.plugin = instance;
 		this.sessionManager = instance.getSessionManager();
         this.plugin.getCommand("logout").setExecutor(this);
+        this.plugin.getCommand("logout").setTabCompleter(new TabCompleter() {
+            @Override
+            public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
+                return ImmutableList.of();
+            }
+        });
 	}
 
     @Override
