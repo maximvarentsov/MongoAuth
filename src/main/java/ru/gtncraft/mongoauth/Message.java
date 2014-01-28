@@ -4,7 +4,6 @@ import org.bukkit.ChatColor;
 
 public class Message {
 
-    public static final String WHITELIST = ChatColor.RED + "Вас нет в WHITELIST";
     public static final String PLAYER_IS_LOGGED = ChatColor.GREEN + "Вы уже авторизованы";
     public static final String PLAYER_NOT_REGISTER = ChatColor.RED + "Игрок с таким именем не зарегистрирован";
     public static final String LOGOUT_SUCCESS = ChatColor.GREEN + "Игровая сессия завершена";
@@ -19,7 +18,7 @@ public class Message {
     public static final String UNREGISTER_COMMAND_HINT = ChatColor.GREEN +  "Удалить игровой аккунт можно коммандой " + ChatColor.DARK_PURPLE + "/unregister пароль";
     public static final String LOGIN_COMMAND_HINT = ChatColor.GREEN + "Авторизируйтесь с помощью команды " + ChatColor.DARK_PURPLE + "/login пароль";
     public static final String LOGIN_SUCCESS = ChatColor.GREEN + "Вы успешно авторизованы";
-    public static final String CPW_COMMAND_HINT = ChatColor.GREEN + "Сменить пароль можно коммандой " + ChatColor.DARK_PURPLE + "/cpw пароль новый_пароль";
+    public static final String CPW_COMMAND_HINT = ChatColor.GREEN + "Сменить пароль можно коммандой " + ChatColor.DARK_PURPLE + "/changepassword пароль новый_пароль";
     public static final String CPW_SUCCESS = ChatColor.GREEN + "Ваш пароль был изменен";
     public static final String SENDER_NOT_VALID = ChatColor.RED + "Эта комманда работает только для игроков";
     public static final String PERMISSION_FORBIDDEN = ChatColor.RED + "У вас недостаточно прав для выполнения этой комманды";

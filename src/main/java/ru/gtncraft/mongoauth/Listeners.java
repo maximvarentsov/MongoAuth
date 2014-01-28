@@ -16,7 +16,6 @@ public class Listeners implements Listener {
     private final Storage storage;
 	private final MongoAuth plugin;
 	private final SessionManager sm;
-    private final boolean whiteList;
     private final Pattern pattern;
 
 	public Listeners(final MongoAuth instance) {
@@ -24,7 +23,6 @@ public class Listeners implements Listener {
         this.plugin.getServer().getPluginManager().registerEvents(this, instance);
         this.sm = instance.getSessionManager();
         this.storage = instance.getStorage();
-        this.whiteList = instance.getConfig().getBoolean("general.whitelist", false);
         this.pattern = Pattern.compile(instance.getConfig().getString("general.playernamePattern", "*"));
 	}
 
@@ -45,14 +43,6 @@ public class Listeners implements Listener {
                 return;
             }
 		}
-
-        if (whiteList) {
-            Account account = storage.get(playername);
-            if (!account.isAllowed()) {
-                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-                event.setKickMessage(Message.WHITELIST);
-            }
-        }
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
