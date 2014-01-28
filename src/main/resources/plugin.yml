@@ -28,7 +28,7 @@ commands:
       usage: /<command> <playername> <password> - Создать игровой аккаунт.
          /<command> register <playername> <password> - Создать аккаунт.
          /<command> unregister <playername> - Удалить аккаунт.
-         /<command> cpw <playername> <password> - Сменить пароль.
+         /<command> changepassword <playername> <password> - Сменить пароль.
       permission: mongoauth.admin
 permissions:
    mongoauth.admin:
