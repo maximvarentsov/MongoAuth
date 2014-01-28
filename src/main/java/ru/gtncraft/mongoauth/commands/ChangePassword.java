@@ -1,22 +1,22 @@
-package ru.gtncraft.commands;
+package ru.gtncraft.mongoauth.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import ru.gtncraft.*;
+import ru.gtncraft.mongoauth.*;
 
-public class Unregister implements CommandExecutor {
+public class ChangePassword implements CommandExecutor {
 
     private final MongoAuth plugin;
 	private final Storage storage;
-	private final SessionManager sessionManager;
-
-	public Unregister(final MongoAuth instance) {
+    private final SessionManager sessionManager;
+	
+	public ChangePassword(final MongoAuth instance) {
         this.plugin = instance;
-		this.storage = instance.getStorage();
-		this.sessionManager = instance.getSessionManager();
-        this.plugin.getCommand("unregister").setExecutor(this);
+		this.storage = plugin.getStorage();
+        this.sessionManager = plugin.getSessionManager();
+        this.plugin.getCommand("cpw").setExecutor(this);
 	}
 
     @Override
@@ -35,7 +35,7 @@ public class Unregister implements CommandExecutor {
         Account account = storage.get(sender.getName());
 
         if (account == null) {
-            sender.sendMessage(Message.PLAYER_NOT_REGISTER);
+            sender.sendMessage(Message.REGISTER_COMMAND_HINT);
             return true;
         }
 
@@ -45,16 +45,18 @@ public class Unregister implements CommandExecutor {
         }
 
         try {
-            if (account.checkPassword(args[0])) {
-                storage.remove(account);
-                sessionManager.remove(sender.getName());
-                plugin.getLogger().info("Account " + account + " unregistered.");
-                sender.sendMessage(Message.UNREGISTER_SUCCESS);
+            String currentPassword = args[0];
+            String newPassword = args[1];
+            if (account.checkPassword(currentPassword)) {
+                account.setPassword(newPassword);
+                storage.save(account);
+                plugin.getLogger().info("Player " + account + " has changed password.");
+                sender.sendMessage(Message.CPW_SUCCESS);
             } else {
                 sender.sendMessage(Message.PASSWORD_WRONG);
             }
-        } catch (ArrayIndexOutOfBoundsException ex) {
-            sender.sendMessage(Message.UNREGISTER_COMMAND_HINT);
+        } catch (Exception ex) {
+            sender.sendMessage(Message.CPW_COMMAND_HINT);
         }
         return true;
     }

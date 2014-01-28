@@ -1,4 +1,4 @@
-package ru.gtncraft;
+package ru.gtncraft.mongoauth;
 
 import com.mongodb.*;
 

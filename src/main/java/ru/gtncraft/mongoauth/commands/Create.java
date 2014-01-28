@@ -1,9 +1,9 @@
-package ru.gtncraft.commands;
+package ru.gtncraft.mongoauth.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import ru.gtncraft.*;
+import ru.gtncraft.mongoauth.*;
 
 public class Create implements CommandExecutor {
 

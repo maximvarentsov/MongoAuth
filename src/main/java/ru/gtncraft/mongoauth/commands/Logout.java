@@ -1,13 +1,13 @@
-package ru.gtncraft.commands;
+package ru.gtncraft.mongoauth.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import ru.gtncraft.Account;
-import ru.gtncraft.Message;
-import ru.gtncraft.MongoAuth;
-import ru.gtncraft.SessionManager;
+import ru.gtncraft.mongoauth.Account;
+import ru.gtncraft.mongoauth.Message;
+import ru.gtncraft.mongoauth.MongoAuth;
+import ru.gtncraft.mongoauth.SessionManager;
 
 public class Logout implements CommandExecutor {
 

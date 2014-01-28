@@ -1,8 +1,9 @@
-package ru.gtncraft;
+package ru.gtncraft.mongoauth;
 
 import org.bukkit.ChatColor;
 
-final public class Message {
+public class Message {
+
     public static final String WHITELIST = ChatColor.RED + "Вас нет в WHITELIST";
     public static final String PLAYER_IS_LOGGED = ChatColor.GREEN + "Вы уже авторизованы";
     public static final String PLAYER_NOT_REGISTER = ChatColor.RED + "Игрок с таким именем не зарегистрирован";

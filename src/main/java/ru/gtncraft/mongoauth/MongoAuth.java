@@ -1,7 +1,7 @@
-package ru.gtncraft;
+package ru.gtncraft.mongoauth;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import ru.gtncraft.commands.*;
+import ru.gtncraft.mongoauth.commands.*;
 
 import java.io.IOException;
 

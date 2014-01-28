@@ -1,10 +1,10 @@
-package ru.gtncraft.commands;
+package ru.gtncraft.mongoauth.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import ru.gtncraft.*;
+import ru.gtncraft.mongoauth.*;
 
 public class Register implements CommandExecutor {
 
