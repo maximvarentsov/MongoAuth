@@ -6,20 +6,24 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import ru.gtncraft.mongoauth.*;
+import ru.gtncraft.mongoauth.Account;
+import ru.gtncraft.mongoauth.Message;
+import ru.gtncraft.mongoauth.MongoAuth;
+import ru.gtncraft.mongoauth.SessionManager;
+import ru.gtncraft.mongoauth.database.Database;
 
 import java.util.List;
 
 public class Changepassword implements CommandExecutor {
 
     private final MongoAuth plugin;
-	private final Storage storage;
+	private final Database db;
     private final SessionManager sessionManager;
 	
 	public Changepassword(final MongoAuth instance) {
         this.plugin = instance;
-		this.storage = plugin.getStorage();
-        this.sessionManager = plugin.getSessionManager();
+		this.db = instance.getDB();
+        this.sessionManager = instance.getSessionManager();
         this.plugin.getCommand("changepassword").setExecutor(this);
         this.plugin.getCommand("changepassword").setTabCompleter(new TabCompleter() {
             @Override
@@ -42,7 +46,7 @@ public class Changepassword implements CommandExecutor {
             return true;
         }
 
-        Account account = storage.get(sender.getName());
+        Account account = db.get(sender.getName());
 
         if (account == null) {
             sender.sendMessage(Message.REGISTER_COMMAND_HINT);
@@ -59,7 +63,7 @@ public class Changepassword implements CommandExecutor {
             String newPassword = args[1];
             if (account.checkPassword(currentPassword)) {
                 account.setPassword(newPassword);
-                storage.save(account);
+                db.save(account);
                 plugin.getLogger().info("Player " + account + " has changed password.");
                 sender.sendMessage(Message.CPW_SUCCESS);
             } else {
