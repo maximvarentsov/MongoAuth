@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 
 public class Message {
 
+    public static final String PLAYER_BLOCKED = ChatColor.RED + "Аккаунт заблокирован.";
     public static final String PLAYER_IS_LOGGED = ChatColor.GREEN + "Вы уже авторизованы";
     public static final String PLAYER_NOT_REGISTER = ChatColor.RED + "Игрок с таким именем не зарегистрирован";
     public static final String LOGOUT_SUCCESS = ChatColor.GREEN + "Игровая сессия завершена";

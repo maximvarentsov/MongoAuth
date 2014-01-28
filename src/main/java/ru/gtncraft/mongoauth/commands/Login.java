@@ -49,6 +49,11 @@ public class Login implements CommandExecutor {
             return true;
         }
 
+        if (!account.isAllowed()) {
+            sender.sendMessage(Message.PLAYER_BLOCKED);
+            return true;
+        }
+
         if (sessionManager.contains(sender.getName())) {
             sender.sendMessage(Message.PLAYER_IS_LOGGED);
             return true;
