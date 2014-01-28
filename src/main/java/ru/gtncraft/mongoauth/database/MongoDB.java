@@ -1,14 +1,16 @@
-package ru.gtncraft.mongoauth;
+package ru.gtncraft.mongoauth.database;
 
 import com.mongodb.*;
+import ru.gtncraft.mongoauth.Account;
+import ru.gtncraft.mongoauth.MongoAuth;
 
 import java.io.IOException;
 
-public class Storage {
+public class MongoDB implements Database {
 
     private final DBCollection players;
 
-	public Storage(final MongoAuth plugin) throws IOException {
+	public MongoDB(final MongoAuth plugin) throws IOException {
         MongoClient mongoClient = new MongoClient(
                 plugin.getConfig().getString("database.host", "localhost"),
                 plugin.getConfig().getInt("database.port", 27017)

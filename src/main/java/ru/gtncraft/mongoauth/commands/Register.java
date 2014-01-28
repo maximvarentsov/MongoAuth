@@ -7,19 +7,20 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
+import ru.gtncraft.mongoauth.database.Database;
 
 import java.util.List;
 
 public class Register implements CommandExecutor {
 
     private final MongoAuth plugin;
-	private final Storage storage;
+	private final Database db;
     private final SessionManager sessionManager;
     private final int maxPerIp;
 	
 	public Register(final MongoAuth instance) {
         this.plugin = instance;
-        this.storage = instance.getStorage();
+        this.db = instance.getDB();
         this.sessionManager = instance.getSessionManager();
         this.maxPerIp = instance.getConfig().getInt("general.maxPerIp", 0);
         this.plugin.getCommand("register").setExecutor(this);
@@ -51,12 +52,12 @@ public class Register implements CommandExecutor {
             return true;
         }
 
-        if (storage.get(account.getName()) != null) {
+        if (db.get(account.getName()) != null) {
             sender.sendMessage(Message.PLAYER_ALREADY_REGISTERED);
             return true;
         }
 
-        long total = storage.countIp(account.getIP());
+        long total = db.countIp(account.getIP());
         if (maxPerIp > 0 && total >= maxPerIp) {
             sender.sendMessage(Message.REGISTER_LIMIT_REACHED);
             return true;
@@ -64,7 +65,7 @@ public class Register implements CommandExecutor {
 
         try {
             account.setPassword(args[0]);
-            storage.save(account);
+            db.save(account);
             sessionManager.add(account.getName());
             plugin.getLogger().info("New player " + account + " registered.");
             sender.sendMessage(Message.REGISTER_SUCCESS);

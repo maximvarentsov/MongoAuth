@@ -8,12 +8,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
+import ru.gtncraft.mongoauth.database.Database;
 
 import java.util.regex.Pattern;
 
 public class Listeners implements Listener {
 
-    private final Storage storage;
+    private final Database db;
 	private final MongoAuth plugin;
 	private final SessionManager sm;
     private final Pattern pattern;
@@ -22,7 +23,7 @@ public class Listeners implements Listener {
         this.plugin = instance;
         this.plugin.getServer().getPluginManager().registerEvents(this, instance);
         this.sm = instance.getSessionManager();
-        this.storage = instance.getStorage();
+        this.db = instance.getDB();
         this.pattern = Pattern.compile(instance.getConfig().getString("general.playernamePattern", "*"));
 	}
 
@@ -71,7 +72,7 @@ public class Listeners implements Listener {
     public void onPlayerJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        Account account = storage.get(player.getName());
+        Account account = db.get(player.getName());
 
         if (account == null) {
             player.sendMessage(Message.REGISTER_COMMAND_HINT);

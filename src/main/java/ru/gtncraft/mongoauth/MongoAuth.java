@@ -2,12 +2,13 @@ package ru.gtncraft.mongoauth;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.gtncraft.mongoauth.commands.*;
+import ru.gtncraft.mongoauth.database.*;
 
 import java.io.IOException;
 
 public final class MongoAuth extends JavaPlugin {
 
-    private Storage storage;
+    private Database db;
     private SessionManager sessionManager;
 
     @Override
@@ -20,7 +21,7 @@ public final class MongoAuth extends JavaPlugin {
         }
 
         try {
-			storage = new Storage(this);
+			db = new MongoDB(this);
 		} catch (IOException ex) {
 			getLogger().severe("Can't connect to MongoDB instance.");
 		}
@@ -39,8 +40,8 @@ public final class MongoAuth extends JavaPlugin {
         sessionManager.save();
     }
 
-    public Storage getStorage() {
-        return storage;
+    public Database getDB() {
+        return db;
     }
 
     public SessionManager getSessionManager() {

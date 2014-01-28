@@ -6,19 +6,23 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import ru.gtncraft.mongoauth.*;
+import ru.gtncraft.mongoauth.Account;
+import ru.gtncraft.mongoauth.Message;
+import ru.gtncraft.mongoauth.MongoAuth;
+import ru.gtncraft.mongoauth.SessionManager;
+import ru.gtncraft.mongoauth.database.Database;
 
 import java.util.List;
 
 public class Login implements CommandExecutor {
 
     private final MongoAuth plugin;
-	private final Storage storage;
+	private final Database db;
 	private final SessionManager sessionManager;
 
     public Login(final MongoAuth instance) {
         this.plugin = instance;
-		this.storage = instance.getStorage();
+		this.db = instance.getDB();
 		this.sessionManager = instance.getSessionManager();
         this.plugin.getCommand("login").setExecutor(this);
         this.plugin.getCommand("login").setTabCompleter(new TabCompleter() {
@@ -42,7 +46,7 @@ public class Login implements CommandExecutor {
             return true;
         }
 
-        Account account = storage.get(sender.getName());
+        Account account = db.get(sender.getName());
 
         if (account == null) {
             sender.sendMessage(Message.PLAYER_NOT_REGISTER + "\n" + Message.REGISTER_COMMAND_HINT);
