@@ -27,16 +27,24 @@ public class Mongoauth implements CommandExecutor {
         this.plugin.getCommand("mongoauth").setTabCompleter(new TabCompleter() {
 
             private final List<String> subs = ImmutableList.of(
-                "register", "unregister", "cpw", "changepassword", "changepass"
+                "register", "unregister", "cpw", "changepassword", "changepass", "block"
             );
+            private final List<String> bool = ImmutableList.of("true", "false");
 
             @Override
             public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
+
+                String lastarg = args[args.length - 1];
 
                 if (args.length <= 1) {
                     return partial(args[0], subs);
                 } else if (args.length == 2) {
                     return null;
+                } else if (args.length == 3) {
+                    String sub = args[0];
+                    if ("block".equals(sub)) {
+                        return partial(lastarg, bool);
+                    }
                 }
 
                 return ImmutableList.of();

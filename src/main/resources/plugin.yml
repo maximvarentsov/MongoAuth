@@ -29,6 +29,7 @@ commands:
          /<command> register <playername> <password> - Создать аккаунт.
          /<command> unregister <playername> - Удалить аккаунт.
          /<command> changepassword <playername> <password> - Сменить пароль.
+         /<command> block <playername> <true|false> - Вкл|выкл блокировку аккаунта.
       permission: mongoauth.admin
 permissions:
    mongoauth.admin:
