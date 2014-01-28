@@ -49,7 +49,8 @@ public class Login implements CommandExecutor {
         Account account = db.get(sender.getName());
 
         if (account == null) {
-            sender.sendMessage(Message.PLAYER_NOT_REGISTER + "\n" + Message.REGISTER_COMMAND_HINT);
+            sender.sendMessage(Message.PLAYER_NOT_REGISTER);
+            sender.sendMessage(Message.REGISTER_COMMAND_HINT);
             return true;
         }
 
