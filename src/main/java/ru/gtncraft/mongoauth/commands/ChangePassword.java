@@ -10,18 +10,18 @@ import ru.gtncraft.mongoauth.*;
 
 import java.util.List;
 
-public class ChangePassword implements CommandExecutor {
+public class Changepassword implements CommandExecutor {
 
     private final MongoAuth plugin;
 	private final Storage storage;
     private final SessionManager sessionManager;
 	
-	public ChangePassword(final MongoAuth instance) {
+	public Changepassword(final MongoAuth instance) {
         this.plugin = instance;
 		this.storage = plugin.getStorage();
         this.sessionManager = plugin.getSessionManager();
-        this.plugin.getCommand("cpw").setExecutor(this);
-        this.plugin.getCommand("cpw").setTabCompleter(new TabCompleter() {
+        this.plugin.getCommand("changepassword").setExecutor(this);
+        this.plugin.getCommand("changepassword").setTabCompleter(new TabCompleter() {
             @Override
             public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
                 return ImmutableList.of();

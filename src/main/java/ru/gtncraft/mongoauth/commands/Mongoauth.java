@@ -13,20 +13,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class Create implements CommandExecutor {
+public class Mongoauth implements CommandExecutor {
 
     private final MongoAuth plugin;
     private final Storage storage;
     private final SessionManager sessionManager;
 
-    public Create(final MongoAuth instance) {
+    public Mongoauth(final MongoAuth instance) {
         this.plugin = instance;
         this.storage = instance.getStorage();
         this.sessionManager = instance.getSessionManager();
-        this.plugin.getCommand("create").setExecutor(this);
-        this.plugin.getCommand("create").setTabCompleter(new TabCompleter() {
+        this.plugin.getCommand("mongoauth").setExecutor(this);
+        this.plugin.getCommand("mongoauth").setTabCompleter(new TabCompleter() {
 
-            private final List<String> subs = ImmutableList.of("register", "unregister", "cpw");
+            private final List<String> subs = ImmutableList.of(
+                "register", "unregister", "cpw", "changepassword", "changepass"
+            );
 
             @Override
             public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
@@ -96,7 +98,7 @@ public class Create implements CommandExecutor {
                     return true;
                 }
                 break;
-            case "cpw":
+            case "changepassword":
                 try {
                     Account account = storage.get(args[1]);
                     if (account == null) {

@@ -4,28 +4,28 @@ author: Maxim Varentsov <admin@gtn-craft.ru>
 version: ${version}
 commands:
    login:
-      description: Авторизоваться на сервере
-      usage: /login пароль
+      description: Авторизоваться на сервере.
+      usage: /login <пароль>
       aliases: [l]
    logout:
-      description: Завершить игровую сессию
+      description: Завершить игровую сессию.
       usage: /logout
       permission: mongoauth.user
    register:
-      description: Регистрация на сервере
-      usage: /register пароль
+      description: Регистрация на сервере.
+      usage: /register <пароль>
    unregister:
-      description: Удалить игровой аккаунт
-      usage: /unregister пароль
+      description: Удалить игровой аккаунт.
+      usage: /unregister <пароль>
       permission: mongoauth.user
-   cpw:
-      description: Сменить пароль
-      usage: /cpw пароль новый_пароль
+   changepassword:
+      description: Сменить пароль.
+      usage: /changepassword <пароль> <новый пароль>
       permission: mongoauth.user
-      aliases: [changepass]
-   create:
-      description: Управление учетными записями
-      usage: |
+      aliases: [changepass, cpw]
+   mongoauth:
+      description: Управление учетными записями.
+      usage: /<command> <playername> <password> - Создать игровой аккаунт.
          /<command> register <playername> <password> - Создать аккаунт.
          /<command> unregister <playername> - Удалить аккаунт.
          /<command> cpw <playername> <password> - Сменить пароль.

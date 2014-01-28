@@ -28,10 +28,10 @@ public final class MongoAuth extends JavaPlugin {
         new Listeners(this);
         new Login(this);
         new Logout(this);
-        new ChangePassword(this);
+        new Changepassword(this);
         new Register(this);
         new Unregister(this);
-        new Create(this);
+        new Mongoauth(this);
 	}
 
     @Override
