@@ -23,7 +23,7 @@ public class Create implements CommandExecutor {
         this.storage = instance.getStorage();
         this.sessionManager = instance.getSessionManager();
         this.plugin.getCommand("create").setExecutor(this);
-        this.plugin.getCommand("unregister").setTabCompleter(new TabCompleter() {
+        this.plugin.getCommand("create").setTabCompleter(new TabCompleter() {
 
             private final List<String> subs = ImmutableList.of("register", "unregister", "cpw");
 
