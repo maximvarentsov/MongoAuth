@@ -10,18 +10,18 @@ commands:
    logout:
       description: Завершить игровую сессию.
       usage: /logout
-      permission: mongoauth.user
+      permission: mongoauth.use
    register:
       description: Регистрация на сервере.
       usage: /register <пароль>
    unregister:
       description: Удалить игровой аккаунт.
       usage: /unregister <пароль>
-      permission: mongoauth.user
+      permission: mongoauth.use
    changepassword:
       description: Сменить пароль.
       usage: /changepassword <пароль> <новый пароль>
-      permission: mongoauth.user
+      permission: mongoauth.use
       aliases: [changepass, cpw]
    mongoauth:
       description: Управление учетными записями.
