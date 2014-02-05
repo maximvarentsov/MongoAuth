@@ -17,7 +17,6 @@ import java.util.regex.Pattern;
 
 public class Listeners implements Listener {
 
-    private final Database db;
 	private final MongoAuth plugin;
 	private final SessionManager sm;
     private final Pattern pattern;
@@ -27,7 +26,6 @@ public class Listeners implements Listener {
         this.plugin = instance;
         this.plugin.getServer().getPluginManager().registerEvents(this, instance);
         this.sm = instance.getSessionManager();
-        this.db = instance.getDB();
         this.config = plugin.getConfig();
         this.pattern = Pattern.compile(this.config.getString("general.playernamePattern"));
 	}
