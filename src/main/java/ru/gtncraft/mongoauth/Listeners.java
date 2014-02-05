@@ -71,9 +71,9 @@ public class Listeners implements Listener {
     public void onPlayerMove(final PlayerMoveEvent event) {
         final Player player = event.getPlayer();
         if (!sm.contains(player.getName())) {
-            Location from = event.getFrom();
-            from.setPitch(event.getTo().getPitch());
-            from.setYaw(event.getTo().getYaw());
+            final Location from = event.getFrom();
+            from.setPitch(player.getLocation().getPitch());
+            from.setYaw(player.getLocation().getYaw());
             player.teleport(from);
         }
     }
