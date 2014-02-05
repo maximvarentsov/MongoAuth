@@ -6,10 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import ru.gtncraft.mongoauth.Account;
-import ru.gtncraft.mongoauth.Messages;
-import ru.gtncraft.mongoauth.MongoAuth;
-import ru.gtncraft.mongoauth.SessionManager;
+import ru.gtncraft.mongoauth.*;
 import ru.gtncraft.mongoauth.database.Database;
 
 import java.util.List;
@@ -36,7 +33,7 @@ public class Login implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
 
-        if (!sender.hasPermission("mongoauth.user")) {
+        if (!sender.hasPermission(Permissions.use)) {
             sender.sendMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
             return true;
         }

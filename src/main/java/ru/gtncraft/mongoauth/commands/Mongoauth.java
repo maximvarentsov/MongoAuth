@@ -7,10 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
-import ru.gtncraft.mongoauth.Account;
-import ru.gtncraft.mongoauth.Messages;
-import ru.gtncraft.mongoauth.MongoAuth;
-import ru.gtncraft.mongoauth.SessionManager;
+import ru.gtncraft.mongoauth.*;
 import ru.gtncraft.mongoauth.database.Database;
 
 import java.util.ArrayList;
@@ -67,7 +64,7 @@ public class Mongoauth implements CommandExecutor {
             return false;
         }
 
-        if (!sender.hasPermission("mongoauth.admin")) {
+        if (!sender.hasPermission(Permissions.admin)) {
             sender.sendMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
             return true;
         }

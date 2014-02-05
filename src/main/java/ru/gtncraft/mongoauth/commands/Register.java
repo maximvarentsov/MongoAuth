@@ -35,7 +35,7 @@ public class Register implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
 
-        if (!sender.hasPermission("mongoauth.user")) {
+        if (!sender.hasPermission(Permissions.use)) {
             sender.sendMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
             return true;
         }
