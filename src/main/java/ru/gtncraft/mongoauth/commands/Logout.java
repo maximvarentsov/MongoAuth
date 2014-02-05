@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.Account;
-import ru.gtncraft.mongoauth.Message;
+import ru.gtncraft.mongoauth.Messages;
 import ru.gtncraft.mongoauth.MongoAuth;
 import ru.gtncraft.mongoauth.SessionManager;
 
@@ -34,18 +34,17 @@ public class Logout implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Message.SENDER_NOT_VALID);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_command_sender));
             return true;
         }
 
-        Account account = new Account((Player) sender);
+        final Account account = new Account((Player) sender);
 
         if (sessionManager.remove(account.getName())) {
             plugin.getLogger().info("Player " + account + " logget out.");
-            sender.sendMessage(Message.LOGOUT_SUCCESS);
-        } else {
-            sender.sendMessage(Message.LOGIN_COMMAND_HINT);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.success_account_logout));
         }
+
         return true;
     }
 }

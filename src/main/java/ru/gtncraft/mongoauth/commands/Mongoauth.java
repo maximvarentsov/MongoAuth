@@ -8,7 +8,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 import ru.gtncraft.mongoauth.Account;
-import ru.gtncraft.mongoauth.Message;
+import ru.gtncraft.mongoauth.Messages;
 import ru.gtncraft.mongoauth.MongoAuth;
 import ru.gtncraft.mongoauth.SessionManager;
 import ru.gtncraft.mongoauth.database.Database;
@@ -68,64 +68,75 @@ public class Mongoauth implements CommandExecutor {
         }
 
         if (!sender.hasPermission("mongoauth.admin")) {
-            sender.sendMessage(Message.PERMISSION_FORBIDDEN);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
             return true;
         }
 
         switch (args[0].toLowerCase()) {
             case "register":
                 try {
-                    Account account = db.get(args[1]);
-                    if (account == null) {
-                        sender.sendMessage(Message.PLAYER_ALREADY_REGISTERED);
+                    final String playername = args[1];
+                    final Account account = db.get(playername);
+                    if (account != null) {
+                        sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_exists));
                         return true;
                     }
-                    account.setPassword(args[2]);
-                    account.setAllowed(true);
-                    if (sender instanceof Player) {
-                        account.setIP(((Player) sender).getAddress().getAddress().getHostAddress());
-                    } else {
-                        account.setIP("127.0.0.1");
+                    try {
+                        final String password = args[2];
+                        account.setPassword(password);
+                        account.setAllowed(true);
+                        if (sender instanceof Player) {
+                            account.setIP(((Player) sender).getAddress().getAddress().getHostAddress());
+                        } else {
+                            account.setIP("127.0.0.1");
+                        }
+                        sender.sendMessage(plugin.getConfig().getMessage(Messages.success_command_admin_register, sender.getName()));
+                        plugin.getLogger().info(String.format("Account %s success register by %s.", account.getName(), sender.getName()));
+                    } catch (ArrayIndexOutOfBoundsException ex) {
+                        sender.sendMessage(plugin.getConfig().getMessage(Messages.error_input_password));
                     }
-                    sender.sendMessage(String.format(Message.ADMIN_SUCCESS_REGISTER_PLAYER, account.getName()));
-                    plugin.getLogger().info(String.format("Account %s success register by %s.", account.getName(), sender.getName()));
                 } catch (ArrayIndexOutOfBoundsException ex) {
-                    sender.sendMessage(Message.ADMIN_MISSING_PLAYERNAME_OR_PASSWORD);
-                    return true;
+                    sender.sendMessage(plugin.getConfig().getMessage(Messages.error_input_playername));
                 }
                 break;
             case "unregister":
                 try {
-                    Account account = db.get(args[1]);
+                    final Account account = db.get(args[1]);
                     if (account == null) {
-                        sender.sendMessage(Message.PLAYER_NOT_REGISTER);
+                        sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_not_registred));
                         return true;
                     }
                     db.remove(account);
                     sessionManager.remove(account.getName());
+                    sender.sendMessage(plugin.getConfig().getMessage(Messages.success_command_admin_delete, sender.getName()));
                     plugin.getLogger().info(sender.getName() + " deleted player " + account + " from database.");
-                    sender.sendMessage(String.format(Message.ADMIN_SUCCESS_PLAYER_UREGISTRED, account.getName()));
                 } catch (ArrayIndexOutOfBoundsException ex) {
-                    sender.sendMessage(Message.ADMIN_MISSING_PLAYERNAME);
-                    return true;
+                    sender.sendMessage(plugin.getConfig().getMessage(Messages.error_input_playername));
                 }
                 break;
             case "changepassword":
                 try {
-                    Account account = db.get(args[1]);
+                    final String playername = args[1];
+                    final Account account = db.get(playername);
                     if (account == null) {
-                        sender.sendMessage(Message.PLAYER_NOT_REGISTER);
+                        sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_not_registred));
                         return true;
                     }
-                    account.setPassword(args[2]);
-                    db.save(account);
-                    plugin.getLogger().info("Player " + sender.getName() + " changed password for " + account + ".");
-                    sender.sendMessage(String.format(Message.ADMIN_SUCCESS_CHANGE_PASSWORD, account.getName()));
+                    try {
+                        final String password = args[2];
+                        account.setPassword(password);
+                        db.save(account);
+                        plugin.getLogger().info("Player " + sender.getName() + " changed password for " + account + ".");
+                        sender.sendMessage(plugin.getConfig().getMessage(Messages.success_command_admin_changepassword, sender.getName()));
+                    } catch (ArrayIndexOutOfBoundsException ex) {
+                        sender.sendMessage(plugin.getConfig().getMessage(Messages.error_input_password));
+                    }
                 } catch (ArrayIndexOutOfBoundsException ex) {
-                    sender.sendMessage(Message.ADMIN_MISSING_PLAYERNAME_OR_PASSWORD);
-                    return true;
+                    sender.sendMessage(plugin.getConfig().getMessage(Messages.error_input_playername));
                 }
                 break;
+            default:
+                return false;
         }
         return true;
     }

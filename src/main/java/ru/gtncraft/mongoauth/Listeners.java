@@ -1,5 +1,7 @@
 package ru.gtncraft.mongoauth;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,6 +11,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import ru.gtncraft.mongoauth.database.Database;
+import ru.gtncraft.mongoauth.tasks.AuthMessage;
 
 import java.util.regex.Pattern;
 
@@ -18,29 +21,31 @@ public class Listeners implements Listener {
 	private final MongoAuth plugin;
 	private final SessionManager sm;
     private final Pattern pattern;
+    private final Config config;
 
 	public Listeners(final MongoAuth instance) {
         this.plugin = instance;
         this.plugin.getServer().getPluginManager().registerEvents(this, instance);
         this.sm = instance.getSessionManager();
         this.db = instance.getDB();
-        this.pattern = Pattern.compile(instance.getConfig().getString("general.playernamePattern", "*"));
+        this.config = plugin.getConfig();
+        this.pattern = Pattern.compile(this.config.getString("general.playernamePattern"));
 	}
 
     @EventHandler (priority = EventPriority.LOWEST)
 	public void onPlayerPreLogin(final AsyncPlayerPreLoginEvent event) {
-		String playername = event.getName();
+		final String playername = event.getName();
 
         if (!pattern.matcher(playername).matches()) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage(Message.LOGIN_NOT_VALID);
+            event.setKickMessage(config.getMessage(Messages.error_input_invalid_login));
             return;
         }
 
 		for (Player online : plugin.getServer().getOnlinePlayers()) {
             if (online.getName().equalsIgnoreCase(playername)) {
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-                event.setKickMessage(String.format(Message.PLAYER_ALREADY_ONLINE, playername));
+                event.setKickMessage(config.getMessage(Messages.error_account_online, playername));
                 return;
             }
 		}
@@ -48,42 +53,40 @@ public class Listeners implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onCommand(final PlayerCommandPreprocessEvent event) {
-		Player player =  event.getPlayer();
-		String command = event.getMessage().substring(1);
-		String rootCommand = command.split(" ")[0];
-		if (plugin.getCommand(rootCommand) != null && !plugin.getCommand(rootCommand).equals(plugin.getCommand("mongoauth"))) {
+		final Player player =  event.getPlayer();
+		final String command = event.getMessage().substring(1);
+		final String rootCommand = command.split(" ")[0];
+
+        if (plugin.getCommand(rootCommand) != null && !plugin.getCommand(rootCommand).equals(plugin.getCommand("mongoauth"))) {
             return;
 		}
+
 		if (!sm.contains(player.getName())) {
-			 player.sendMessage(Message.REGISTER_OR_LOGIN);
-			 event.setCancelled(true);
+            Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
+			event.setCancelled(true);
 		}
 	}
 
     @EventHandler(priority=EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerMove(final PlayerMoveEvent event) {
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         if (!sm.contains(player.getName())) {
-            player.teleport(event.getFrom());
+            Location from = event.getFrom();
+            from.setPitch(event.getTo().getPitch());
+            from.setYaw(event.getTo().getYaw());
+            player.teleport(from);
         }
     }
 
     @EventHandler(priority=EventPriority.HIGH)
     public void onPlayerJoin(final PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-
-        Account account = db.get(player.getName());
-
-        if (account == null) {
-            player.sendMessage(Message.REGISTER_COMMAND_HINT);
-        } else {
-            player.sendMessage(Message.LOGIN_COMMAND_HINT);
-        }
+        final Player player = event.getPlayer();
+        Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerQuitEvent(final PlayerQuitEvent event) {
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         if (sm.contains(player.getName())) {
             sm.remove(player.getName());
             plugin.getLogger().info("Account " + player.getName() + " logged out.");
@@ -92,16 +95,16 @@ public class Listeners implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onChat(final AsyncPlayerChatEvent event) {
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         if (!sm.contains(player.getName())) {
-            player.sendMessage(Message.REGISTER_OR_LOGIN);
+            Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
             event.setCancelled(true);
         }
     }
 
     @EventHandler (ignoreCancelled = true)
     public void onEntityDamage(final EntityDamageEvent event) {
-        Entity entity = event.getEntity();
+        final Entity entity = event.getEntity();
         if (entity instanceof Player) {
             Player player = (Player) entity;
             if (!sm.contains(player.getName())) {

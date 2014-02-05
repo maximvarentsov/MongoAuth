@@ -36,42 +36,42 @@ public class Register implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
 
         if (!sender.hasPermission("mongoauth.user")) {
-            sender.sendMessage(Message.PERMISSION_FORBIDDEN);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
             return true;
         }
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Message.SENDER_NOT_VALID);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_command_sender));
             return true;
         }
 
-        Account account = new Account((Player) sender);
+        final Account account = new Account((Player) sender);
 
         if (sessionManager.contains(account.getName())) {
-            sender.sendMessage(Message.PLAYER_IS_LOGGED);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_is_auth));
             return true;
         }
 
         if (db.get(account.getName()) != null) {
-            sender.sendMessage(Message.PLAYER_ALREADY_REGISTERED);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_exists));
             return true;
         }
 
-        long total = db.countIp(account.getIP());
+        final long total = db.countIp(account.getIP());
         if (maxPerIp > 0 && total >= maxPerIp) {
-            sender.sendMessage(Message.REGISTER_LIMIT_REACHED);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_register_limit));
             return true;
         }
 
         try {
-            account.setPassword(args[0]);
+            final String password = args[0];
+            account.setPassword(password);
             db.save(account);
             sessionManager.add(account.getName());
             plugin.getLogger().info("New player " + account + " registered.");
-            sender.sendMessage(Message.REGISTER_SUCCESS);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.success_account_create));
         } catch (ArrayIndexOutOfBoundsException ex) {
-            sender.sendMessage(Message.REGISTER_COMMAND_HINT);
-            sender.sendMessage(Message.PASSWORD_MISSING);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_input_password));
         }
         return true;
     }

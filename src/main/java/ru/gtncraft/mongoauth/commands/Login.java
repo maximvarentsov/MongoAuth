@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.Account;
-import ru.gtncraft.mongoauth.Message;
+import ru.gtncraft.mongoauth.Messages;
 import ru.gtncraft.mongoauth.MongoAuth;
 import ru.gtncraft.mongoauth.SessionManager;
 import ru.gtncraft.mongoauth.database.Database;
@@ -36,45 +36,45 @@ public class Login implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
 
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(Message.SENDER_NOT_VALID);
-            return true;
-        }
-
         if (!sender.hasPermission("mongoauth.user")) {
-            sender.sendMessage(Message.PERMISSION_FORBIDDEN);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
             return true;
         }
 
-        Account account = db.get(sender.getName());
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_command_sender));
+            return true;
+        }
+
+        final Account account = db.get(sender.getName());
 
         if (account == null) {
-            sender.sendMessage(Message.PLAYER_NOT_REGISTER);
-            sender.sendMessage(Message.REGISTER_COMMAND_HINT);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_not_registred));
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.command_register_hint));
             return true;
         }
 
         if (!account.isAllowed()) {
-            sender.sendMessage(Message.PLAYER_BLOCKED);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_is_block));
             return true;
         }
 
         if (sessionManager.contains(sender.getName())) {
-            sender.sendMessage(Message.PLAYER_IS_LOGGED);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_is_auth));
             return true;
         }
 
         try {
-            String password = args[0];
+            final String password = args[0];
             if (account.checkPassword(password)) {
                 sessionManager.add(account.getName());
-                sender.sendMessage(Message.LOGIN_SUCCESS);
+                sender.sendMessage(plugin.getConfig().getMessage(Messages.success_account_login));
                 plugin.getLogger().info("Player " + account + " logged in.");
             } else {
-                sender.sendMessage(Message.PASSWORD_WRONG);
+                sender.sendMessage(plugin.getConfig().getMessage(Messages.error_input_password_missmach));
             }
         } catch (ArrayIndexOutOfBoundsException ex) {
-            sender.sendMessage(Message.LOGIN_COMMAND_HINT);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_input_password));
         }
         return true;
     }

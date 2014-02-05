@@ -12,11 +12,11 @@ public class MongoDB implements Database {
 
 	public MongoDB(final MongoAuth plugin) throws IOException {
         MongoClient mongoClient = new MongoClient(
-                plugin.getConfig().getString("database.host", "localhost"),
-                plugin.getConfig().getInt("database.port", 27017)
+                plugin.getConfig().getString("database.host"),
+                plugin.getConfig().getInt("database.port")
         );
-        DB db = mongoClient.getDB(plugin.getConfig().getString("database.name", "minecraft"));
-        players = db.getCollection(plugin.getConfig().getString("database.collection", "players"));
+        DB db = mongoClient.getDB(plugin.getConfig().getString("database.name"));
+        players = db.getCollection(plugin.getConfig().getString("database.collection"));
         if (players.count() < 1) {
             ensureIndex();
         }

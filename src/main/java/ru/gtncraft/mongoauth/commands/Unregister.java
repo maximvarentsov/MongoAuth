@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.Account;
-import ru.gtncraft.mongoauth.Message;
+import ru.gtncraft.mongoauth.Messages;
 import ru.gtncraft.mongoauth.MongoAuth;
 import ru.gtncraft.mongoauth.SessionManager;
 import ru.gtncraft.mongoauth.database.Database;
@@ -37,38 +37,39 @@ public class Unregister implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
 
         if (!sender.hasPermission("mongoauth.user")) {
-            sender.sendMessage(Message.PERMISSION_FORBIDDEN);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
             return true;
         }
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Message.SENDER_NOT_VALID);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_command_sender));
             return true;
         }
 
-        Account account = db.get(sender.getName());
+        final Account account = db.get(sender.getName());
 
         if (account == null) {
-            sender.sendMessage(Message.PLAYER_NOT_REGISTER);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_not_registred));
             return true;
         }
 
         if (!sessionManager.contains(account.getName())) {
-            sender.sendMessage(Message.LOGIN_COMMAND_HINT);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.command_login_hint));
             return true;
         }
 
         try {
-            if (account.checkPassword(args[0])) {
+            final String password = args[0];
+            if (account.checkPassword(password)) {
                 db.remove(account);
                 sessionManager.remove(sender.getName());
                 plugin.getLogger().info("Account " + account + " unregistered.");
-                sender.sendMessage(Message.UNREGISTER_SUCCESS);
+                sender.sendMessage(plugin.getConfig().getMessage(Messages.success_account_delete));
             } else {
-                sender.sendMessage(Message.PASSWORD_WRONG);
+                sender.sendMessage(plugin.getConfig().getMessage(Messages.error_input_password_missmach));
             }
         } catch (ArrayIndexOutOfBoundsException ex) {
-            sender.sendMessage(Message.UNREGISTER_COMMAND_HINT);
+            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_input_password));
         }
         return true;
     }
