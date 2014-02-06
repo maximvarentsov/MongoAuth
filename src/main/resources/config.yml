@@ -22,7 +22,7 @@ messages:
    error_input_invalid_login: "&4Имя игрока содержит неправильные символы."
    error_command_permission: "&4У вас недостаточно прав для выполнения этой комманды."
    error_command_sender: "&4Эта комманда работает только для игроков."
-   success_account_create: "&2Регистрация завершина."
+   success_account_create: "&2Регистрация завершена."
    success_account_logout: "&2Игровая сессия завершена."
    success_account_delete: "&2Игровой аккаунт удален."
    success_account_login: "&2Вы успешно авторизованы. Удачной игры!"
