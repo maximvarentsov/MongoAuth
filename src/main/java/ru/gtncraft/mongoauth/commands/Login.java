@@ -65,6 +65,7 @@ public class Login implements CommandExecutor {
             final String password = args[0];
             if (account.checkPassword(password)) {
                 sessionManager.add(account.getName());
+                sessionManager.getLocations().restore((Player) sender);
                 sender.sendMessage(plugin.getConfig().getMessage(Messages.success_account_login));
                 plugin.getLogger().info("Player " + account + " logged in.");
             } else {

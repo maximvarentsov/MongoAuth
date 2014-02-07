@@ -10,7 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
-import ru.gtncraft.mongoauth.database.Database;
 import ru.gtncraft.mongoauth.tasks.AuthMessage;
 
 import java.util.regex.Pattern;
@@ -32,7 +31,7 @@ public class Listeners implements Listener {
 
     @EventHandler (priority = EventPriority.LOWEST)
 	public void onPlayerPreLogin(final AsyncPlayerPreLoginEvent event) {
-		final String playername = event.getName();
+        final String playername = event.getName();
 
         if (!pattern.matcher(playername).matches()) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
@@ -79,15 +78,29 @@ public class Listeners implements Listener {
     @EventHandler(priority=EventPriority.HIGH)
     public void onPlayerJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+        sm.getLocations().save(player);
         Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler
+    public void onPlayerKickEvent(final PlayerKickEvent event) {
+        final Player player = event.getPlayer();
+        if (sm.contains(player.getName())) {
+            sm.remove(player.getName());
+            plugin.getLogger().info("Account " + player.getName() + " logged out.");
+        } else {
+            sm.getLocations().restore(player);
+        }
+    }
+
+    @EventHandler
     public void onPlayerQuitEvent(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         if (sm.contains(player.getName())) {
             sm.remove(player.getName());
             plugin.getLogger().info("Account " + player.getName() + " logged out.");
+        } else {
+            sm.getLocations().restore(player);
         }
     }
 

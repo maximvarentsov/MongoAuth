@@ -3,18 +3,25 @@ package ru.gtncraft.mongoauth;
 import org.bukkit.Bukkit;
 
 import java.io.*;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public class SessionManager {
 
+    private final Locations locations;
     private final Set<String> sessions;
     private final File file;
 
-    public SessionManager(final MongoAuth instance) {
-        this.file = new File(instance.getDataFolder() + File.separator + "sessions.dat");
-        this.sessions = Collections.synchronizedSet(new HashSet<String>());
+
+
+    public SessionManager(final MongoAuth plugin) {
+        this.locations = new Locations();
+        this.sessions = new ConcurrentSkipListSet<>();
+        this.file = new File(plugin.getDataFolder() + File.separator + "sessions.dat");
+    }
+
+    public Locations getLocations() {
+        return locations;
     }
 
     public void load() {
