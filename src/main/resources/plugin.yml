@@ -35,6 +35,6 @@ permissions:
    mongoauth.admin:
       description: Gives an admin access
       default: op
-   mongoauth.user:
+   mongoauth.use:
       description: Allows the use of plugin to players
       default: true
