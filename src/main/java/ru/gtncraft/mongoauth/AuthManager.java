@@ -2,6 +2,7 @@ package ru.gtncraft.mongoauth;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.database.Database;
 import ru.gtncraft.mongoauth.database.MongoDB;
@@ -42,7 +43,12 @@ public class AuthManager {
      */
     public void saveLocation(final Player player) {
         locations.put(player.getName().toLowerCase(), player.getLocation().clone());
-        player.teleport(Bukkit.getServer().getWorlds().get(0).getSpawnLocation());
+        final Location spawn = Bukkit.getServer().getWorlds().get(0).getSpawnLocation();
+        // Check spawn location has block under player.
+        if (spawn.getBlock().getType() == Material.AIR) {
+            spawn.getWorld().getBlockAt(spawn.getBlockX(), spawn.getBlockY(),spawn.getBlockZ()).setType(Material.BEDROCK);
+        }
+        player.teleport(spawn);
     }
     /**
      * Restore last login location.
