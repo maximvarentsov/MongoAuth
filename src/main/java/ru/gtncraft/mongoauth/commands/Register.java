@@ -1,30 +1,28 @@
 package ru.gtncraft.mongoauth.commands;
 
 import com.google.common.collect.ImmutableList;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
-import ru.gtncraft.mongoauth.*;
-import ru.gtncraft.mongoauth.database.Database;
+import ru.gtncraft.mongoauth.Account;
+import ru.gtncraft.mongoauth.AuthManager;
+import ru.gtncraft.mongoauth.Messages;
+import ru.gtncraft.mongoauth.MongoAuth;
 
 import java.util.List;
 
 public class Register implements CommandExecutor {
 
     private final MongoAuth plugin;
-	private final Database db;
-    private final SessionManager sessionManager;
-    private final int maxPerIp;
+    private final AuthManager authManager;
 	
 	public Register(final MongoAuth instance) {
         this.plugin = instance;
-        this.db = instance.getDB();
-        this.sessionManager = instance.getSessionManager();
-        this.maxPerIp = instance.getConfig().getInt("general.maxPerIp", 0);
-        this.plugin.getCommand("register").setExecutor(this);
-        this.plugin.getCommand("register").setTabCompleter(new TabCompleter() {
+        this.authManager = instance.getAuthManager();
+
+        final PluginCommand command = this.plugin.getCommand("register");
+        command.setExecutor(this);
+        command.setPermissionMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
+        command.setTabCompleter(new TabCompleter() {
             @Override
             public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
                 return ImmutableList.of();
@@ -33,32 +31,26 @@ public class Register implements CommandExecutor {
 	}
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-
-        if (!sender.hasPermission(Permissions.use)) {
-            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
-            return true;
-        }
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         if (!(sender instanceof Player)) {
             sender.sendMessage(plugin.getConfig().getMessage(Messages.error_command_sender));
-            return true;
+            return false;
         }
 
         final Account account = new Account((Player) sender);
 
-        if (sessionManager.contains(account.getName())) {
+        if (authManager.isAuth(account.getName())) {
             sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_is_auth));
             return true;
         }
 
-        if (db.get(account.getName()) != null) {
+        if (authManager.get(account.getName()) != null) {
             sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_exists));
             return true;
         }
 
-        final long total = db.countIp(account.getIP());
-        if (maxPerIp > 0 && total >= maxPerIp) {
+        if (!authManager.checkRegisterLimit(account)) {
             sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_register_limit));
             return true;
         }
@@ -66,13 +58,14 @@ public class Register implements CommandExecutor {
         try {
             final String password = args[0];
             account.setPassword(password);
-            db.save(account);
-            sessionManager.add(account.getName());
-            plugin.getLogger().info("New player " + account + " registered.");
+            authManager.save(account);
+            authManager.login(account.getName());
             sender.sendMessage(plugin.getConfig().getMessage(Messages.success_account_create));
+            plugin.getLogger().info("New player " + account + " registered.");
         } catch (ArrayIndexOutOfBoundsException ex) {
             sender.sendMessage(plugin.getConfig().getMessage(Messages.error_input_password));
         }
+
         return true;
     }
 }

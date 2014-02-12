@@ -1,14 +1,13 @@
 package ru.gtncraft.mongoauth.commands;
 
 import com.google.common.collect.ImmutableList;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
-import ru.gtncraft.mongoauth.*;
-import ru.gtncraft.mongoauth.database.Database;
+import ru.gtncraft.mongoauth.Account;
+import ru.gtncraft.mongoauth.AuthManager;
+import ru.gtncraft.mongoauth.Messages;
+import ru.gtncraft.mongoauth.MongoAuth;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,18 +16,19 @@ import java.util.List;
 public class Mongoauth implements CommandExecutor {
 
     private final MongoAuth plugin;
-    private final Database db;
-    private final SessionManager sessionManager;
+    private final AuthManager authManager;
 
     public Mongoauth(final MongoAuth instance) {
         this.plugin = instance;
-        this.db = instance.getDB();
-        this.sessionManager = instance.getSessionManager();
-        this.plugin.getCommand("mongoauth").setExecutor(this);
-        this.plugin.getCommand("mongoauth").setTabCompleter(new TabCompleter() {
+        this.authManager = instance.getAuthManager();
+
+        final PluginCommand command = this.plugin.getCommand("mongoauth");
+        command.setExecutor(this);
+        command.setPermissionMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
+        command.setTabCompleter(new TabCompleter() {
 
             private final List<String> subs = ImmutableList.of(
-                "register", "unregister", "cpw", "changepassword", "changepass", "block"
+                    "register", "unregister", "cpw", "changepassword", "changepass", "block"
             );
             private final List<String> bool = ImmutableList.of("true", "false");
 
@@ -64,16 +64,11 @@ public class Mongoauth implements CommandExecutor {
             return false;
         }
 
-        if (!sender.hasPermission(Permissions.admin)) {
-            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
-            return true;
-        }
-
         switch (args[0].toLowerCase()) {
             case "register":
                 try {
                     final String playername = args[1];
-                    final Account account = db.get(playername);
+                    final Account account = authManager.get(playername);
                     if (account != null) {
                         sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_exists));
                         return true;
@@ -98,13 +93,13 @@ public class Mongoauth implements CommandExecutor {
                 break;
             case "unregister":
                 try {
-                    final Account account = db.get(args[1]);
+                    final Account account = authManager.get(args[1]);
                     if (account == null) {
                         sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_not_registred));
                         return true;
                     }
-                    db.remove(account);
-                    sessionManager.remove(account.getName());
+                    authManager.unregister(account);
+                    authManager.logout(account.getName());
                     sender.sendMessage(plugin.getConfig().getMessage(Messages.success_command_admin_delete, sender.getName()));
                     plugin.getLogger().info(sender.getName() + " deleted player " + account + " from database.");
                 } catch (ArrayIndexOutOfBoundsException ex) {
@@ -114,7 +109,7 @@ public class Mongoauth implements CommandExecutor {
             case "changepassword":
                 try {
                     final String playername = args[1];
-                    final Account account = db.get(playername);
+                    final Account account = authManager.get(playername);
                     if (account == null) {
                         sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_not_registred));
                         return true;
@@ -122,7 +117,7 @@ public class Mongoauth implements CommandExecutor {
                     try {
                         final String password = args[2];
                         account.setPassword(password);
-                        db.save(account);
+                        authManager.save(account);
                         plugin.getLogger().info("Player " + sender.getName() + " changed password for " + account + ".");
                         sender.sendMessage(plugin.getConfig().getMessage(Messages.success_command_admin_changepassword, sender.getName()));
                     } catch (ArrayIndexOutOfBoundsException ex) {

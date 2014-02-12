@@ -17,14 +17,14 @@ import java.util.regex.Pattern;
 public class Listeners implements Listener {
 
 	private final MongoAuth plugin;
-	private final SessionManager sm;
+	private final AuthManager manager;
     private final Pattern pattern;
     private final Config config;
 
 	public Listeners(final MongoAuth instance) {
         this.plugin = instance;
         this.plugin.getServer().getPluginManager().registerEvents(this, instance);
-        this.sm = instance.getSessionManager();
+        this.manager = instance.getAuthManager();
         this.config = plugin.getConfig();
         this.pattern = Pattern.compile(this.config.getString("general.playernamePattern"));
 	}
@@ -58,7 +58,7 @@ public class Listeners implements Listener {
             return;
 		}
 
-		if (!sm.contains(player.getName())) {
+		if (!manager.isAuth(player.getName())) {
             Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
 			event.setCancelled(true);
 		}
@@ -67,7 +67,7 @@ public class Listeners implements Listener {
     @EventHandler(priority=EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerMove(final PlayerMoveEvent event) {
         final Player player = event.getPlayer();
-        if (!sm.contains(player.getName())) {
+        if (!manager.isAuth(player.getName())) {
             final Location from = event.getFrom();
             from.setPitch(player.getLocation().getPitch());
             from.setYaw(player.getLocation().getYaw());
@@ -78,36 +78,36 @@ public class Listeners implements Listener {
     @EventHandler(priority=EventPriority.HIGH)
     public void onPlayerJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        sm.getLocations().save(player);
+        manager.saveLocation(player);
         Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
     }
 
     @EventHandler
     public void onPlayerKickEvent(final PlayerKickEvent event) {
         final Player player = event.getPlayer();
-        if (sm.contains(player.getName())) {
-            sm.remove(player.getName());
+        if (manager.isAuth(player.getName())) {
+            manager.logout(player.getName());
             plugin.getLogger().info("Account " + player.getName() + " logged out.");
         } else {
-            sm.getLocations().restore(player);
+            manager.restoreLocation(player);
         }
     }
 
     @EventHandler
     public void onPlayerQuitEvent(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
-        if (sm.contains(player.getName())) {
-            sm.remove(player.getName());
+        if (manager.isAuth(player.getName())) {
+            manager.logout(player.getName());
             plugin.getLogger().info("Account " + player.getName() + " logged out.");
         } else {
-            sm.getLocations().restore(player);
+            manager.restoreLocation(player);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onChat(final AsyncPlayerChatEvent event) {
         final Player player = event.getPlayer();
-        if (!sm.contains(player.getName())) {
+        if (!manager.isAuth(player.getName())) {
             Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
             event.setCancelled(true);
         }
@@ -118,7 +118,7 @@ public class Listeners implements Listener {
         final Entity entity = event.getEntity();
         if (entity instanceof Player) {
             Player player = (Player) entity;
-            if (!sm.contains(player.getName())) {
+            if (!manager.isAuth(player.getName())) {
                 event.setCancelled(true);
             }
         }
@@ -126,35 +126,35 @@ public class Listeners implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onInventoryInteract(final InventoryClickEvent event) {
-        if (!sm.contains(event.getWhoClicked().getName())) {
+        if (!manager.isAuth(event.getWhoClicked().getName())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true)
 	public void onItemDrop(final PlayerDropItemEvent event) {
-		if (!sm.contains(event.getPlayer().getName())) {
+		if (!manager.isAuth(event.getPlayer().getName())) {
             event.setCancelled(true);
         }
 	}
 
     @EventHandler(ignoreCancelled = true)
 	public void onInteract(final PlayerInteractEvent event) {
-		if (!sm.contains(event.getPlayer().getName())) {
+		if (!manager.isAuth(event.getPlayer().getName())) {
             event.setCancelled(true);
         }
 	}
 
     @EventHandler(ignoreCancelled = true)
 	public void onEntityInteract(final PlayerInteractEntityEvent event) {
-		if (!sm.contains(event.getPlayer().getName())) {
+		if (!manager.isAuth(event.getPlayer().getName())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerPickupItem(final PlayerPickupItemEvent event) {
-        if (!sm.contains(event.getPlayer().getName())) {
+        if (!manager.isAuth(event.getPlayer().getName())) {
             event.setCancelled(true);
         }
     }
