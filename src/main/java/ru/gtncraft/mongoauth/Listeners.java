@@ -96,9 +96,10 @@ public class Listeners implements Listener {
         final Player player = event.getPlayer();
         if (!manager.isAuth(player.getName())) {
             final Location from = event.getFrom();
-            from.setPitch(player.getLocation().getPitch());
-            from.setYaw(player.getLocation().getYaw());
-            player.teleport(from);
+            final Location to = event.getTo();
+            if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
+                player.teleport(from);
+            }
         }
     }
 
