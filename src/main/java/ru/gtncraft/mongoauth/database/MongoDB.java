@@ -9,13 +9,14 @@ import java.io.IOException;
 public class MongoDB implements Database {
 
     private final DBCollection players;
+    private final MongoClient client;
 
 	public MongoDB(final MongoAuth plugin) throws IOException {
-        MongoClient mongoClient = new MongoClient(
+        client = new MongoClient(
                 plugin.getConfig().getString("database.host"),
                 plugin.getConfig().getInt("database.port")
         );
-        DB db = mongoClient.getDB(plugin.getConfig().getString("database.name"));
+        DB db = client.getDB(plugin.getConfig().getString("database.name"));
         players = db.getCollection(plugin.getConfig().getString("database.collection"));
         if (players.count() < 1) {
             ensureIndex();
@@ -45,5 +46,10 @@ public class MongoDB implements Database {
     private void ensureIndex() {
         players.ensureIndex(new BasicDBObject("playername", true));
         players.ensureIndex(new BasicDBObject("ip", true));
+    }
+
+    @Override
+    public void close() throws Exception {
+        client.close();
     }
 }

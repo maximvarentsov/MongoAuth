@@ -100,6 +100,9 @@ public class AuthManager {
                 new ObjectOutputStream(fos).writeObject(sessions);
             }
         } catch (IOException ex) {}
+        try {
+            db.close();
+        } catch (Exception ex) {}
     }
     /**
      * Get Player Account.
