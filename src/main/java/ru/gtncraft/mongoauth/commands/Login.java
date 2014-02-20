@@ -1,74 +1,76 @@
 package ru.gtncraft.mongoauth.commands;
 
 import com.google.common.collect.ImmutableList;
+import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
-import ru.gtncraft.mongoauth.Account;
-import ru.gtncraft.mongoauth.AuthManager;
-import ru.gtncraft.mongoauth.Messages;
-import ru.gtncraft.mongoauth.MongoAuth;
+import ru.gtncraft.mongoauth.*;
 
 import java.util.List;
 
-public class Login implements CommandExecutor {
+public class Login implements CommandExecutor, TabExecutor {
 
     private final MongoAuth plugin;
+    private final Config config;
 	private final AuthManager authManager;
 
-    public Login(final MongoAuth instance) {
-        this.plugin = instance;
-		this.authManager = instance.getAuthManager();
-
-        final PluginCommand command = this.plugin.getCommand("login");
+    public Login(final MongoAuth plugin) {
+        this.plugin = plugin;
+        this.config = plugin.getConfig();
+		this.authManager = plugin.getAuthManager();
+        final PluginCommand command = plugin.getCommand("login");
         command.setExecutor(this);
-        command.setPermissionMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
-        command.setTabCompleter(new TabCompleter() {
-            @Override
-            public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-                return ImmutableList.of();
-            }
-        });
+        command.setPermissionMessage(config.getMessage(Messages.error_command_permission));
 	}
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_command_sender));
+            sender.sendMessage(config.getMessage(Messages.error_command_sender));
             return false;
         }
 
-        final Account account = authManager.get(sender.getName());
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                final Account account = authManager.get(sender.getName());
 
-        if (account == null) {
-            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_not_registred));
-            sender.sendMessage(plugin.getConfig().getMessage(Messages.command_register_hint));
-            return true;
-        }
+                if (account == null) {
+                    sender.sendMessage(config.getMessage(Messages.command_register_hint));
+                    return;
+                }
 
-        if (!account.isAllowed()) {
-            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_is_block));
-            return true;
-        }
+                if (!account.isAllowed()) {
+                    sender.sendMessage(config.getMessage(Messages.error_account_is_block));
+                    return;
+                }
 
-        if (authManager.isAuth(sender.getName())) {
-            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_is_auth));
-            return true;
-        }
+                if (authManager.isAuth(sender.getName())) {
+                    sender.sendMessage(config.getMessage(Messages.error_account_is_auth));
+                    return;
+                }
 
-        try {
-            final String password = args[0];
-            if (account.checkPassword(password)) {
-                authManager.login(account.getName());
-                authManager.restoreLocation((Player) sender);
-                sender.sendMessage(plugin.getConfig().getMessage(Messages.success_account_login));
-                plugin.getLogger().info("Player " + account + " logged in.");
-            } else {
-                sender.sendMessage(plugin.getConfig().getMessage(Messages.error_input_password_missmach));
+                if (args.length < 1) {
+                    sender.sendMessage(config.getMessage(Messages.error_input_password));
+                    return;
+                }
+
+                if (!account.checkPassword(args[0])) {
+                    sender.sendMessage(config.getMessage(Messages.error_input_password_missmach));
+                    return;
+                }
+
+                authManager.login((Player) sender);
+                sender.sendMessage(config.getMessage(Messages.success_account_login));
+                plugin.getLogger().info("Player " + sender.getName() + " logged in.");
             }
-        } catch (ArrayIndexOutOfBoundsException ex) {
-            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_input_password));
-        }
+        });
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+        return ImmutableList.of();
     }
 }

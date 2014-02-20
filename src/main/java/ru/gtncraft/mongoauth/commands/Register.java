@@ -1,71 +1,72 @@
 package ru.gtncraft.mongoauth.commands;
 
 import com.google.common.collect.ImmutableList;
+import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
-import ru.gtncraft.mongoauth.Account;
-import ru.gtncraft.mongoauth.AuthManager;
-import ru.gtncraft.mongoauth.Messages;
-import ru.gtncraft.mongoauth.MongoAuth;
+import ru.gtncraft.mongoauth.*;
 
 import java.util.List;
 
-public class Register implements CommandExecutor {
+public class Register implements CommandExecutor, TabCompleter {
 
     private final MongoAuth plugin;
     private final AuthManager authManager;
+    private final Config config;
 	
-	public Register(final MongoAuth instance) {
-        this.plugin = instance;
-        this.authManager = instance.getAuthManager();
-
-        final PluginCommand command = this.plugin.getCommand("register");
+	public Register(final MongoAuth plugin) {
+        this.plugin = plugin;
+        this.authManager = plugin.getAuthManager();
+        this.config = plugin.getConfig();
+        final PluginCommand command = plugin.getCommand("register");
         command.setExecutor(this);
         command.setPermissionMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
-        command.setTabCompleter(new TabCompleter() {
-            @Override
-            public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-                return ImmutableList.of();
-            }
-        });
 	}
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_command_sender));
+            sender.sendMessage(config.getMessage(Messages.error_command_sender));
             return false;
         }
 
-        final Account account = new Account((Player) sender);
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                final Account account = new Account((Player) sender);
 
-        if (authManager.isAuth(account.getName())) {
-            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_is_auth));
-            return true;
-        }
+                if (authManager.isAuth(account.getName())) {
+                    sender.sendMessage(config.getMessage(Messages.error_account_is_auth));
+                    return;
+                }
 
-        if (authManager.get(account.getName()) != null) {
-            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_exists));
-            return true;
-        }
+                if (authManager.get(account.getName()) != null) {
+                    sender.sendMessage(config.getMessage(Messages.command_login_hint));
+                    return;
+                }
 
-        if (!authManager.checkRegisterLimit(account)) {
-            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_account_register_limit));
-            return true;
-        }
+                if (args.length < 1) {
+                    sender.sendMessage(config.getMessage(Messages.error_input_password));
+                    return;
+                }
 
-        try {
-            final String password = args[0];
-            account.setPassword(password);
-            authManager.save(account);
-            authManager.login(account.getName());
-            sender.sendMessage(plugin.getConfig().getMessage(Messages.success_account_create));
-            plugin.getLogger().info("New player " + account + " registered.");
-        } catch (ArrayIndexOutOfBoundsException ex) {
-            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_input_password));
-        }
-
+                if (authManager.registrationLimitMax(account)) {
+                    sender.sendMessage(config.getMessage(Messages.error_account_register_limit));
+                    return;
+                }
+                account.setPassword(args[0]);
+                authManager.save(account);
+                authManager.login((Player) sender);
+                sender.sendMessage(config.getMessage(Messages.success_account_create));
+                plugin.getLogger().info("New player " + sender.getName() + " registered.");
+            }
+        });
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+        return ImmutableList.of();
     }
 }

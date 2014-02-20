@@ -11,7 +11,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import ru.gtncraft.mongoauth.tasks.AuthMessage;
-
 import java.util.regex.Pattern;
 
 public class Listeners implements Listener {
@@ -29,16 +28,14 @@ public class Listeners implements Listener {
         this.pattern = Pattern.compile(this.config.getString("general.playernamePattern"));
 	}
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true)
 	public void onPlayerPreLogin(final AsyncPlayerPreLoginEvent event) {
         final String playername = event.getName();
-
         if (!pattern.matcher(playername).matches()) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             event.setKickMessage(config.getMessage(Messages.error_input_invalid_login));
             return;
         }
-
 		for (Player online : plugin.getServer().getOnlinePlayers()) {
             if (online.getName().equalsIgnoreCase(playername)) {
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
@@ -48,23 +45,53 @@ public class Listeners implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void onCommand(final PlayerCommandPreprocessEvent event) {
-		final Player player =  event.getPlayer();
-		final String command = event.getMessage().substring(1);
-		final String rootCommand = command.split(" ")[0];
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerJoin(final PlayerJoinEvent event) {
+        final Player player = event.getPlayer();
+        manager.join(player);
+        Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
+    }
 
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerKickEvent(final PlayerKickEvent event) {
+        final Player player = event.getPlayer();
+        if (manager.exit(player)) {
+            plugin.getLogger().info("Account " + player.getName() + " logged out.");
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerQuitEvent(final PlayerQuitEvent event) {
+        final Player player = event.getPlayer();
+        if (manager.exit(player)) {
+            plugin.getLogger().info("Account " + player.getName() + " logged out.");
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    public void onCommand(final PlayerCommandPreprocessEvent event) {
+        final Player player =  event.getPlayer();
+        final String command = event.getMessage().substring(1);
+        final String rootCommand = command.split(" ")[0];
         if (plugin.getCommand(rootCommand) != null && !plugin.getCommand(rootCommand).equals(plugin.getCommand("mongoauth"))) {
             return;
-		}
-
-		if (!manager.isAuth(player.getName())) {
+        }
+        if (!manager.isAuth(player.getName())) {
             Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
-			event.setCancelled(true);
-		}
-	}
+            event.setCancelled(true);
+        }
+    }
 
-    @EventHandler(priority=EventPriority.LOWEST, ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
+        final Player player = event.getPlayer();
+        if (!manager.isAuth(player.getName())) {
+            Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerMove(final PlayerMoveEvent event) {
         final Player player = event.getPlayer();
         if (!manager.isAuth(player.getName())) {
@@ -75,49 +102,11 @@ public class Listeners implements Listener {
         }
     }
 
-    @EventHandler(priority=EventPriority.HIGH)
-    public void onPlayerJoin(final PlayerJoinEvent event) {
-        final Player player = event.getPlayer();
-        manager.saveLocation(player);
-        Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
-    }
-
-    @EventHandler
-    public void onPlayerKickEvent(final PlayerKickEvent event) {
-        final Player player = event.getPlayer();
-        if (manager.isAuth(player.getName())) {
-            manager.logout(player.getName());
-            plugin.getLogger().info("Account " + player.getName() + " logged out.");
-        } else {
-            manager.restoreLocation(player);
-        }
-    }
-
-    @EventHandler
-    public void onPlayerQuitEvent(final PlayerQuitEvent event) {
-        final Player player = event.getPlayer();
-        if (manager.isAuth(player.getName())) {
-            manager.logout(player.getName());
-            plugin.getLogger().info("Account " + player.getName() + " logged out.");
-        } else {
-            manager.restoreLocation(player);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onChat(final AsyncPlayerChatEvent event) {
-        final Player player = event.getPlayer();
-        if (!manager.isAuth(player.getName())) {
-            Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler (ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true)
     public void onEntityDamage(final EntityDamageEvent event) {
         final Entity entity = event.getEntity();
         if (entity instanceof Player) {
-            Player player = (Player) entity;
+            final Player player = (Player) entity;
             if (!manager.isAuth(player.getName())) {
                 event.setCancelled(true);
             }

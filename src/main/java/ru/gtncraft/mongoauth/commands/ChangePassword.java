@@ -1,77 +1,83 @@
 package ru.gtncraft.mongoauth.commands;
 
 import com.google.common.collect.ImmutableList;
+import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
-import ru.gtncraft.mongoauth.Account;
-import ru.gtncraft.mongoauth.AuthManager;
-import ru.gtncraft.mongoauth.Messages;
-import ru.gtncraft.mongoauth.MongoAuth;
-
+import ru.gtncraft.mongoauth.*;
 import java.util.List;
 
-public class ChangePassword implements CommandExecutor {
+public class ChangePassword implements CommandExecutor, TabCompleter {
 
-    private final MongoAuth plugin;
+    private final Config config;
     private final AuthManager authManager;
+    private final MongoAuth plugin;
 	
-	public ChangePassword(final MongoAuth instance) {
-        this.plugin = instance;
-        this.authManager = instance.getAuthManager();
-
-        final PluginCommand command = this.plugin.getCommand("changepassword");
+	public ChangePassword(final MongoAuth plugin) {
+        this.config = plugin.getConfig();
+        this.authManager = plugin.getAuthManager();
+        this.plugin = plugin;
+        final PluginCommand command = plugin.getCommand("changepassword");
         command.setExecutor(this);
-        command.setPermissionMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
-        command.setTabCompleter(new TabCompleter() {
-            @Override
-            public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-                return ImmutableList.of();
-            }
-        });
+        command.setPermissionMessage(config.getMessage(Messages.error_command_permission));
 	}
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_command_sender));
+            sender.sendMessage(config.getMessage(Messages.error_command_sender));
             return false;
         }
 
-        final Account account = authManager.get(sender.getName());
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                final Account account = authManager.get(sender.getName());
 
-        if (account == null) {
-            sender.sendMessage(plugin.getConfig().getMessage(Messages.command_register_hint));
-            return true;
-        }
-
-        if (!authManager.isAuth(account.getName())) {
-            sender.sendMessage(plugin.getConfig().getMessage(Messages.command_login_hint));
-            return true;
-        }
-
-        try {
-            final String currentPassword = args[0];
-            try {
-                final String newPassword = args[1];
-                if (account.checkPassword(currentPassword)) {
-                    if (currentPassword.equals(newPassword)) {
-                        sender.sendMessage(plugin.getConfig().getMessage(Messages.error_input_passwords_equals));
-                        return true;
-                    }
-                    account.setPassword(newPassword);
-                    authManager.save(account);
-                    plugin.getLogger().info("Player " + account + " has changed password.");
-                    sender.sendMessage(plugin.getConfig().getMessage(Messages.success_change_password));
-                } else {
-                    sender.sendMessage(plugin.getConfig().getMessage(Messages.error_input_password_missmach));
+                if (account == null) {
+                    sender.sendMessage(config.getMessage(Messages.command_register_hint));
+                    return;
                 }
-            } catch (ArrayIndexOutOfBoundsException ex) {
-                sender.sendMessage(plugin.getConfig().getMessage(Messages.error_input_password_new));
+
+                if (!authManager.isAuth(account.getName())) {
+                    sender.sendMessage(config.getMessage(Messages.command_login_hint));
+                    return;
+                }
+
+                if (args.length < 1) {
+                    sender.sendMessage(config.getMessage(Messages.error_input_password));
+                    return;
+                }
+
+                if (args.length < 2) {
+                    sender.sendMessage(config.getMessage(Messages.error_input_password_new));
+                    return;
+                }
+
+                final String currentPassword = args[0];
+                final String newPassword = args[1];
+                if (!account.checkPassword(currentPassword)) {
+                    sender.sendMessage(config.getMessage(Messages.error_input_password_missmach));
+                    return;
+                }
+
+                if (currentPassword.equals(newPassword)) {
+                    sender.sendMessage(config.getMessage(Messages.error_input_passwords_equals));
+                    return;
+                }
+
+                account.setPassword(newPassword);
+                authManager.save(account);
+                plugin.getLogger().info("Player " + sender.getName() + " has changed password.");
+                sender.sendMessage(config.getMessage(Messages.success_change_password));
             }
-        } catch (ArrayIndexOutOfBoundsException ex) {
-            sender.sendMessage(plugin.getConfig().getMessage(Messages.error_input_password));
-        }
+        });
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] strings) {
+        return ImmutableList.of();
     }
 }
