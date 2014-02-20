@@ -41,7 +41,7 @@ public class AuthManager {
      */
     public void join(final Player player) {
         locations.put(player.getName().toLowerCase(), player.getLocation().clone());
-        final Location spawn = Bukkit.getServer().getWorlds().get(0).getSpawnLocation();
+        final Location spawn = Bukkit.getServer().getWorld(player.getWorld().getName()).getSpawnLocation();
         // Check spawn location has block under player and two air block up.
         if (spawn.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR || spawn.getBlock().getType() != Material.AIR || spawn.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
             spawn.getWorld().getBlockAt(spawn.getBlockX(), spawn.getBlockY() - 1, spawn.getBlockZ()).setType(Material.BEDROCK);
