@@ -43,13 +43,15 @@ public class AuthManager {
         locations.put(player.getName().toLowerCase(), player.getLocation().clone());
         final Location spawn = Bukkit.getServer().getWorlds().get(0).getSpawnLocation();
         // Check spawn location has block under player and two air block up.
-        if (spawn.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR ||
-            spawn.getBlock().getType() != Material.AIR || spawn.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
+        if (spawn.getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR || spawn.getBlock().getType() != Material.AIR || spawn.getBlock().getRelative(BlockFace.UP).getType() != Material.AIR) {
             spawn.getWorld().getBlockAt(spawn.getBlockX(), spawn.getBlockY() - 1, spawn.getBlockZ()).setType(Material.BEDROCK);
             spawn.getWorld().getBlockAt(spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ()).setType(Material.AIR);
             spawn.getWorld().getBlockAt(spawn.getBlockX(), spawn.getBlockY() + 1, spawn.getBlockZ()).setType(Material.AIR);
         }
-        player.teleport(spawn);
+        Location center = new Location(spawn.getWorld(), spawn.getBlockX() + 0.5, spawn.getBlockY(), spawn.getBlockZ() + 0.5);
+        center.setPitch(spawn.getPitch());
+        center.setYaw(spawn.getYaw());
+        player.teleport(center);
     }
     /**
      * If player is auth, just destroy session. If not restore location.
