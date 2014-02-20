@@ -1,5 +1,5 @@
 name: ${artifactId}
-main: ru.gtncraft.mongoauth.MongoAuth
+main: ${groupId}.${artifactId}
 author: Maxim Varentsov <admin@gtn-craft.ru>
 version: ${version}
 commands:
