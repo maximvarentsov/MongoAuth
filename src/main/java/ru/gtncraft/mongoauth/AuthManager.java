@@ -10,12 +10,14 @@ import ru.gtncraft.mongoauth.database.MongoDB;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class AuthManager {
 
+    private final MongoAuth plugin;
     private final Collection<String> sessions;
     private final Map<String, Location> locations;
     private final Map<String, Collection<Runnable>> postAuth;
@@ -30,6 +32,7 @@ public class AuthManager {
         this.postAuth = new ConcurrentHashMap<>();
         this.file = new File(plugin.getDataFolder() + File.separator + "sessions.dat");
         this.maxPerIp = plugin.getConfig().getInt("general.maxPerIp");
+        this.plugin = plugin;
         try {
             this.db = new MongoDB(plugin);
         } catch (IOException ex) {
@@ -142,12 +145,19 @@ public class AuthManager {
         final String playername = player.getName().toLowerCase();
         sessions.add(playername);
         restoreLocation(player);
-        // run post auth tasks.
-        if (postAuth.containsKey(playername)) {
-            for (Runnable task : postAuth.get(playername)) {
-                task.run();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                if (postAuth.containsKey(playername)) {
+                    Iterator<Runnable> it = postAuth.get(playername).iterator();
+                    while (it.hasNext()) {
+                        Runnable task = it.next();
+                        task.run();
+                        it.remove();
+                    }
+                }
             }
-        }
+        });
     }
     /**
      * Destroy player session.
