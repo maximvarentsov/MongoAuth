@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.database.Database;
 import ru.gtncraft.mongoauth.database.MongoDB;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,6 +18,8 @@ public class AuthManager {
 
     private final Collection<String> sessions;
     private final Map<String, Location> locations;
+    private final Map<String, Collection<Runnable>> postAuth;
+
     private Database db;
     private final File file;
     private final int maxPerIp;
@@ -24,6 +27,7 @@ public class AuthManager {
     public AuthManager(final MongoAuth plugin) {
         this.locations = new ConcurrentHashMap<>();
         this.sessions = new ConcurrentSkipListSet<>();
+        this.postAuth = new ConcurrentHashMap<>();
         this.file = new File(plugin.getDataFolder() + File.separator + "sessions.dat");
         this.maxPerIp = plugin.getConfig().getInt("general.maxPerIp");
         try {
@@ -57,6 +61,7 @@ public class AuthManager {
      * If player is auth, just destroy session. If not restore location.
      */
     public boolean exit(final Player player) {
+        postAuth.remove(player.getName().toLowerCase());
         if (isAuth(player.getName())) {
             logout(player.getName());
             return true;
@@ -131,11 +136,18 @@ public class AuthManager {
         return sessions.contains(o.toLowerCase());
     }
     /**
-     * Create player session and restore location.
+     * Create player session and restore location, run post auth tasks.
      */
     public void login(final Player player) {
-        sessions.add(player.getName().toLowerCase());
+        final String playername = player.getName().toLowerCase();
+        sessions.add(playername);
         restoreLocation(player);
+        // run post auth tasks.
+        if (postAuth.containsKey(playername)) {
+            for (Runnable task : postAuth.get(playername)) {
+                task.run();
+            }
+        }
     }
     /**
      * Destroy player session.
@@ -149,5 +161,17 @@ public class AuthManager {
     public boolean registrationLimitMax(final Account account) {
         final int count = db.countIp(account.getIP()) + 1;
         return count > maxPerIp;
+    }
+    /**
+     * Execute task after player is logged.
+     */
+    public void addPostAuth(final Player player, final Runnable runnable) {
+        final String playername = player.getName().toLowerCase();
+
+        if (postAuth.get(playername) == null) {
+            postAuth.put(playername, new ArrayList<Runnable>());
+        }
+
+        postAuth.get(playername).add(runnable);
     }
 }
