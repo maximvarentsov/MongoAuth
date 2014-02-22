@@ -2,7 +2,6 @@ package ru.gtncraft.mongoauth.commands;
 
 import com.google.common.collect.ImmutableList;
 import org.bukkit.command.*;
-import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
 
 import java.util.Collection;
@@ -32,77 +31,75 @@ public class Mongoauth implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
 
-        if (args.length == 0) {
+        if (args.length < 2) {
+            sender.sendMessage(config.getMessage(Messages.error_input_playername));
             return false;
         }
 
+        final Account player = authManager.get(args[1]);
+
         switch (args[0].toLowerCase()) {
+
             case "register":
-                try {
-                    final String playername = args[1];
-                    final Account account = authManager.get(playername);
-                    if (account != null) {
-                        sender.sendMessage(config.getMessage(Messages.error_account_exists));
-                        return true;
-                    }
-                    try {
-                        final String password = args[2];
-                        account.setPassword(password);
-                        account.setAllowed(true);
-                        if (sender instanceof Player) {
-                            account.setIP(((Player) sender).getAddress().getAddress().getHostAddress());
-                        } else {
-                            account.setIP("127.0.0.1");
-                        }
-                        sender.sendMessage(config.getMessage(Messages.success_command_admin_register, sender.getName()));
-                        logger.info(String.format("Account %s success register by %s.", account.getName(), sender.getName()));
-                    } catch (ArrayIndexOutOfBoundsException ex) {
-                        sender.sendMessage(config.getMessage(Messages.error_input_password));
-                    }
-                } catch (ArrayIndexOutOfBoundsException ex) {
-                    sender.sendMessage(config.getMessage(Messages.error_input_playername));
+                if (player != null) {
+                    sender.sendMessage(config.getMessage(Messages.error_account_exists));
+                    return true;
                 }
-                break;
+                if (args.length < 3) {
+                    sender.sendMessage(config.getMessage(Messages.error_input_password));
+                    return true;
+                }
+                Account newPlayer = new Account(args[1]);
+                newPlayer.setPassword(args[2]);
+                newPlayer.setAllowed(true);
+                newPlayer.setIP(sender);
+                authManager.save(newPlayer);
+                sender.sendMessage(config.getMessage(Messages.success_command_admin_register, newPlayer.getName()));
+                logger.info(String.format("Account %s success register by %s.", newPlayer.getName(), sender.getName()));
+                return true;
+
             case "unregister":
-                try {
-                    final Account account = authManager.get(args[1]);
-                    if (account == null) {
-                        sender.sendMessage(config.getMessage(Messages.error_account_not_registred));
-                        return true;
-                    }
-                    authManager.unregister(account);
-                    authManager.logout(account.getName());
-                    sender.sendMessage(config.getMessage(Messages.success_command_admin_delete, sender.getName()));
-                    logger.info(sender.getName() + " deleted player " + account + " from database.");
-                } catch (ArrayIndexOutOfBoundsException ex) {
-                    sender.sendMessage(config.getMessage(Messages.error_input_playername));
+                if (player == null) {
+                    sender.sendMessage(config.getMessage(Messages.error_account_not_registred));
+                    return true;
                 }
-                break;
+                authManager.unregister(player);
+                if (authManager.isAuth(player.getName())) {
+                    authManager.logout(player.getName());
+                }
+                sender.sendMessage(config.getMessage(Messages.success_command_admin_delete, player.getName()));
+                logger.info(sender.getName() + " deleted player " + player + " from database.");
+                return true;
+
             case "changepassword":
-                try {
-                    final String playername = args[1];
-                    final Account account = authManager.get(playername);
-                    if (account == null) {
-                        sender.sendMessage(config.getMessage(Messages.error_account_not_registred));
-                        return true;
-                    }
-                    try {
-                        final String password = args[2];
-                        account.setPassword(password);
-                        authManager.save(account);
-                        logger.info("Player " + sender.getName() + " changed password for " + account + ".");
-                        sender.sendMessage(config.getMessage(Messages.success_command_admin_changepassword, sender.getName()));
-                    } catch (ArrayIndexOutOfBoundsException ex) {
-                        sender.sendMessage(config.getMessage(Messages.error_input_password));
-                    }
-                } catch (ArrayIndexOutOfBoundsException ex) {
-                    sender.sendMessage(config.getMessage(Messages.error_input_playername));
+                if (player == null) {
+                    sender.sendMessage(config.getMessage(Messages.error_account_not_registred));
+                    return true;
                 }
-                break;
-            default:
-                return false;
+                if (args.length < 3) {
+                    sender.sendMessage(config.getMessage(Messages.error_input_password));
+                    return true;
+                }
+                player.setPassword(args[2]);
+                authManager.save(player);
+                logger.info("Player " + sender.getName() + " changed password for " + player + ".");
+                sender.sendMessage(config.getMessage(Messages.success_command_admin_changepassword, sender.getName()));
+                return true;
+
+            case "block":
+                if (player == null) {
+                    sender.sendMessage(config.getMessage(Messages.error_account_not_registred));
+                    return true;
+                }
+                if (args.length < 3) {
+                    return false;
+                }
+                player.setAllowed(false);
+                authManager.save(player);
+                return true;
         }
-        return true;
+
+        return false;
     }
 
     @Override

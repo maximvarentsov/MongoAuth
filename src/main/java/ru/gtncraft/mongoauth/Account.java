@@ -1,7 +1,9 @@
 package ru.gtncraft.mongoauth;
 
 import com.mongodb.BasicDBObject;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -11,12 +13,16 @@ public class Account extends BasicDBObject {
 
     public Account(final Player player) {
         this.setName(player.getName());
-        this.setIP(player.getAddress().getAddress().getHostAddress());
+        this.setIP(player);
         this.setAllowed(true);
     }
 
     public Account(final Map map) {
         this.putAll(map);
+    }
+
+    public Account(final String playername) {
+        this.setName(playername.toLowerCase());
     }
 
     public String getName() {
@@ -31,8 +37,17 @@ public class Account extends BasicDBObject {
         return getInt("ip");
     }
 
-    public void setIP(final String value) {
-        put("ip", dot2LongIP(value));
+    public void setIP(final CommandSender commandSender) {
+
+        final String ip;
+
+        if (commandSender instanceof Player) {
+            ip = ((Player) commandSender).getAddress().getAddress().getHostAddress();
+        } else {
+            ip = "127.0.0.1";
+        }
+
+        put("ip", dot2LongIP(ip));
     }
 
     public String getPassword() {
