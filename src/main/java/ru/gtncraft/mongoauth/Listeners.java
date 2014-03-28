@@ -54,18 +54,18 @@ public class Listeners implements Listener {
         Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler()
     @SuppressWarnings("unused")
-    public void onPlayerKickEvent(final PlayerKickEvent event) {
+    public void onPlayerQuitEvent(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         if (manager.exit(player)) {
             plugin.getLogger().info("Account " + player.getName() + " logged out.");
         }
     }
 
-    @EventHandler()
+    @EventHandler(ignoreCancelled = true)
     @SuppressWarnings("unused")
-    public void onPlayerQuitEvent(final PlayerQuitEvent event) {
+    public void onPlayerKickEvent(final PlayerKickEvent event) {
         final Player player = event.getPlayer();
         if (manager.exit(player)) {
             plugin.getLogger().info("Account " + player.getName() + " logged out.");
