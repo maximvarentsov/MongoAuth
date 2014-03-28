@@ -28,7 +28,7 @@ public class Listeners implements Listener {
         this.pattern = Pattern.compile(this.config.getString("general.playernamePattern"));
 	}
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler()
     @SuppressWarnings("unused")
     public void onPlayerPreLogin(final AsyncPlayerPreLoginEvent event) {
         final String playername = event.getName();
@@ -46,7 +46,7 @@ public class Listeners implements Listener {
 		}
 	}
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler()
     @SuppressWarnings("unused")
     public void onPlayerJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
@@ -63,7 +63,7 @@ public class Listeners implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler()
     @SuppressWarnings("unused")
     public void onPlayerQuitEvent(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
