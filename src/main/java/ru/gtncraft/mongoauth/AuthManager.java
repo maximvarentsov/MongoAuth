@@ -75,7 +75,7 @@ public class AuthManager {
     }
     /**
      * Restore last login location.
-     * @param player
+     * @param player the player
      */
     private void restoreLocation(final Player player) {
         final Location location = locations.remove(player.getName().toLowerCase());
@@ -89,11 +89,9 @@ public class AuthManager {
     private void restoreSession() {
         try (FileInputStream fis = new FileInputStream(file)) {
             ObjectInputStream ois = new ObjectInputStream(fis);
-            for (String player : (Collection<String>) ois.readObject()) {
-                if (Bukkit.getServer().getPlayer(player) != null) {
-                    sessions.add(player);
-                }
-            }
+            ((Collection<String>) ois.readObject()).stream().filter(
+                    p -> Bukkit.getServer().getPlayer(p) != null
+            ).forEach(sessions::add);
             file.delete();
         } catch (IOException | ClassNotFoundException ex) {}
     }
@@ -145,16 +143,13 @@ public class AuthManager {
         final String playername = player.getName().toLowerCase();
         sessions.add(playername);
         restoreLocation(player);
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                if (postAuth.containsKey(playername)) {
-                    Iterator<Runnable> it = postAuth.get(playername).iterator();
-                    while (it.hasNext()) {
-                        Runnable task = it.next();
-                        task.run();
-                        it.remove();
-                    }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            if (postAuth.containsKey(playername)) {
+                Iterator<Runnable> it = postAuth.get(playername).iterator();
+                while (it.hasNext()) {
+                    Runnable task = it.next();
+                    task.run();
+                    it.remove();
                 }
             }
         });
@@ -175,11 +170,12 @@ public class AuthManager {
     /**
      * Execute task after player is logged.
      */
+    @SuppressWarnings("unused")
     public void addPostAuth(final Player player, final Runnable runnable) {
         final String playername = player.getName().toLowerCase();
 
         if (postAuth.get(playername) == null) {
-            postAuth.put(playername, new ArrayList<Runnable>());
+            postAuth.put(playername, new ArrayList<>());
         }
 
         postAuth.get(playername).add(runnable);

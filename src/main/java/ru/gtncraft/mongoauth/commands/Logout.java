@@ -31,19 +31,16 @@ public class Logout implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                final Account account = plugin.getAuthManager().get(sender.getName());
-                if (account == null) {
-                    sender.sendMessage(plugin.getConfig().getMessage(Messages.command_register_hint));
-                } else {
-                    sender.sendMessage(plugin.getConfig().getMessage(Messages.command_login_hint));
-                }
-                if (authManager.logout(sender.getName())) {
-                    plugin.getLogger().info("Player " + sender.getName() + " logget out.");
-                    sender.sendMessage(config.getMessage(Messages.success_account_logout));
-                }
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            final Account account = plugin.getAuthManager().get(sender.getName());
+            if (account == null) {
+                sender.sendMessage(plugin.getConfig().getMessage(Messages.command_register_hint));
+            } else {
+                sender.sendMessage(plugin.getConfig().getMessage(Messages.command_login_hint));
+            }
+            if (authManager.logout(sender.getName())) {
+                plugin.getLogger().info("Player " + sender.getName() + " logget out.");
+                sender.sendMessage(config.getMessage(Messages.success_account_logout));
             }
         });
         return true;

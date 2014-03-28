@@ -31,36 +31,33 @@ public class Register implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                final Account account = new Account((Player) sender);
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            final Account account = new Account((Player) sender);
 
-                if (authManager.isAuth(account.getName())) {
-                    sender.sendMessage(config.getMessage(Messages.error_account_is_auth));
-                    return;
-                }
-
-                if (authManager.get(account.getName()) != null) {
-                    sender.sendMessage(config.getMessage(Messages.command_login_hint));
-                    return;
-                }
-
-                if (args.length < 1) {
-                    sender.sendMessage(config.getMessage(Messages.error_input_password));
-                    return;
-                }
-
-                if (authManager.registrationLimitMax(account)) {
-                    sender.sendMessage(config.getMessage(Messages.error_account_register_limit));
-                    return;
-                }
-                account.setPassword(args[0]);
-                authManager.save(account);
-                authManager.login((Player) sender);
-                sender.sendMessage(config.getMessage(Messages.success_account_create));
-                plugin.getLogger().info("New player " + sender.getName() + " registered.");
+            if (authManager.isAuth(account.getName())) {
+                sender.sendMessage(config.getMessage(Messages.error_account_is_auth));
+                return;
             }
+
+            if (authManager.get(account.getName()) != null) {
+                sender.sendMessage(config.getMessage(Messages.command_login_hint));
+                return;
+            }
+
+            if (args.length < 1) {
+                sender.sendMessage(config.getMessage(Messages.error_input_password));
+                return;
+            }
+
+            if (authManager.registrationLimitMax(account)) {
+                sender.sendMessage(config.getMessage(Messages.error_account_register_limit));
+                return;
+            }
+            account.setPassword(args[0]);
+            authManager.save(account);
+            authManager.login((Player) sender);
+            sender.sendMessage(config.getMessage(Messages.success_account_create));
+            plugin.getLogger().info("New player " + sender.getName() + " registered.");
         });
         return true;
     }

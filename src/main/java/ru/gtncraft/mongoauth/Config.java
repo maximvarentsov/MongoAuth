@@ -5,8 +5,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.mongodb.connection.ServerAddress;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Config extends YamlConfiguration {
 
@@ -24,11 +24,7 @@ public class Config extends YamlConfiguration {
     }
 
     public List<ServerAddress> getReplicaSet() {
-        List<ServerAddress> result = new ArrayList<>();
-        for (String host : getStringList("storage.hosts")) {
-            result.add(new ServerAddress(host));
-        }
-        return result;
+        return getStringList("storage.hosts").stream().map(ServerAddress::new).collect(Collectors.toList());
     }
 
 }

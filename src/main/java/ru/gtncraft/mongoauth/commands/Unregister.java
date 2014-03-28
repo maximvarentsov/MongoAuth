@@ -35,46 +35,43 @@ public class Unregister implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                final Account account = authManager.get(sender.getName());
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            final Account account = authManager.get(sender.getName());
 
-                if (account == null) {
-                    sender.sendMessage(config.getMessage(Messages.command_register_hint));
-                    return ;
-                }
-
-                if (!authManager.isAuth(account.getName())) {
-                    sender.sendMessage(config.getMessage(Messages.command_login_hint));
-                    return ;
-                }
-
-                if (args.length < 1) {
-                    sender.sendMessage(config.getMessage(Messages.error_input_password));
-                    return;
-                }
-
-                if (!account.checkPassword(args[0])) {
-                    sender.sendMessage(config.getMessage(Messages.error_input_password_missmach));
-                    return;
-                }
-
-                authManager.unregister(account);
-                authManager.logout(sender.getName());
-                logger.info("Account " + account + " unregistered.");
-                sender.sendMessage(config.getMessage(Messages.success_account_delete));
-
-                // Clear player profile.
-                // TODO: remove perms, worldprotect regions and other stuff.
-                Player player = (Player) sender;
-                player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
-                player.getInventory().clear();
-                player.setGameMode(GameMode.SURVIVAL);
-                player.setAllowFlight(false);
-                player.setFoodLevel(20);
-                player.setExp(0);
+            if (account == null) {
+                sender.sendMessage(config.getMessage(Messages.command_register_hint));
+                return ;
             }
+
+            if (!authManager.isAuth(account.getName())) {
+                sender.sendMessage(config.getMessage(Messages.command_login_hint));
+                return ;
+            }
+
+            if (args.length < 1) {
+                sender.sendMessage(config.getMessage(Messages.error_input_password));
+                return;
+            }
+
+            if (!account.checkPassword(args[0])) {
+                sender.sendMessage(config.getMessage(Messages.error_input_password_missmach));
+                return;
+            }
+
+            authManager.unregister(account);
+            authManager.logout(sender.getName());
+            logger.info("Account " + account + " unregistered.");
+            sender.sendMessage(config.getMessage(Messages.success_account_delete));
+
+            // Clear player profile.
+            // TODO: remove perms, worldprotect regions and other stuff.
+            Player player = (Player) sender;
+            player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+            player.getInventory().clear();
+            player.setGameMode(GameMode.SURVIVAL);
+            player.setAllowFlight(false);
+            player.setFoodLevel(20);
+            player.setExp(0);
         });
         return true;
     }

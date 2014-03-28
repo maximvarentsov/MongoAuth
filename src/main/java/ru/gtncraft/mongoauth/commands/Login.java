@@ -31,40 +31,37 @@ public class Login implements CommandExecutor, TabExecutor {
             return false;
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                final Account account = authManager.get(sender.getName());
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            final Account account = authManager.get(sender.getName());
 
-                if (account == null) {
-                    sender.sendMessage(config.getMessage(Messages.command_register_hint));
-                    return;
-                }
-
-                if (!account.isAllowed()) {
-                    sender.sendMessage(config.getMessage(Messages.error_account_is_block));
-                    return;
-                }
-
-                if (authManager.isAuth(sender.getName())) {
-                    sender.sendMessage(config.getMessage(Messages.error_account_is_auth));
-                    return;
-                }
-
-                if (args.length < 1) {
-                    sender.sendMessage(config.getMessage(Messages.error_input_password));
-                    return;
-                }
-
-                if (!account.checkPassword(args[0])) {
-                    sender.sendMessage(config.getMessage(Messages.error_input_password_missmach));
-                    return;
-                }
-
-                authManager.login((Player) sender);
-                sender.sendMessage(config.getMessage(Messages.success_account_login));
-                plugin.getLogger().info("Player " + sender.getName() + " logged in.");
+            if (account == null) {
+                sender.sendMessage(config.getMessage(Messages.command_register_hint));
+                return;
             }
+
+            if (!account.isAllowed()) {
+                sender.sendMessage(config.getMessage(Messages.error_account_is_block));
+                return;
+            }
+
+            if (authManager.isAuth(sender.getName())) {
+                sender.sendMessage(config.getMessage(Messages.error_account_is_auth));
+                return;
+            }
+
+            if (args.length < 1) {
+                sender.sendMessage(config.getMessage(Messages.error_input_password));
+                return;
+            }
+
+            if (!account.checkPassword(args[0])) {
+                sender.sendMessage(config.getMessage(Messages.error_input_password_missmach));
+                return;
+            }
+
+            authManager.login((Player) sender);
+            sender.sendMessage(config.getMessage(Messages.success_account_login));
+            plugin.getLogger().info("Player " + sender.getName() + " logged in.");
         });
         return true;
     }
