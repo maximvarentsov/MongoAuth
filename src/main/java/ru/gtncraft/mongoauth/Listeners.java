@@ -29,7 +29,8 @@ public class Listeners implements Listener {
 	}
 
     @EventHandler(ignoreCancelled = true)
-	public void onPlayerPreLogin(final AsyncPlayerPreLoginEvent event) {
+    @SuppressWarnings("unused")
+    public void onPlayerPreLogin(final AsyncPlayerPreLoginEvent event) {
         final String playername = event.getName();
         if (!pattern.matcher(playername).matches()) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
@@ -46,6 +47,7 @@ public class Listeners implements Listener {
 	}
 
     @EventHandler(ignoreCancelled = true)
+    @SuppressWarnings("unused")
     public void onPlayerJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         manager.join(player);
@@ -53,6 +55,7 @@ public class Listeners implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
+    @SuppressWarnings("unused")
     public void onPlayerKickEvent(final PlayerKickEvent event) {
         final Player player = event.getPlayer();
         if (manager.exit(player)) {
@@ -61,6 +64,7 @@ public class Listeners implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
+    @SuppressWarnings("unused")
     public void onPlayerQuitEvent(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         if (manager.exit(player)) {
@@ -69,6 +73,7 @@ public class Listeners implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @SuppressWarnings("unused")
     public void onCommand(final PlayerCommandPreprocessEvent event) {
         final Player player =  event.getPlayer();
         final String command = event.getMessage().substring(1);
@@ -83,6 +88,7 @@ public class Listeners implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    @SuppressWarnings("unused")
     public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
         final Player player = event.getPlayer();
         if (!manager.isAuth(player.getName())) {
@@ -92,6 +98,7 @@ public class Listeners implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    @SuppressWarnings("unused")
     public void onPlayerMove(final PlayerMoveEvent event) {
         final Player player = event.getPlayer();
         if (!manager.isAuth(player.getName())) {
@@ -104,6 +111,7 @@ public class Listeners implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
+    @SuppressWarnings("unused")
     public void onEntityDamage(final EntityDamageEvent event) {
         final Entity entity = event.getEntity();
         if (entity instanceof Player) {
@@ -115,6 +123,7 @@ public class Listeners implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
+    @SuppressWarnings("unused")
     public void onInventoryInteract(final InventoryClickEvent event) {
         if (!manager.isAuth(event.getWhoClicked().getName())) {
             event.setCancelled(true);
@@ -122,27 +131,31 @@ public class Listeners implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true)
-	public void onItemDrop(final PlayerDropItemEvent event) {
+    @SuppressWarnings("unused")
+    public void onItemDrop(final PlayerDropItemEvent event) {
 		if (!manager.isAuth(event.getPlayer().getName())) {
             event.setCancelled(true);
         }
 	}
 
     @EventHandler(ignoreCancelled = true)
-	public void onInteract(final PlayerInteractEvent event) {
+    @SuppressWarnings("unused")
+    public void onInteract(final PlayerInteractEvent event) {
 		if (!manager.isAuth(event.getPlayer().getName())) {
             event.setCancelled(true);
         }
 	}
 
     @EventHandler(ignoreCancelled = true)
-	public void onEntityInteract(final PlayerInteractEntityEvent event) {
+    @SuppressWarnings("unused")
+    public void onEntityInteract(final PlayerInteractEntityEvent event) {
 		if (!manager.isAuth(event.getPlayer().getName())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(ignoreCancelled = true)
+    @SuppressWarnings("unused")
     public void onPlayerPickupItem(final PlayerPickupItemEvent event) {
         if (!manager.isAuth(event.getPlayer().getName())) {
             event.setCancelled(true);
