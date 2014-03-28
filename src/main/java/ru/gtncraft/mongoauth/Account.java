@@ -1,15 +1,15 @@
 package ru.gtncraft.mongoauth;
 
-import com.mongodb.BasicDBObject;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.mongodb.Document;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
-public class Account extends BasicDBObject {
+public class Account extends Document {
 
     public Account(final Player player) {
         this.setName(player.getName());
@@ -33,8 +33,8 @@ public class Account extends BasicDBObject {
         put("playername", value.toLowerCase());
     }
 
-    public int getIP() {
-        return getInt("ip");
+    public long getIP() {
+        return getLong("ip");
     }
 
     public void setIP(final CommandSender commandSender) {

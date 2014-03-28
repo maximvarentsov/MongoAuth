@@ -1,6 +1,7 @@
 package ru.gtncraft.mongoauth.database;
 
-import com.mongodb.*;
+import com.google.common.collect.ImmutableList;
+import org.mongodb.*;
 import ru.gtncraft.mongoauth.Account;
 import ru.gtncraft.mongoauth.MongoAuth;
 
@@ -8,44 +9,37 @@ import java.io.IOException;
 
 public class MongoDB implements Database {
 
-    private final DBCollection players;
+    private final MongoCollection players;
     private final MongoClient client;
 
 	public MongoDB(final MongoAuth plugin) throws IOException {
-        client = new MongoClient(
-                plugin.getConfig().getString("database.host"),
-                plugin.getConfig().getInt("database.port")
-        );
-        DB db = client.getDB(plugin.getConfig().getString("database.name"));
-        players = db.getCollection(plugin.getConfig().getString("database.collection"));
-        if (players.count() < 1) {
-            ensureIndex();
-        }
+        client = MongoClients.create(plugin.getConfig().getReplicaSet());
+        MongoDatabase db = client.getDatabase(plugin.getConfig().getString("storage.name"));
+        players = db.getCollection(plugin.getConfig().getString("storage.collection"));
+        players.tools().createIndexes(ImmutableList.of(
+            Index.builder().addKey("playername").unique().build(),
+            Index.builder().addKey("ip").build()
+        ));
 	}
 
     public Account get(final String playername) {
-        DBObject obj = players.findOne(new BasicDBObject("playername", playername.toLowerCase()));
-        if (obj == null) {
-            return null;
+        Object obj = players.find(new Document("playername", playername.toLowerCase())).getOne();
+        if (obj != null) {
+            return new Account((Document) obj);
         }
-        return new Account(obj.toMap());
+        return null;
     }
 
     public void remove(final Account document) {
-        players.remove(new BasicDBObject("playername", document.getName()));
+        players.find(new Document("playername", document.getName())).removeOne();
     }
 
     public void save(final Account document) {
-        players.update(new BasicDBObject("playername", document.getName()), document, true, false);
+        players.find(new Document("playername", document.getName())).upsert().updateOne(document);
     }
 
-    public int countIp(final int ip) {
-        return players.find(new BasicDBObject("ip", ip)).count();
-    }
-
-    private void ensureIndex() {
-        players.ensureIndex(new BasicDBObject("playername", true));
-        players.ensureIndex(new BasicDBObject("ip", true));
+    public long countIp(final long ip) {
+        return players.find(new Document("ip", ip)).count();
     }
 
     @Override

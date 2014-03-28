@@ -169,7 +169,7 @@ public class AuthManager {
      * Check maximum registration per IP.
      */
     public boolean registrationLimitMax(final Account account) {
-        final int count = db.countIp(account.getIP()) + 1;
+        final long count = db.countIp(account.getIP()) + 1;
         return count > maxPerIp;
     }
     /**

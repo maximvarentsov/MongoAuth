@@ -1,6 +1,6 @@
-database:
-    host: localhost
-    port: 27017
+storage:
+    hosts:
+        - localhost:27017
     name: minecraft
     collection: players
 general:

@@ -7,6 +7,6 @@ public interface Database extends AutoCloseable {
     Account get(final String playername);
     void remove(final Account document);
     void save(final Account document);
-    int countIp(final int ip);
+    long countIp(final long ip);
 
 }
