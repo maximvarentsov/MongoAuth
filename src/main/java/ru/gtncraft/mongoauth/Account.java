@@ -47,7 +47,7 @@ public class Account extends Document {
             ip = "127.0.0.1";
         }
 
-        //put("ip", dot2LongIP(ip));
+        put("ip", dot2LongIP(ip));
     }
 
     public String getPassword() {
