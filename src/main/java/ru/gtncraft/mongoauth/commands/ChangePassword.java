@@ -7,11 +7,11 @@ import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
 import java.util.List;
 
-public class ChangePassword implements CommandExecutor, TabCompleter {
+class ChangePassword implements CommandExecutor, TabCompleter {
 
-    private final Config config;
-    private final AuthManager authManager;
-    private final MongoAuth plugin;
+    final Config config;
+    final AuthManager authManager;
+    final MongoAuth plugin;
 	
 	public ChangePassword(final MongoAuth plugin) {
         this.config = plugin.getConfig();

@@ -17,14 +17,14 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 public class AuthManager {
 
-    private final MongoAuth plugin;
-    private final Collection<String> sessions;
-    private final Map<String, Location> locations;
-    private final Map<String, Collection<Runnable>> postAuth;
+    final MongoAuth plugin;
+    final Collection<String> sessions;
+    final Map<String, Location> locations;
+    final Map<String, Collection<Runnable>> postAuth;
 
-    private Database db;
-    private final File file;
-    private final int maxPerIp;
+    Database db;
+    final File file;
+    final int maxPerIp;
 
     public AuthManager(final MongoAuth plugin) {
         this.locations = new ConcurrentHashMap<>();
@@ -77,7 +77,7 @@ public class AuthManager {
      * Restore last login location.
      * @param player the player
      */
-    private void restoreLocation(final Player player) {
+    void restoreLocation(final Player player) {
         final Location location = locations.remove(player.getName().toLowerCase());
         if (location != null) {
             player.teleport(location);
@@ -86,7 +86,7 @@ public class AuthManager {
     /**
      * Restore player sessions.
      */
-    private void restoreSession() {
+    void restoreSession() {
         try (FileInputStream fis = new FileInputStream(file)) {
             ObjectInputStream ois = new ObjectInputStream(fis);
             ((Collection<String>) ois.readObject()).stream().filter(

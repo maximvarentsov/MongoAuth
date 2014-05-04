@@ -70,7 +70,7 @@ public class Account extends Document {
         return encryptPassword(password).equals(getPassword());
     }
 
-    private static String encryptPassword(final String password) {
+    static String encryptPassword(final String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] hash = md.digest(password.getBytes("UTF-8"));
@@ -88,7 +88,7 @@ public class Account extends Document {
         }
     }
 
-    private static long dot2LongIP(final String dottedIP) {
+    static long dot2LongIP(final String dottedIP) {
         String[] addrArray = dottedIP.split("\\.");
         long num = 0;
         for (int i = 0; i < addrArray.length; i++) {

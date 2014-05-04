@@ -9,8 +9,8 @@ import java.io.IOException;
 
 public class MongoDB implements Database {
 
-    private final MongoCollection players;
-    private final MongoClient client;
+    final MongoCollection players;
+    final MongoClient client;
 
 	public MongoDB(final MongoAuth plugin) throws IOException {
         client = MongoClients.create(plugin.getConfig().getReplicaSet());

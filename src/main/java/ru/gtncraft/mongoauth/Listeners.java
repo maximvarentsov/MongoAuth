@@ -13,12 +13,12 @@ import org.bukkit.event.player.*;
 import ru.gtncraft.mongoauth.tasks.AuthMessage;
 import java.util.regex.Pattern;
 
-public class Listeners implements Listener {
+class Listeners implements Listener {
 
-	private final MongoAuth plugin;
-	private final AuthManager manager;
-    private final Pattern pattern;
-    private final Config config;
+	final MongoAuth plugin;
+	final AuthManager manager;
+    final Pattern pattern;
+    final Config config;
 
 	public Listeners(final MongoAuth instance) {
         this.plugin = instance;

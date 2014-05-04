@@ -8,11 +8,11 @@ import ru.gtncraft.mongoauth.*;
 
 import java.util.List;
 
-public class Logout implements CommandExecutor, TabCompleter {
+class Logout implements CommandExecutor, TabCompleter {
 
-	private final AuthManager authManager;
-    private final Config config;
-    private final MongoAuth plugin;
+	final AuthManager authManager;
+    final Config config;
+    final MongoAuth plugin;
 	
 	public Logout(final MongoAuth plugin) {
 		this.authManager = plugin.getAuthManager();

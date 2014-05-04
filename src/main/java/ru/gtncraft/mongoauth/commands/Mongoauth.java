@@ -10,12 +10,12 @@ import java.util.logging.Logger;
 
 import static ru.gtncraft.mongoauth.util.Strings.partial;
 
-public class Mongoauth implements CommandExecutor, TabCompleter {
+class Mongoauth implements CommandExecutor, TabCompleter {
 
-    private final AuthManager authManager;
-    private final Config config;
-    private final Logger logger;
-    private final Collection<String> commands = ImmutableList.of(
+    final AuthManager authManager;
+    final Config config;
+    final Logger logger;
+    final Collection<String> commands = ImmutableList.of(
         "register", "unregister", "cpw", "changepassword", "changepass", "block"
     );
 

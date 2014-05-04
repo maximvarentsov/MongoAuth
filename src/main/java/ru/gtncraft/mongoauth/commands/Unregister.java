@@ -10,12 +10,12 @@ import ru.gtncraft.mongoauth.*;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class Unregister implements CommandExecutor, TabCompleter {
+class Unregister implements CommandExecutor, TabCompleter {
 
-	private final AuthManager authManager;
-    private final Config config;
-    private final Logger logger;
-    private final MongoAuth plugin;
+	final AuthManager authManager;
+    final Config config;
+    final Logger logger;
+    final MongoAuth plugin;
 
 	public Unregister(final MongoAuth plugin) {
         this.config = plugin.getConfig();

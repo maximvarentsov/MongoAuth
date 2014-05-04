@@ -7,8 +7,8 @@ import ru.gtncraft.mongoauth.MongoAuth;
 
 public class AuthMessage implements Runnable {
 
-    private final MongoAuth plugin;
-    private final Player player;
+    final MongoAuth plugin;
+    final Player player;
 
     public AuthMessage(final MongoAuth plugin, final Player player) {
         this.plugin = plugin;

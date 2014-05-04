@@ -8,11 +8,11 @@ import ru.gtncraft.mongoauth.*;
 
 import java.util.List;
 
-public class Login implements CommandExecutor, TabExecutor {
+class Login implements CommandExecutor, TabExecutor {
 
-    private final MongoAuth plugin;
-    private final Config config;
-	private final AuthManager authManager;
+    final MongoAuth plugin;
+    final Config config;
+	final AuthManager authManager;
 
     public Login(final MongoAuth plugin) {
         this.plugin = plugin;

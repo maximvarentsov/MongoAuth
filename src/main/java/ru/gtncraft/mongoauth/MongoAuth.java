@@ -5,8 +5,8 @@ import ru.gtncraft.mongoauth.commands.*;
 
 public final class MongoAuth extends JavaPlugin {
 
-    private AuthManager authManager;
-    private Config config;
+    AuthManager authManager;
+    Config config;
 
     @Override
 	public void onEnable() {
@@ -16,12 +16,7 @@ public final class MongoAuth extends JavaPlugin {
         authManager = new AuthManager(this);
 
         new Listeners(this);
-        new Login(this);
-        new Logout(this);
-        new ChangePassword(this);
-        new Register(this);
-        new Unregister(this);
-        new Mongoauth(this);
+        new Commands(this);
 	}
 
     @Override
