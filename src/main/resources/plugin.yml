@@ -5,22 +5,22 @@ version: ${version}
 commands:
    login:
       description: Авторизоваться на сервере.
-      usage: /login <пароль>
+      usage: /<command> <пароль>
       aliases: [l]
    logout:
       description: Завершить игровую сессию.
-      usage: /logout
+      usage: /<command>
       permission: mongoauth.use
    register:
       description: Регистрация на сервере.
-      usage: /register <пароль>
+      usage: /<command> <пароль>
    unregister:
       description: Удалить игровой аккаунт.
-      usage: /unregister <пароль>
+      usage: /<command> <пароль>
       permission: mongoauth.use
    changepassword:
       description: Сменить пароль.
-      usage: /changepassword <пароль> <новый пароль>
+      usage: /<command> <пароль> <новый пароль>
       permission: mongoauth.use
       aliases: [changepass, cpw]
    mongoauth:
