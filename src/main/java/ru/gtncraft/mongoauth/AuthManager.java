@@ -26,18 +26,14 @@ public class AuthManager {
     final File file;
     final int maxPerIp;
 
-    public AuthManager(final MongoAuth plugin) {
+    public AuthManager(final MongoAuth plugin) throws IOException {
         this.locations = new ConcurrentHashMap<>();
         this.sessions = new ConcurrentSkipListSet<>();
         this.postAuth = new ConcurrentHashMap<>();
         this.file = new File(plugin.getDataFolder() + File.separator + "sessions.dat");
         this.maxPerIp = plugin.getConfig().getInt("general.maxPerIp");
         this.plugin = plugin;
-        try {
-            this.db = new MongoDB(plugin);
-        } catch (IOException ex) {
-            plugin.getLogger().severe(ex.getMessage());
-        }
+        this.db = new MongoDB(plugin);
         if (plugin.getConfig().getBoolean("general.restoreSessions")) {
             this.restoreSession();
         }

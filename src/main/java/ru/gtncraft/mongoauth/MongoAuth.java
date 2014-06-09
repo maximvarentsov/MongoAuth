@@ -3,6 +3,8 @@ package ru.gtncraft.mongoauth;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.gtncraft.mongoauth.commands.*;
 
+import java.io.IOException;
+
 public final class MongoAuth extends JavaPlugin {
 
     AuthManager authManager;
@@ -13,10 +15,16 @@ public final class MongoAuth extends JavaPlugin {
         saveDefaultConfig();
 
         config = new Config(super.getConfig());
-        authManager = new AuthManager(this);
 
-        new Listeners(this);
-        new Commands(this);
+        try {
+            authManager = new AuthManager(this);
+            new Listeners(this);
+            new Commands(this);
+        } catch (IOException ex) {
+            new EmergencyListeners(this);
+            getLogger().severe("Emergency mode!");
+            getLogger().severe(ex.getMessage());
+        }
 	}
 
     @Override

@@ -15,6 +15,7 @@ public enum Messages {
     error_input_invalid_login,
     error_command_permission,
     error_command_sender,
+    error_emergency,
     success_account_create,
     success_account_logout,
     success_account_delete,
