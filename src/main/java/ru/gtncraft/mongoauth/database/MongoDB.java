@@ -13,9 +13,12 @@ public class MongoDB implements Database {
     final MongoClient client;
 
 	public MongoDB(final MongoAuth plugin) throws IOException {
-        client = MongoClients.create(plugin.getConfig().getReplicaSet());
-        MongoDatabase db = client.getDatabase(plugin.getConfig().getString("storage.name"));
-        players = db.getCollection(plugin.getConfig().getString("storage.collection"));
+        client = MongoClients.create(
+                plugin.getConfig().getReplicaSet(),
+                MongoClientOptions.builder().SSLEnabled(plugin.getConfig().getBoolean("database.ssl")).build()
+        );
+        MongoDatabase db = client.getDatabase(plugin.getConfig().getString("database.name"));
+        players = db.getCollection(plugin.getConfig().getString("database.collection"));
         players.tools().createIndexes(ImmutableList.of(
             Index.builder().addKey("playername").unique().build(),
             Index.builder().addKey("ip").build()

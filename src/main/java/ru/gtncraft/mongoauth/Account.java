@@ -17,7 +17,7 @@ public class Account extends Document {
         this.setAllowed(true);
     }
 
-    public Account(final Map map) {
+    public Account(final Map<String, Object> map) {
         this.putAll(map);
     }
 
@@ -38,7 +38,10 @@ public class Account extends Document {
     }
 
     public void setIP(final CommandSender commandSender) {
+        put("ip", getIP(commandSender));
+    }
 
+    long getIP(final CommandSender commandSender) {
         final String ip;
 
         if (commandSender instanceof Player) {
@@ -47,7 +50,7 @@ public class Account extends Document {
             ip = "127.0.0.1";
         }
 
-        put("ip", dot2LongIP(ip));
+        return dot2LongIP(ip);
     }
 
     public String getPassword() {

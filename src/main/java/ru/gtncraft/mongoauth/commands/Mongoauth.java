@@ -23,7 +23,8 @@ class Mongoauth implements CommandExecutor, TabCompleter {
         this.authManager = plugin.getAuthManager();
         this.config = plugin.getConfig();
         this.logger = plugin.getLogger();
-        final PluginCommand command = plugin.getCommand("mongoauth");
+
+        PluginCommand command = plugin.getCommand("mongoauth");
         command.setExecutor(this);
         command.setPermissionMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
     }

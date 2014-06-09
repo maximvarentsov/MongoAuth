@@ -17,7 +17,8 @@ class ChangePassword implements CommandExecutor, TabCompleter {
         this.config = plugin.getConfig();
         this.authManager = plugin.getAuthManager();
         this.plugin = plugin;
-        final PluginCommand command = plugin.getCommand("changepassword");
+
+        PluginCommand command = plugin.getCommand("changepassword");
         command.setExecutor(this);
         command.setPermissionMessage(config.getMessage(Messages.error_command_permission));
 	}

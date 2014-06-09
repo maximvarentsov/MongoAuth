@@ -1,8 +1,9 @@
-storage:
+database:
     hosts:
         - localhost:27017
     name: minecraft
     collection: players
+    ssl: false
 general:
     restoreSessions: true
     playernamePattern: ^[a-zA-Z0-9_]+$

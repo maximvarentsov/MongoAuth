@@ -18,7 +18,8 @@ class Logout implements CommandExecutor, TabCompleter {
 		this.authManager = plugin.getAuthManager();
         this.config = plugin.getConfig();
         this.plugin = plugin;
-        final PluginCommand command = plugin.getCommand("logout");
+
+        PluginCommand command = plugin.getCommand("logout");
         command.setExecutor(this);
         command.setPermissionMessage(config.getMessage(Messages.error_command_permission));
 	}

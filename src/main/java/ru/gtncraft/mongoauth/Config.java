@@ -24,7 +24,7 @@ public class Config extends YamlConfiguration {
     }
 
     public List<ServerAddress> getReplicaSet() {
-        return getStringList("storage.hosts").stream().map(ServerAddress::new).collect(Collectors.toList());
+        return getStringList("database.hosts").stream().map(ServerAddress::new).collect(Collectors.toList());
     }
 
 }

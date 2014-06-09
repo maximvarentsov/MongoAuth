@@ -93,7 +93,7 @@ public class AuthManager {
                     p -> Bukkit.getServer().getPlayer(p) != null
             ).forEach(sessions::add);
             file.delete();
-        } catch (IOException | ClassNotFoundException ex) {}
+        } catch (IOException | ClassNotFoundException ignore) {}
     }
     /**
      * Save player sessions.
@@ -140,7 +140,7 @@ public class AuthManager {
      * Create player session and restore location, run post auth tasks.
      */
     public void login(final Player player) {
-        final String playername = player.getName().toLowerCase();
+        String playername = player.getName().toLowerCase();
         sessions.add(playername);
         restoreLocation(player);
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -164,7 +164,7 @@ public class AuthManager {
      * Check maximum registration per IP.
      */
     public boolean registrationLimitMax(final Account account) {
-        final long count = db.countIp(account.getIP()) + 1;
+        long count = db.countIp(account.getIP()) + 1;
         return count > maxPerIp;
     }
     /**
@@ -172,7 +172,7 @@ public class AuthManager {
      */
     @SuppressWarnings("unused")
     public void addPostAuth(final Player player, final Runnable runnable) {
-        final String playername = player.getName().toLowerCase();
+        String playername = player.getName().toLowerCase();
 
         if (postAuth.get(playername) == null) {
             postAuth.put(playername, new ArrayList<>());

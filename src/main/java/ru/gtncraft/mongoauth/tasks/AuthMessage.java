@@ -18,7 +18,9 @@ public class AuthMessage implements Runnable {
     @Override
     public void run() {
         if (player != null) {
-            final Account account = plugin.getAuthManager().get(player.getName());
+
+            Account account = plugin.getAuthManager().get(player.getName());
+
             if (account == null) {
                 player.sendMessage(plugin.getConfig().getMessage(Messages.command_register_hint));
             } else {

@@ -22,7 +22,8 @@ class Unregister implements CommandExecutor, TabCompleter {
 		this.authManager = plugin.getAuthManager();
         this.logger = plugin.getLogger();
         this.plugin = plugin;
-        final PluginCommand command = plugin.getCommand("unregister");
+
+        PluginCommand command = plugin.getCommand("unregister");
         command.setExecutor(this);
         command.setPermissionMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
 	}

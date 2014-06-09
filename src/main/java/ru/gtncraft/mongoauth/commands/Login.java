@@ -18,7 +18,8 @@ class Login implements CommandExecutor, TabExecutor {
         this.plugin = plugin;
         this.config = plugin.getConfig();
 		this.authManager = plugin.getAuthManager();
-        final PluginCommand command = plugin.getCommand("login");
+
+        PluginCommand command = plugin.getCommand("login");
         command.setExecutor(this);
         command.setPermissionMessage(config.getMessage(Messages.error_command_permission));
 	}

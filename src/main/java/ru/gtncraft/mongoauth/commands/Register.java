@@ -18,7 +18,8 @@ class Register implements CommandExecutor, TabCompleter {
         this.plugin = plugin;
         this.authManager = plugin.getAuthManager();
         this.config = plugin.getConfig();
-        final PluginCommand command = plugin.getCommand("register");
+
+        PluginCommand command = plugin.getCommand("register");
         command.setExecutor(this);
         command.setPermissionMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
 	}
