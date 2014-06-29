@@ -1,81 +1,57 @@
 package ru.gtncraft.mongoauth.commands;
 
-import com.google.common.collect.ImmutableList;
-import org.bukkit.Bukkit;
-import org.bukkit.command.*;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
-import ru.gtncraft.mongoauth.*;
-import java.util.List;
+import ru.gtncraft.mongoauth.Account;
+import ru.gtncraft.mongoauth.Messages;
+import ru.gtncraft.mongoauth.MongoAuth;
 
-class ChangePassword implements CommandExecutor, TabCompleter {
+public class ChangePassword extends Command {
 
-    final Config config;
-    final AuthManager authManager;
-    final MongoAuth plugin;
-	
 	public ChangePassword(final MongoAuth plugin) {
-        this.config = plugin.getConfig();
-        this.authManager = plugin.getAuthManager();
-        this.plugin = plugin;
-
-        PluginCommand command = plugin.getCommand("changepassword");
-        command.setExecutor(this);
-        command.setPermissionMessage(config.getMessage(Messages.error_command_permission));
+        super(plugin);
+        PluginCommand pluginCommand = plugin.getCommand("changepassword");
+        pluginCommand.setExecutor(this);
+        pluginCommand.setPermissionMessage(getPlugin().getConfig().getMessage(Messages.error_command_permission));
 	}
 
     @Override
-    public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+    public Message execute(Player player, String command, String[] args) {
 
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(config.getMessage(Messages.error_command_sender));
-            return false;
+        if (args.length < 1) {
+            return new Message(Messages.error_input_password);
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            final Account account = authManager.get(sender.getName());
+        if (args.length < 2) {
+            return new Message(Messages.error_input_password_new);
+        }
 
-            if (account == null) {
-                sender.sendMessage(config.getMessage(Messages.command_register_hint));
-                return;
-            }
+        Account account = getAccount(player);
 
-            if (!authManager.isAuth(account.getName())) {
-                sender.sendMessage(config.getMessage(Messages.command_login_hint));
-                return;
-            }
+        if (account == null) {
+            return new Message(Messages.command_register_hint);
+        }
 
-            if (args.length < 1) {
-                sender.sendMessage(config.getMessage(Messages.error_input_password));
-                return;
-            }
+        if (isAuthorized(player)) {
+            return new Message(Messages.command_login_hint);
+        }
 
-            if (args.length < 2) {
-                sender.sendMessage(config.getMessage(Messages.error_input_password_new));
-                return;
-            }
+        String currentPassword = args[0];
+        String newPassword = args[1];
 
-            final String currentPassword = args[0];
-            final String newPassword = args[1];
-            if (!account.checkPassword(currentPassword)) {
-                sender.sendMessage(config.getMessage(Messages.error_input_password_missmach));
-                return;
-            }
+        if (!account.checkPassword(currentPassword)) {
+            return new Message(Messages.error_input_password_missmach);
+        }
 
-            if (currentPassword.equals(newPassword)) {
-                sender.sendMessage(config.getMessage(Messages.error_input_passwords_equals));
-                return;
-            }
+        if (currentPassword.equals(newPassword)) {
+            return new Message(Messages.error_input_passwords_equals);
+        }
 
-            account.setPassword(newPassword);
-            authManager.save(account);
-            plugin.getLogger().info("Player " + sender.getName() + " has changed password.");
-            sender.sendMessage(config.getMessage(Messages.success_change_password));
-        });
-        return true;
-    }
+        account.setPassword(newPassword);
+        getManager().save(account);
 
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] strings) {
-        return ImmutableList.of();
+        getLogger().info("Player " + player.getName() + " has changed password.");
+
+        return new Message(Messages.success_change_password);
     }
 }

@@ -6,6 +6,7 @@ import ru.gtncraft.mongoauth.Account;
 import ru.gtncraft.mongoauth.MongoAuth;
 
 import java.io.IOException;
+import java.util.UUID;
 
 public class MongoDB implements Database {
 
@@ -25,8 +26,17 @@ public class MongoDB implements Database {
         ));
 	}
 
-    public Account get(final String playername) {
-        Object obj = players.find(new Document("playername", playername.toLowerCase())).getOne();
+    public Account get(final UUID uuid) {
+        Object obj = players.find(new Document("uuid", uuid.toString())).getOne();
+        if (obj != null) {
+            return new Account((Document) obj);
+        }
+        return null;
+    }
+
+    @Deprecated
+    public Account get(final String player) {
+        Object obj = players.find(new Document("playername", player.toLowerCase())).getOne();
         if (obj != null) {
             return new Account((Document) obj);
         }
@@ -34,11 +44,12 @@ public class MongoDB implements Database {
     }
 
     public void remove(final Account document) {
-        players.find(new Document("playername", document.getName())).removeOne();
+        players.find(new Document("uuid", document.getUUID())).removeOne();
     }
 
     public void save(final Account document) {
-        players.find(new Document("playername", document.getName())).upsert().updateOne(document);
+        //players.find(new Document("uuid", document.getUUID())).upsert().updateOne(document);
+        players.insert(document);
     }
 
     public long countIp(final long ip) {

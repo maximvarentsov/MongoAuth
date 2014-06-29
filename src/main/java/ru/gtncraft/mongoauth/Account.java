@@ -8,36 +8,39 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+import java.util.UUID;
 
 public class Account extends Document {
 
     public Account(final Player player) {
-        this.setName(player.getName());
+        this.setUUID(player.getUniqueId());
         this.setIP(player);
         this.setAllowed(true);
+        this.setName(player);
     }
 
     public Account(final Map<String, Object> map) {
         this.putAll(map);
     }
 
-    public Account(final String playername) {
-        this.setName(playername.toLowerCase());
+    public String getUUID() {
+        return getString("uuid");
     }
 
-    public String getName() {
-        return getString("playername");
+    @Deprecated
+    void setName(final Player player) {
+        put("playername", player.getName().toLowerCase());
     }
 
-    public void setName(String value) {
-        put("playername", value.toLowerCase());
+    void setUUID(final UUID uuid) {
+        put("uuid", uuid.toString());
     }
 
     public long getIP() {
         return getLong("ip");
     }
 
-    public void setIP(final CommandSender commandSender) {
+    void setIP(final CommandSender commandSender) {
         put("ip", getIP(commandSender));
     }
 
@@ -61,11 +64,11 @@ public class Account extends Document {
         put("password", encryptPassword(value));
     }
 
-    public boolean isAllowed() {
-        return getBoolean("allowed");
+    public boolean isBlocked() {
+        return ! getBoolean("allowed");
     }
 
-    public void setAllowed(final boolean value) {
+    public void setAllowed(boolean value) {
         put("allowed", value);
     }
 
@@ -103,6 +106,6 @@ public class Account extends Document {
 
     @Override
     public String toString() {
-        return getName();
+        return getUUID();
     }
 }

@@ -1,54 +1,33 @@
 package ru.gtncraft.mongoauth.commands;
 
-import com.google.common.collect.ImmutableList;
-import org.bukkit.Bukkit;
-import org.bukkit.command.*;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
-import ru.gtncraft.mongoauth.*;
+import ru.gtncraft.mongoauth.Messages;
+import ru.gtncraft.mongoauth.MongoAuth;
 
-import java.util.List;
+public class Logout extends Command {
 
-class Logout implements CommandExecutor, TabCompleter {
-
-	final AuthManager authManager;
-    final Config config;
-    final MongoAuth plugin;
-	
 	public Logout(final MongoAuth plugin) {
-		this.authManager = plugin.getAuthManager();
-        this.config = plugin.getConfig();
-        this.plugin = plugin;
-
-        PluginCommand command = plugin.getCommand("logout");
-        command.setExecutor(this);
-        command.setPermissionMessage(config.getMessage(Messages.error_command_permission));
-	}
-
-    @Override
-    public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
-
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(config.getMessage(Messages.error_command_sender));
-            return false;
-        }
-
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            final Account account = plugin.getAuthManager().get(sender.getName());
-            if (account == null) {
-                sender.sendMessage(plugin.getConfig().getMessage(Messages.command_register_hint));
-            } else {
-                sender.sendMessage(plugin.getConfig().getMessage(Messages.command_login_hint));
-            }
-            if (authManager.logout(sender.getName())) {
-                plugin.getLogger().info("Player " + sender.getName() + " logget out.");
-                sender.sendMessage(config.getMessage(Messages.success_account_logout));
-            }
-        });
-        return true;
+        super(plugin);
+        PluginCommand pluginCommand = plugin.getCommand("logout");
+        pluginCommand.setExecutor(this);
+        pluginCommand.setPermissionMessage(getPlugin().getConfig().getMessage(Messages.error_command_permission));
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        return ImmutableList.of();
+    public Message execute(Player player, String command, String[] args) {
+
+        if (getAccount(player) == null) {
+            return new Message(Messages.command_register_hint);
+        }
+
+        if (!isAuthorized(player)) {
+            return new Message(Messages.command_login_hint);
+        }
+
+        logout(player);
+        getLogger().info("Player " + player.getName() + " logout.");
+
+        return new Message(Messages.success_account_logout);
     }
 }

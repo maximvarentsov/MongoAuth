@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
+import ru.gtncraft.mongoauth.manager.AuthManager;
 import ru.gtncraft.mongoauth.tasks.AuthMessage;
 import java.util.regex.Pattern;
 
@@ -37,13 +38,14 @@ class Listeners implements Listener {
             event.setKickMessage(config.getMessage(Messages.error_input_invalid_login));
             return;
         }
-		for (Player online : plugin.getServer().getOnlinePlayers()) {
+
+        for (Player online : Bukkit.getServer().getOnlinePlayers()) {
             if (online.getName().equalsIgnoreCase(playername)) {
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 event.setKickMessage(config.getMessage(Messages.error_account_online, playername));
                 return;
             }
-		}
+        }
 	}
 
     @EventHandler()
@@ -81,7 +83,7 @@ class Listeners implements Listener {
         if (plugin.getCommand(rootCommand) != null && !plugin.getCommand(rootCommand).equals(plugin.getCommand("mongoauth"))) {
             return;
         }
-        if (!manager.isAuth(player.getName())) {
+        if (!manager.isAuth(player.getUniqueId())) {
             Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
             event.setCancelled(true);
         }
@@ -91,7 +93,7 @@ class Listeners implements Listener {
     @SuppressWarnings("unused")
     public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        if (!manager.isAuth(player.getName())) {
+        if (!manager.isAuth(player.getUniqueId())) {
             Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
             event.setCancelled(true);
         }
@@ -101,7 +103,7 @@ class Listeners implements Listener {
     @SuppressWarnings("unused")
     public void onPlayerMove(final PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        if (!manager.isAuth(player.getName())) {
+        if (!manager.isAuth(player.getUniqueId())) {
             Location from = event.getFrom();
             Location to = event.getTo();
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
@@ -116,7 +118,7 @@ class Listeners implements Listener {
         Entity entity = event.getEntity();
         if (entity instanceof Player) {
             final Player player = (Player) entity;
-            if (!manager.isAuth(player.getName())) {
+            if (!manager.isAuth(player.getUniqueId())) {
                 event.setCancelled(true);
             }
         }
@@ -125,7 +127,7 @@ class Listeners implements Listener {
     @EventHandler(ignoreCancelled = true)
     @SuppressWarnings("unused")
     public void onInventoryInteract(final InventoryClickEvent event) {
-        if (!manager.isAuth(event.getWhoClicked().getName())) {
+        if (!manager.isAuth(event.getWhoClicked().getUniqueId())) {
             event.setCancelled(true);
         }
     }
@@ -133,7 +135,7 @@ class Listeners implements Listener {
     @EventHandler(ignoreCancelled = true)
     @SuppressWarnings("unused")
     public void onItemDrop(final PlayerDropItemEvent event) {
-		if (!manager.isAuth(event.getPlayer().getName())) {
+		if (!manager.isAuth(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
 	}
@@ -141,7 +143,7 @@ class Listeners implements Listener {
     @EventHandler(ignoreCancelled = true)
     @SuppressWarnings("unused")
     public void onInteract(final PlayerInteractEvent event) {
-		if (!manager.isAuth(event.getPlayer().getName())) {
+		if (!manager.isAuth(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
 	}
@@ -149,7 +151,7 @@ class Listeners implements Listener {
     @EventHandler(ignoreCancelled = true)
     @SuppressWarnings("unused")
     public void onEntityInteract(final PlayerInteractEntityEvent event) {
-		if (!manager.isAuth(event.getPlayer().getName())) {
+		if (!manager.isAuth(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
     }
@@ -157,7 +159,7 @@ class Listeners implements Listener {
     @EventHandler(ignoreCancelled = true)
     @SuppressWarnings("unused")
     public void onPlayerPickupItem(final PlayerPickupItemEvent event) {
-        if (!manager.isAuth(event.getPlayer().getName())) {
+        if (!manager.isAuth(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
     }

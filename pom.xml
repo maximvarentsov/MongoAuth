@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.gtncraft.mongoauth</groupId>
     <artifactId>MongoAuth</artifactId>
-    <version>1.8</version>
+    <version>1.9</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -36,7 +36,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.0</version>
+                <version>2.2</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -67,8 +67,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.7.9-R0.3-SNAPSHOT</version>
-            <scope>compile</scope>
+            <version>LATEST</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>

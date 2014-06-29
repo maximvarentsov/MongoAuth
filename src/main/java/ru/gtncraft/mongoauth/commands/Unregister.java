@@ -1,84 +1,52 @@
 package ru.gtncraft.mongoauth.commands;
 
-import com.google.common.collect.ImmutableList;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.command.*;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
 
-import java.util.List;
-import java.util.logging.Logger;
-
-class Unregister implements CommandExecutor, TabCompleter {
-
-	final AuthManager authManager;
-    final Config config;
-    final Logger logger;
-    final MongoAuth plugin;
+public class Unregister extends Command {
 
 	public Unregister(final MongoAuth plugin) {
-        this.config = plugin.getConfig();
-		this.authManager = plugin.getAuthManager();
-        this.logger = plugin.getLogger();
-        this.plugin = plugin;
-
-        PluginCommand command = plugin.getCommand("unregister");
-        command.setExecutor(this);
-        command.setPermissionMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
+        super(plugin);
+        PluginCommand pluginCommand = plugin.getCommand("unregister");
+        pluginCommand.setExecutor(this);
+        pluginCommand.setPermissionMessage(getPlugin().getConfig().getMessage(Messages.error_command_permission));
 	}
 
     @Override
-    public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+    public Message execute(Player player, String command, String[] args) {
 
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(config.getMessage(Messages.error_command_sender));
-            return true;
+        Account account = getAccount(player);
+
+        if (account == null) {
+            return new Message(Messages.command_register_hint);
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            final Account account = authManager.get(sender.getName());
+        if (!isAuthorized(player)) {
+            return new Message(Messages.command_login_hint);
+        }
 
-            if (account == null) {
-                sender.sendMessage(config.getMessage(Messages.command_register_hint));
-                return ;
-            }
+        if (args.length < 1) {
+            return new Message(Messages.error_input_password);
+        }
 
-            if (!authManager.isAuth(account.getName())) {
-                sender.sendMessage(config.getMessage(Messages.command_login_hint));
-                return ;
-            }
+        if (!account.checkPassword(args[0])) {
+            return new Message(Messages.error_input_password_missmach);
+        }
 
-            if (args.length < 1) {
-                sender.sendMessage(config.getMessage(Messages.error_input_password));
-                return;
-            }
+        getManager().unregister(account);
+        logout(player);
 
-            if (!account.checkPassword(args[0])) {
-                sender.sendMessage(config.getMessage(Messages.error_input_password_missmach));
-                return;
-            }
+        player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+        player.getInventory().clear();
+        player.setGameMode(GameMode.SURVIVAL);
+        player.setAllowFlight(false);
+        player.setFoodLevel(20);
+        player.setExp(0);
 
-            authManager.unregister(account);
-            authManager.logout(sender.getName());
-            logger.info("Account " + account + " unregistered.");
-            sender.sendMessage(config.getMessage(Messages.success_account_delete));
-
-            // Clear player profile.
-            // TODO: remove perms, worldprotect regions and other stuff.
-            Player player = (Player) sender;
-            player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
-            player.getInventory().clear();
-            player.setGameMode(GameMode.SURVIVAL);
-            player.setAllowFlight(false);
-            player.setFoodLevel(20);
-            player.setExp(0);
-        });
-        return true;
-    }
-
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] strings) {
-        return ImmutableList.of();
+        getLogger().info("Account " + account + " unregistered.");
+        return new Message(Messages.success_account_delete);
     }
 }

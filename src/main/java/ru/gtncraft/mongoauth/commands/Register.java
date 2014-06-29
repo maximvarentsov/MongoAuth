@@ -1,70 +1,46 @@
 package ru.gtncraft.mongoauth.commands;
 
-import com.google.common.collect.ImmutableList;
-import org.bukkit.Bukkit;
-import org.bukkit.command.*;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
 
-import java.util.List;
+public class Register extends Command {
 
-class Register implements CommandExecutor, TabCompleter {
-
-    final MongoAuth plugin;
-    final AuthManager authManager;
-    final Config config;
-	
 	public Register(final MongoAuth plugin) {
-        this.plugin = plugin;
-        this.authManager = plugin.getAuthManager();
-        this.config = plugin.getConfig();
-
-        PluginCommand command = plugin.getCommand("register");
-        command.setExecutor(this);
-        command.setPermissionMessage(plugin.getConfig().getMessage(Messages.error_command_permission));
+        super(plugin);
+        PluginCommand pluginCommand = plugin.getCommand("register");
+        pluginCommand.setExecutor(this);
+        pluginCommand.setPermissionMessage(getPlugin().getConfig().getMessage(Messages.error_command_permission));
 	}
 
     @Override
-    public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+    public Message execute(Player player, String command, String[] args) {
 
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(config.getMessage(Messages.error_command_sender));
-            return false;
+        if (isAuthorized(player)) {
+            return new Message(Messages.error_account_is_auth);
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            final Account account = new Account((Player) sender);
+        if (getAccount(player) != null) {
+            return new Message(Messages.command_login_hint);
+        }
 
-            if (authManager.isAuth(account.getName())) {
-                sender.sendMessage(config.getMessage(Messages.error_account_is_auth));
-                return;
-            }
+        Account account = new Account(player);
 
-            if (authManager.get(account.getName()) != null) {
-                sender.sendMessage(config.getMessage(Messages.command_login_hint));
-                return;
-            }
+        if (args.length < 1) {
+            return new Message(Messages.error_input_password);
+        }
 
-            if (args.length < 1) {
-                sender.sendMessage(config.getMessage(Messages.error_input_password));
-                return;
-            }
+        if (getManager().registrationLimitMax(account)) {
+            return new Message(Messages.error_account_register_limit);
+        }
 
-            if (authManager.registrationLimitMax(account)) {
-                sender.sendMessage(config.getMessage(Messages.error_account_register_limit));
-                return;
-            }
-            account.setPassword(args[0]);
-            authManager.save(account);
-            authManager.login((Player) sender);
-            sender.sendMessage(config.getMessage(Messages.success_account_create));
-            plugin.getLogger().info("New player " + sender.getName() + " registered.");
-        });
-        return true;
-    }
+        account.setPassword(args[0]);
 
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        return ImmutableList.of();
+        getManager().save(account);
+        getManager().login(player);
+
+        getLogger().info("New player " + player.getName() + " registered.");
+
+        return new Message(Messages.success_account_create);
     }
 }

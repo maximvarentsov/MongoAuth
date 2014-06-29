@@ -15,12 +15,9 @@ public class Config extends YamlConfiguration {
         this.addDefaults(config.getRoot());
     }
 
-    public String getMessage(final Messages key) {
-        return ChatColor.translateAlternateColorCodes('&', this.getString("messages." + key.name()));
-    }
-
     public String getMessage(final Messages key, String...args) {
-        return String.format(getMessage(key), args);
+        String message = ChatColor.translateAlternateColorCodes('&', this.getString("messages." + key.name()));
+        return String.format(message, args);
     }
 
     public List<ServerAddress> getReplicaSet() {
