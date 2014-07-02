@@ -18,7 +18,7 @@ class EmergencyListeners implements Listener {
         message = plugin.getConfig().getMessage(Messages.error_emergency);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onCommand(final PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
@@ -26,8 +26,8 @@ class EmergencyListeners implements Listener {
         event.setCancelled(true);
     }
 
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onPlayerMove(final PlayerMoveEvent event) {
         Player player = event.getPlayer();
         player.sendMessage(message);
@@ -35,42 +35,42 @@ class EmergencyListeners implements Listener {
     }
 
     @SuppressWarnings("unused")
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onEntityDamage(final EntityDamageEvent event) {
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onInventoryInteract(final InventoryClickEvent event) {
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onItemDrop(final PlayerDropItemEvent event) {
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onInteract(final PlayerInteractEvent event) {
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onEntityInteract(final PlayerInteractEntityEvent event) {
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onPlayerPickupItem(final PlayerPickupItemEvent event) {
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
         event.setCancelled(true);

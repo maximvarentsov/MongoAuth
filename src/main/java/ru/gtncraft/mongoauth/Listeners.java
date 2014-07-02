@@ -29,7 +29,7 @@ class Listeners implements Listener {
         this.pattern = Pattern.compile(this.config.getString("general.playernamePattern"));
 	}
 
-    @EventHandler()
+    @EventHandler(priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onPlayerPreLogin(final AsyncPlayerPreLoginEvent event) {
         String playername = event.getName();
@@ -48,7 +48,7 @@ class Listeners implements Listener {
         }
 	}
 
-    @EventHandler()
+    @EventHandler(priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onPlayerJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
@@ -56,7 +56,7 @@ class Listeners implements Listener {
         Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
     }
 
-    @EventHandler()
+    @EventHandler(priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onPlayerQuitEvent(final PlayerQuitEvent event) {
         Player player = event.getPlayer();
@@ -65,7 +65,7 @@ class Listeners implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onPlayerKickEvent(final PlayerKickEvent event) {
         Player player = event.getPlayer();
@@ -74,7 +74,7 @@ class Listeners implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onCommand(final PlayerCommandPreprocessEvent event) {
         Player player =  event.getPlayer();
@@ -89,7 +89,7 @@ class Listeners implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
@@ -99,7 +99,7 @@ class Listeners implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onPlayerMove(final PlayerMoveEvent event) {
         Player player = event.getPlayer();
@@ -112,7 +112,7 @@ class Listeners implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onEntityDamage(final EntityDamageEvent event) {
         Entity entity = event.getEntity();
@@ -124,7 +124,7 @@ class Listeners implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onInventoryInteract(final InventoryClickEvent event) {
         if (!manager.isAuth(event.getWhoClicked().getUniqueId())) {
@@ -132,7 +132,7 @@ class Listeners implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onItemDrop(final PlayerDropItemEvent event) {
 		if (!manager.isAuth(event.getPlayer().getUniqueId())) {
@@ -140,7 +140,7 @@ class Listeners implements Listener {
         }
 	}
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onInteract(final PlayerInteractEvent event) {
 		if (!manager.isAuth(event.getPlayer().getUniqueId())) {
@@ -148,7 +148,7 @@ class Listeners implements Listener {
         }
 	}
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onEntityInteract(final PlayerInteractEntityEvent event) {
 		if (!manager.isAuth(event.getPlayer().getUniqueId())) {
@@ -156,7 +156,7 @@ class Listeners implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onPlayerPickupItem(final PlayerPickupItemEvent event) {
         if (!manager.isAuth(event.getPlayer().getUniqueId())) {
