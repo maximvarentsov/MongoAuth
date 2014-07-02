@@ -106,7 +106,7 @@ class Listeners implements Listener {
         if (!manager.isAuth(player.getUniqueId())) {
             Location from = event.getFrom();
             Location to = event.getTo();
-            if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
+            if (to.getX() != from.getX() || to.getZ() != from.getZ()) {
                 player.teleport(from);
             }
         }
