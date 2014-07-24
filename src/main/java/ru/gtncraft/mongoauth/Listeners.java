@@ -22,23 +22,22 @@ class Listeners implements Listener {
     final Config config;
 
 	public Listeners(final MongoAuth instance) {
-        this.plugin = instance;
-        this.plugin.getServer().getPluginManager().registerEvents(this, instance);
-        this.manager = instance.getAuthManager();
-        this.config = plugin.getConfig();
-        this.pattern = Pattern.compile(this.config.getString("general.playernamePattern"));
+        Bukkit.getServer().getPluginManager().registerEvents(this, instance);
+        plugin = instance;
+        manager = instance.getAuthManager();
+        config = plugin.getConfig();
+        pattern = Pattern.compile(config.getString("general.playernamePattern"));
 	}
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR)
     @SuppressWarnings("unused")
-    public void onPlayerPreLogin(final AsyncPlayerPreLoginEvent event) {
+    void onPlayerPreLogin(final AsyncPlayerPreLoginEvent event) {
         String playername = event.getName();
         if (!pattern.matcher(playername).matches()) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             event.setKickMessage(config.getMessage(Messages.error_input_invalid_login));
             return;
         }
-
         for (Player online : Bukkit.getServer().getOnlinePlayers()) {
             if (online.getName().equalsIgnoreCase(playername)) {
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
@@ -48,35 +47,35 @@ class Listeners implements Listener {
         }
 	}
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR)
     @SuppressWarnings("unused")
-    public void onPlayerJoin(final PlayerJoinEvent event) {
+    void onPlayerJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
         manager.join(player);
         Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR)
     @SuppressWarnings("unused")
-    public void onPlayerQuitEvent(final PlayerQuitEvent event) {
+    void onPlayerQuit(final PlayerQuitEvent event) {
         Player player = event.getPlayer();
         if (manager.exit(player)) {
             plugin.getLogger().info("Account " + player.getName() + " logged out.");
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     @SuppressWarnings("unused")
-    public void onPlayerKickEvent(final PlayerKickEvent event) {
+    void onPlayerKick(final PlayerKickEvent event) {
         Player player = event.getPlayer();
         if (manager.exit(player)) {
             plugin.getLogger().info("Account " + player.getName() + " logged out.");
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     @SuppressWarnings("unused")
-    public void onCommand(final PlayerCommandPreprocessEvent event) {
+    void onCommand(final PlayerCommandPreprocessEvent event) {
         Player player =  event.getPlayer();
         String command = event.getMessage().substring(1);
         String rootCommand = command.split(" ")[0];
@@ -89,9 +88,9 @@ class Listeners implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     @SuppressWarnings("unused")
-    public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
+    void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         if (!manager.isAuth(player.getUniqueId())) {
             Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
@@ -99,22 +98,22 @@ class Listeners implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     @SuppressWarnings("unused")
-    public void onPlayerMove(final PlayerMoveEvent event) {
+    void onPlayerMove(final PlayerMoveEvent event) {
         Player player = event.getPlayer();
         if (!manager.isAuth(player.getUniqueId())) {
             Location from = event.getFrom();
             Location to = event.getTo();
-            if (to.getX() != from.getX() || to.getZ() != from.getZ()) {
+            if (to.getX() != from.getX() || to.getY() > from.getY() || to.getZ() != from.getZ()) {
                 player.teleport(from);
             }
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     @SuppressWarnings("unused")
-    public void onEntityDamage(final EntityDamageEvent event) {
+    void onEntityDamage(final EntityDamageEvent event) {
         Entity entity = event.getEntity();
         if (entity instanceof Player) {
             final Player player = (Player) entity;
@@ -124,41 +123,41 @@ class Listeners implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     @SuppressWarnings("unused")
-    public void onInventoryInteract(final InventoryClickEvent event) {
+    void onInventoryInteract(final InventoryClickEvent event) {
         if (!manager.isAuth(event.getWhoClicked().getUniqueId())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     @SuppressWarnings("unused")
-    public void onItemDrop(final PlayerDropItemEvent event) {
+    void onItemDrop(final PlayerDropItemEvent event) {
 		if (!manager.isAuth(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
 	}
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     @SuppressWarnings("unused")
-    public void onInteract(final PlayerInteractEvent event) {
+    void onInteract(final PlayerInteractEvent event) {
 		if (!manager.isAuth(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
 	}
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     @SuppressWarnings("unused")
-    public void onEntityInteract(final PlayerInteractEntityEvent event) {
+    void onEntityInteract(final PlayerInteractEntityEvent event) {
 		if (!manager.isAuth(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     @SuppressWarnings("unused")
-    public void onPlayerPickupItem(final PlayerPickupItemEvent event) {
+    void onPlayerPickupItem(final PlayerPickupItemEvent event) {
         if (!manager.isAuth(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
