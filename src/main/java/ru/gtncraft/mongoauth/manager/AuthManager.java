@@ -1,6 +1,5 @@
 package ru.gtncraft.mongoauth.manager;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.Account;
 import ru.gtncraft.mongoauth.MongoAuth;
@@ -16,7 +15,6 @@ public class AuthManager {
 
     final Sessions sessions;
     final Locations locations;
-    final Tasks tasks;
     final Logger log;
     final Database db;
     final File file;
@@ -27,7 +25,6 @@ public class AuthManager {
 
         this.sessions = new Sessions();
         this.locations = new Locations();
-        this.tasks = new Tasks();
 
         this.file = new File(plugin.getDataFolder() + File.separator + "sessions.dat");
         this.maxPerIp = plugin.getConfig().getInt("general.maxPerIp");
@@ -58,7 +55,6 @@ public class AuthManager {
      */
     public boolean exit(final Player player) {
         UUID uuid = player.getUniqueId();
-        tasks.remove(uuid);
 
         if (isAuth(uuid)) {
             logout(uuid);
@@ -112,7 +108,6 @@ public class AuthManager {
     public void login(final Player player) {
         sessions.add(player.getUniqueId());
         locations.back(player);
-        Bukkit.getScheduler().runTaskAsynchronously(MongoAuth.getInstance(), () -> tasks.execute(player));
     }
 
     /**
@@ -130,15 +125,6 @@ public class AuthManager {
     public boolean registrationLimitMax(final Account account) {
         long count = db.countIp(account.getIP()) + 1;
         return count > maxPerIp;
-    }
-
-    /**
-     * Execute task after player is logged.
-     *
-     */
-    @SuppressWarnings("unused")
-    public void schedule(final Player player, final Runnable runnable) {
-        tasks.schedule(player, runnable);
     }
 
     /**

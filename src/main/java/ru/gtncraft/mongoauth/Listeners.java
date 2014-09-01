@@ -45,7 +45,7 @@ class Listeners implements Listener {
                 return;
             }
         }
-	}
+    }
 
     @EventHandler(priority = EventPriority.MONITOR)
     @SuppressWarnings("unused")
