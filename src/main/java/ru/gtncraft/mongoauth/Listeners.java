@@ -16,34 +16,23 @@ import java.util.regex.Pattern;
 
 class Listeners implements Listener {
 
-	final MongoAuth plugin;
-	final AuthManager manager;
-    final Pattern pattern;
-    final Config config;
+	private final MongoAuth plugin;
+    private final AuthManager manager;
+    private final Pattern pattern;
 
 	public Listeners(final MongoAuth instance) {
         Bukkit.getServer().getPluginManager().registerEvents(this, instance);
         plugin = instance;
         manager = instance.getAuthManager();
-        config = plugin.getConfig();
-        pattern = Pattern.compile(config.getString("general.playernamePattern"));
+        pattern = Pattern.compile(plugin.getConfig().getString("general.playernamePattern"));
 	}
 
     @EventHandler(priority = EventPriority.MONITOR)
     @SuppressWarnings("unused")
     void onPlayerPreLogin(final AsyncPlayerPreLoginEvent event) {
-        String playername = event.getName();
-        if (!pattern.matcher(playername).matches()) {
+        if (!pattern.matcher(event.getName()).matches()) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage(config.getMessage(Messages.error_input_invalid_login));
-            return;
-        }
-        for (Player online : Bukkit.getServer().getOnlinePlayers()) {
-            if (online.getName().equalsIgnoreCase(playername)) {
-                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-                event.setKickMessage(config.getMessage(Messages.error_account_online, playername));
-                return;
-            }
+            event.setKickMessage(plugin.getConfig().getMessage(Messages.error_input_invalid_login));
         }
     }
 
@@ -51,32 +40,14 @@ class Listeners implements Listener {
     @SuppressWarnings("unused")
     void onPlayerJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        manager.join(player);
+        player.teleport(player.getWorld().getSpawnLocation());
         Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    @SuppressWarnings("unused")
-    void onPlayerQuit(final PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-        if (manager.exit(player)) {
-            plugin.getLogger().info("Account " + player.getName() + " logged out.");
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    @SuppressWarnings("unused")
-    void onPlayerKick(final PlayerKickEvent event) {
-        Player player = event.getPlayer();
-        if (manager.exit(player)) {
-            plugin.getLogger().info("Account " + player.getName() + " logged out.");
-        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     @SuppressWarnings("unused")
     void onCommand(final PlayerCommandPreprocessEvent event) {
-        Player player =  event.getPlayer();
+        Player player = event.getPlayer();
         String command = event.getMessage().substring(1);
         String rootCommand = command.split(" ")[0];
         if (plugin.getCommand(rootCommand) != null && !plugin.getCommand(rootCommand).equals(plugin.getCommand("mongoauth"))) {

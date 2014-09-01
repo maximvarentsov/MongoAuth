@@ -8,35 +8,26 @@ import java.io.IOException;
 
 public final class MongoAuth extends JavaPlugin {
 
-    AuthManager authManager;
-    Config config;
-    static MongoAuth intstance;
+    private AuthManager authManager;
+    private Config config;
+    public final String channel = "mongoauth";
 
     @Override
 	public void onEnable() {
         saveDefaultConfig();
-
         config = new Config(super.getConfig());
-
         try {
-
             authManager = new AuthManager(this);
-
             new Listeners(this);
-
             new Login(this);
             new Logout(this);
             new ChangePassword(this);
             new Register(this);
             new Unregister(this);
-            //new Mongoauth(this);
-
         } catch (IOException ex) {
             new EmergencyListeners(this);
             getLogger().severe("Emergency mode!");
             getLogger().severe(ex.getMessage());
-        } finally {
-            intstance = this;
         }
     }
 
@@ -53,9 +44,5 @@ public final class MongoAuth extends JavaPlugin {
 
     public AuthManager getAuthManager() {
         return authManager;
-    }
-
-    public static MongoAuth getInstance() {
-        return intstance;
     }
 }

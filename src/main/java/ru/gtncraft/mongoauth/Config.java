@@ -1,9 +1,9 @@
 package ru.gtncraft.mongoauth;
 
+import com.mongodb.ServerAddress;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.mongodb.connection.ServerAddress;
 
 import java.util.List;
 import java.util.stream.Collectors;

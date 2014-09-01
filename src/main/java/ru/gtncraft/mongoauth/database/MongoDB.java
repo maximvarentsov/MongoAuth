@@ -1,7 +1,12 @@
 package ru.gtncraft.mongoauth.database;
 
 import com.google.common.collect.ImmutableList;
-import org.mongodb.*;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.operation.Index;
+import org.mongodb.Document;
 import ru.gtncraft.mongoauth.Account;
 import ru.gtncraft.mongoauth.MongoAuth;
 
@@ -14,9 +19,9 @@ public class MongoDB implements Database {
     final MongoClient client;
 
 	public MongoDB(final MongoAuth plugin) throws IOException {
-        client = MongoClients.create(
+        client = new MongoClient(
                 plugin.getConfig().getReplicaSet(),
-                MongoClientOptions.builder().SSLEnabled(plugin.getConfig().getBoolean("database.ssl")).build()
+                MongoClientOptions.builder().sslEnabled(plugin.getConfig().getBoolean("database.ssl")).build()
         );
         MongoDatabase db = client.getDatabase(plugin.getConfig().getString("database.name"));
         players = db.getCollection(plugin.getConfig().getString("database.collection"));
@@ -43,13 +48,12 @@ public class MongoDB implements Database {
         return null;
     }
 
-    public void remove(final Account document) {
-        players.find(new Document("uuid", document.getUUID())).removeOne();
+    public void remove(final Account account) {
+        players.find(new Document("uuid", account.getUUID())).removeOne();
     }
 
-    public void save(final Account document) {
-        //players.find(new Document("uuid", document.getUUID())).upsert().updateOne(document);
-        players.insert(document);
+    public void save(final Account account) {
+        players.find(new Document("uuid", account.getUUID())).updateOne(account);
     }
 
     public long countIp(final long ip) {

@@ -1,6 +1,8 @@
 package ru.gtncraft.mongoauth.manager;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 import ru.gtncraft.mongoauth.Account;
 import ru.gtncraft.mongoauth.MongoAuth;
 import ru.gtncraft.mongoauth.database.Database;
@@ -11,41 +13,25 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-public class AuthManager {
+public class AuthManager implements PluginMessageListener {
 
-    final Sessions sessions;
-    final Locations locations;
-    final Logger log;
-    final Database db;
-    final File file;
-    final int maxPerIp;
+    private final Sessions sessions;
+    private final Logger log;
+    private final Database db;
+    private final File file;
+    private final int maxPerIp;
 
     public AuthManager(final MongoAuth plugin) throws IOException {
         this.log = plugin.getLogger();
-
         this.sessions = new Sessions();
-        this.locations = new Locations();
-
         this.file = new File(plugin.getDataFolder() + File.separator + "sessions.dat");
         this.maxPerIp = plugin.getConfig().getInt("general.maxPerIp");
-
         this.db = new MongoDB(plugin);
-
         if (plugin.getConfig().getBoolean("general.restoreSessions")) {
             sessions.load(this.file);
         }
+        Bukkit.getServer().getMessenger().registerIncomingPluginChannel(plugin, plugin.channel, this);
     }
-
-    /**
-     * Save current player location and teleport to spawn point.
-     *
-     * @param player Player
-     */
-    public void join(final Player player) {
-        locations.save(player);
-        locations.spawn(player);
-    }
-
     /**
      * Logout player.
      *
@@ -53,15 +39,11 @@ public class AuthManager {
      *
      * @return true if exit auth player else false.
      */
-    public boolean exit(final Player player) {
-        UUID uuid = player.getUniqueId();
-
+    public boolean exit(final UUID uuid) {
         if (isAuth(uuid)) {
             logout(uuid);
             return true;
         }
-
-        locations.back(player);
         return false;
     }
 
@@ -70,11 +52,6 @@ public class AuthManager {
      */
     public Account get(final UUID uuid) {
         return db.get(uuid);
-    }
-
-    @Deprecated
-    public Account get(final String name) {
-        return db.get(name);
     }
 
     /**
@@ -107,7 +84,6 @@ public class AuthManager {
      */
     public void login(final Player player) {
         sessions.add(player.getUniqueId());
-        locations.back(player);
     }
 
     /**
@@ -142,6 +118,14 @@ public class AuthManager {
             db.close();
         } catch (Exception ex) {
             log.warning(ex.getMessage());
+        }
+    }
+
+    @Override
+    public void onPluginMessageReceived(String channel, Player player, byte[] bytes) {
+        UUID uuid = UUID.fromString(new String(bytes));
+        if (exit(uuid)) {
+            log.info("Account " + player.getName() + " logged out.");
         }
     }
 }

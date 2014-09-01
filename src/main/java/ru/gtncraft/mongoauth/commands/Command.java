@@ -63,7 +63,7 @@ abstract class Command implements CommandExecutor, TabCompleter {
     }
 
     public Account getAccount(final Player player) {
-        return getManager().get(player.getName());
+        return getManager().get(player.getUniqueId());
     }
 
     public boolean isAuthorized(final Player player) {
@@ -72,10 +72,6 @@ abstract class Command implements CommandExecutor, TabCompleter {
 
     public boolean logout(final Player player) {
         return getManager().logout(player.getUniqueId());
-    }
-
-    public Player getPlayer(String name) {
-        return Bukkit.getPlayer(name.toLowerCase());
     }
 
     public abstract Message execute(Player player, String command, String[] args);

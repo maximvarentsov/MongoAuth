@@ -6,9 +6,8 @@ import ru.gtncraft.mongoauth.Messages;
 import ru.gtncraft.mongoauth.MongoAuth;
 
 public class AuthMessage implements Runnable {
-
-    final MongoAuth plugin;
-    final Player player;
+    private final MongoAuth plugin;
+    private final Player player;
 
     public AuthMessage(final MongoAuth plugin, final Player player) {
         this.plugin = plugin;
@@ -18,9 +17,7 @@ public class AuthMessage implements Runnable {
     @Override
     public void run() {
         if (player != null) {
-
-            Account account = plugin.getAuthManager().get(player.getName());
-
+            Account account = plugin.getAuthManager().get(player.getUniqueId());
             if (account == null) {
                 player.sendMessage(plugin.getConfig().getMessage(Messages.command_register_hint));
             } else {
