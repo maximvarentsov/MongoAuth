@@ -14,28 +14,26 @@ public class Unregister extends Command {
         super(plugin);
         PluginCommand pluginCommand = plugin.getCommand("unregister");
         pluginCommand.setExecutor(this);
-        pluginCommand.setPermissionMessage(getPlugin().getConfig().getMessage(Messages.error_command_permission));
 	}
 
     @Override
-    public Message execute(Player player, String command, String[] args) {
-
+    public String execute(Player player, String command, String[] args) {
         Account account = getAccount(player);
 
         if (account == null) {
-            return new Message(Messages.command_register_hint);
+            return Messages.get(Message.command_register_hint);
         }
 
         if (!isAuthorized(player)) {
-            return new Message(Messages.command_login_hint);
+            return Messages.get(Message.command_login_hint);
         }
 
         if (args.length < 1) {
-            return new Message(Messages.error_input_password);
+            return Messages.get(Message.error_input_password);
         }
 
         if (!account.getPassword().equals(encryptPassword(args[0]))) {
-            return new Message(Messages.error_input_password_missmach);
+            return Messages.get(Message.error_input_password_missmach);
         }
 
         getManager().unregister(account);
@@ -49,6 +47,6 @@ public class Unregister extends Command {
         player.setExp(0);
 
         getLogger().info("Account " + account + " unregistered.");
-        return new Message(Messages.success_account_delete);
+        return Messages.get(Message.success_account_delete);
     }
 }

@@ -3,6 +3,7 @@ package ru.gtncraft.mongoauth.database;
 import com.google.common.collect.ImmutableList;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.operation.Index;
@@ -11,16 +12,21 @@ import ru.gtncraft.mongoauth.Account;
 import ru.gtncraft.mongoauth.MongoAuth;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class MongoDB implements Database {
-
-    final MongoCollection players;
-    final MongoClient client;
+    private final MongoCollection players;
+    private final MongoClient client;
 
 	public MongoDB(final MongoAuth plugin) throws IOException {
+        List<ServerAddress> hosts = new ArrayList<>();
+        for (String host: plugin.getConfig().getStringList("database.hosts")) {
+            hosts.add(new ServerAddress(host));
+        }
         client = new MongoClient(
-                plugin.getConfig().getReplicaSet(),
+                hosts,
                 MongoClientOptions.builder().sslEnabled(plugin.getConfig().getBoolean("database.ssl")).build()
         );
         MongoDatabase db = client.getDatabase(plugin.getConfig().getString("database.name"));

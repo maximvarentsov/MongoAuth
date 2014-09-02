@@ -15,7 +15,6 @@ import ru.gtncraft.mongoauth.tasks.AuthMessage;
 import java.util.regex.Pattern;
 
 class Listeners implements Listener {
-
 	private final MongoAuth plugin;
     private final AuthManager manager;
     private final Pattern pattern;
@@ -32,7 +31,7 @@ class Listeners implements Listener {
     void onPlayerPreLogin(final AsyncPlayerPreLoginEvent event) {
         if (!pattern.matcher(event.getName()).matches()) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage(plugin.getConfig().getMessage(Messages.error_input_invalid_login));
+            event.setKickMessage(Messages.get(Message.error_input_invalid_login));
         }
     }
 
@@ -41,7 +40,9 @@ class Listeners implements Listener {
     void onPlayerJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
         player.teleport(player.getWorld().getSpawnLocation());
-        Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
+        if (!manager.isAuth(player.getUniqueId())) {
+            Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
+        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)

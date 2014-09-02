@@ -12,37 +12,35 @@ public class Login extends Command {
         super(plugin);
         PluginCommand pluginCommand = plugin.getCommand("login");
         pluginCommand.setExecutor(this);
-        pluginCommand.setPermissionMessage(getPlugin().getConfig().getMessage(Messages.error_command_permission));
 	}
 
     @Override
-    public Message execute(Player player, String command, String[] args) {
-
+    public String execute(Player player, String command, String[] args) {
         if (args.length < 1) {
-            return new Message(Messages.error_input_password);
+            return Messages.get(Message.error_input_password);
         }
 
         Account account = getAccount(player);
 
         if (account == null) {
-            return new Message(Messages.command_register_hint);
+            return Messages.get(Message.command_register_hint);
         }
 
         if (account.isBlocked()) {
-            return new Message(Messages.error_account_is_block);
+            return Messages.get(Message.error_account_is_block);
         }
 
         if (isAuthorized(player)) {
-            return new Message(Messages.error_account_is_auth);
+            return Messages.get(Message.error_account_is_auth);
         }
 
         if (!account.getPassword().equals(encryptPassword(args[0]))) {
-            return new Message(Messages.error_input_password_missmach);
+            return Messages.get(Message.error_input_password_missmach);
         }
 
         getManager().login(player);
         getLogger().info("Player " + player.getName() + " logged in.");
 
-        return new Message(Messages.success_account_login);
+        return Messages.get(Message.success_account_login);
     }
 }

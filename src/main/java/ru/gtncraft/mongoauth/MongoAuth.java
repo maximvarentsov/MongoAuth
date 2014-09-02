@@ -9,13 +9,12 @@ import java.io.IOException;
 public final class MongoAuth extends JavaPlugin {
 
     private AuthManager authManager;
-    private Config config;
     public final String channel = "mongoauth";
 
     @Override
 	public void onEnable() {
         saveDefaultConfig();
-        config = new Config(super.getConfig());
+        Messages.init(getConfig().getConfigurationSection("messages"));
         try {
             authManager = new AuthManager(this);
             new Listeners(this);
@@ -35,11 +34,6 @@ public final class MongoAuth extends JavaPlugin {
     public void onDisable() {
         authManager.disable();
         getServer().getScheduler().cancelTasks(this);
-    }
-
-    @Override
-    public Config getConfig() {
-        return config;
     }
 
     public AuthManager getAuthManager() {

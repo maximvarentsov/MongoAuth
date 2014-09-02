@@ -21,7 +21,6 @@ messages:
    error_input_playername: "&4Не указано имя игрока."
    error_input_password_missmach: "&4Неправильный пароль."
    error_input_invalid_login: "&4Имя игрока содержит неправильные символы."
-   error_command_permission: "&4У вас недостаточно прав для выполнения этой комманды."
    error_command_sender: "&4Эта комманда работает только для игроков."
    error_emergency: "$4Аварийная ситуация, мы уже работаем над её исправлением."
    success_account_create: "&2Регистрация завершена."

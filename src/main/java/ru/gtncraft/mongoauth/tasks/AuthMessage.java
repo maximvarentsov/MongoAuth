@@ -2,6 +2,7 @@ package ru.gtncraft.mongoauth.tasks;
 
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.Account;
+import ru.gtncraft.mongoauth.Message;
 import ru.gtncraft.mongoauth.Messages;
 import ru.gtncraft.mongoauth.MongoAuth;
 
@@ -19,9 +20,9 @@ public class AuthMessage implements Runnable {
         if (player != null) {
             Account account = plugin.getAuthManager().get(player.getUniqueId());
             if (account == null) {
-                player.sendMessage(plugin.getConfig().getMessage(Messages.command_register_hint));
+                player.sendMessage(Messages.get(Message.command_register_hint));
             } else {
-                player.sendMessage(plugin.getConfig().getMessage(Messages.command_login_hint));
+                player.sendMessage(Messages.get(Message.command_login_hint));
             }
         }
     }

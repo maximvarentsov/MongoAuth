@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.Account;
-import ru.gtncraft.mongoauth.Config;
+import ru.gtncraft.mongoauth.Message;
 import ru.gtncraft.mongoauth.Messages;
 import ru.gtncraft.mongoauth.MongoAuth;
 import ru.gtncraft.mongoauth.manager.AuthManager;
@@ -19,25 +19,6 @@ abstract class Command implements CommandExecutor, TabCompleter {
 
     private MongoAuth plugin;
 
-    class Message {
-
-        final Messages message;
-        final String[] args;
-
-        public Message(Messages messages, String... args) {
-            this.message = messages;
-            this.args = args;
-        }
-
-        public Messages getMessage() {
-            return message;
-        }
-
-        public String[] getArgs() {
-            return args;
-        }
-    }
-
     public Command(MongoAuth plugin) {
         this.plugin = plugin;
     }
@@ -48,14 +29,6 @@ abstract class Command implements CommandExecutor, TabCompleter {
 
     public Logger getLogger() {
         return getPlugin().getLogger();
-    }
-
-    public Config getConfig() {
-        return getPlugin().getConfig();
-    }
-
-    public String getMessage(Messages key, String...args) {
-        return getConfig().getMessage(key, args);
     }
 
     public AuthManager getManager() {
@@ -74,19 +47,18 @@ abstract class Command implements CommandExecutor, TabCompleter {
         return getManager().logout(player.getUniqueId());
     }
 
-    public abstract Message execute(Player player, String command, String[] args);
+    public abstract String execute(Player player, String command, String[] args);
 
     @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String s, String[] strings) {
-
         if (!(sender instanceof Player)) {
-            sender.sendMessage(getMessage(Messages.error_command_sender));
+            sender.sendMessage(Messages.get(Message.error_command_sender));
             return false;
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            Message message = execute((Player) sender, s, strings);
-            sender.sendMessage(getMessage(message.getMessage(), message.getArgs()));
+            String message = execute((Player) sender, s, strings);
+            sender.sendMessage(message);
         });
 
         return true;

@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.List;
 
 public class Strings {
-
     public static List<String> partial(String token, Collection<String> from) {
         return StringUtil.copyPartialMatches(token, from, new ArrayList<>(from.size()));
     }
@@ -42,5 +41,4 @@ public class Strings {
         }
         return num;
     }
-
 }

@@ -10,7 +10,6 @@ import java.util.UUID;
 import static ru.gtncraft.mongoauth.util.Strings.dot2LongIP;
 
 public class Account implements ConvertibleToDocument {
-
     private final UUID uuid;
     private final long ip;
 
