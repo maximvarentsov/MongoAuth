@@ -123,7 +123,9 @@ public class AuthManager implements PluginMessageListener {
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] bytes) {
+        System.out.println(channel);
         UUID uuid = UUID.fromString(new String(bytes));
+        System.out.println("uuid" + uuid);
         if (exit(uuid)) {
             log.info("Account " + player.getName() + " logged out.");
         }

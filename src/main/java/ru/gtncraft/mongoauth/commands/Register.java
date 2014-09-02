@@ -4,6 +4,8 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
 
+import static ru.gtncraft.mongoauth.util.Strings.encryptPassword;
+
 public class Register extends Command {
 
 	public Register(final MongoAuth plugin) {
@@ -34,7 +36,7 @@ public class Register extends Command {
             return new Message(Messages.error_account_register_limit);
         }
 
-        account.setPassword(args[0]);
+        account.setPassword(encryptPassword(args[0]));
 
         getManager().save(account);
         getManager().login(player);

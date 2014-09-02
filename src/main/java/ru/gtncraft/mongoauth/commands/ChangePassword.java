@@ -6,6 +6,8 @@ import ru.gtncraft.mongoauth.Account;
 import ru.gtncraft.mongoauth.Messages;
 import ru.gtncraft.mongoauth.MongoAuth;
 
+import static ru.gtncraft.mongoauth.util.Strings.encryptPassword;
+
 public class ChangePassword extends Command {
 
 	public ChangePassword(final MongoAuth plugin) {
@@ -36,15 +38,15 @@ public class ChangePassword extends Command {
             return new Message(Messages.command_login_hint);
         }
 
-        String currentPassword = args[0];
+        String currentPassword = encryptPassword(args[0]);
         String newPassword = args[1];
 
-        if (!account.checkPassword(currentPassword)) {
-            return new Message(Messages.error_input_password_missmach);
+        if (currentPassword.equals(args[0])) {
+            return new Message(Messages.error_input_passwords_equals);
         }
 
-        if (currentPassword.equals(newPassword)) {
-            return new Message(Messages.error_input_passwords_equals);
+        if (!account.getPassword().equals(currentPassword)) {
+            return new Message(Messages.error_input_password_missmach);
         }
 
         account.setPassword(newPassword);

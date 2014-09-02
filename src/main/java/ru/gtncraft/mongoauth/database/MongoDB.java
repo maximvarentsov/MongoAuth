@@ -26,7 +26,7 @@ public class MongoDB implements Database {
         MongoDatabase db = client.getDatabase(plugin.getConfig().getString("database.name"));
         players = db.getCollection(plugin.getConfig().getString("database.collection"));
         players.tools().createIndexes(ImmutableList.of(
-            Index.builder().addKey("playername").unique().build(),
+            Index.builder().addKey("uuid").unique().build(),
             Index.builder().addKey("ip").build()
         ));
 	}
@@ -39,21 +39,12 @@ public class MongoDB implements Database {
         return null;
     }
 
-    @Deprecated
-    public Account get(final String player) {
-        Object obj = players.find(new Document("playername", player.toLowerCase())).getOne();
-        if (obj != null) {
-            return new Account((Document) obj);
-        }
-        return null;
-    }
-
     public void remove(final Account account) {
-        players.find(new Document("uuid", account.getUUID())).removeOne();
+        players.find(new Document("uuid", account.getUUID().toString())).removeOne();
     }
 
     public void save(final Account account) {
-        players.find(new Document("uuid", account.getUUID())).updateOne(account);
+        players.insert(account.toDocument());
     }
 
     public long countIp(final long ip) {

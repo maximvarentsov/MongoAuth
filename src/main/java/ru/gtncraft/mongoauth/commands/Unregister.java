@@ -6,6 +6,8 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
 
+import static ru.gtncraft.mongoauth.util.Strings.encryptPassword;
+
 public class Unregister extends Command {
 
 	public Unregister(final MongoAuth plugin) {
@@ -32,7 +34,7 @@ public class Unregister extends Command {
             return new Message(Messages.error_input_password);
         }
 
-        if (!account.checkPassword(args[0])) {
+        if (!account.getPassword().equals(encryptPassword(args[0]))) {
             return new Message(Messages.error_input_password_missmach);
         }
 
