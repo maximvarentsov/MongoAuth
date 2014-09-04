@@ -25,9 +25,9 @@ public class AuthManager implements PluginMessageListener {
         this.log = plugin.getLogger();
         this.sessions = new Sessions();
         this.file = new File(plugin.getDataFolder() + File.separator + "sessions.dat");
-        this.maxPerIp = plugin.getConfig().getInt("general.maxPerIp");
+        this.maxPerIp = plugin.getConfig().getInt("general.maxPerIp", 1);
         this.db = new MongoDB(plugin);
-        if (plugin.getConfig().getBoolean("general.restoreSessions")) {
+        if (plugin.getConfig().getBoolean("general.restoreSessions", false)) {
             sessions.load(this.file);
         }
         Bukkit.getServer().getMessenger().registerIncomingPluginChannel(plugin, plugin.channel, this);

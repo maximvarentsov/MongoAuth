@@ -27,10 +27,10 @@ public class MongoDB implements Database {
         }
         client = new MongoClient(
                 hosts,
-                MongoClientOptions.builder().sslEnabled(plugin.getConfig().getBoolean("database.ssl")).build()
+                MongoClientOptions.builder().sslEnabled(plugin.getConfig().getBoolean("database.ssl", false)).build()
         );
-        MongoDatabase db = client.getDatabase(plugin.getConfig().getString("database.name"));
-        players = db.getCollection(plugin.getConfig().getString("database.collection"));
+        MongoDatabase db = client.getDatabase(plugin.getConfig().getString("database.name", "minecraft"));
+        players = db.getCollection(plugin.getConfig().getString("database.collection", "players"));
         players.tools().createIndexes(ImmutableList.of(
             Index.builder().addKey("uuid").unique().build(),
             Index.builder().addKey("ip").build()
