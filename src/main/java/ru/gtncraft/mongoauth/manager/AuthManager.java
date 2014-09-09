@@ -1,6 +1,7 @@
 package ru.gtncraft.mongoauth.manager;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import ru.gtncraft.mongoauth.Account;
@@ -122,8 +123,9 @@ public class AuthManager implements PluginMessageListener {
     }
 
     @Override
-    public void onPluginMessageReceived(String channel, Player player, byte[] bytes) {
+    public void onPluginMessageReceived(String channel, Player p, byte[] bytes) {
         UUID uuid = UUID.fromString(new String(bytes));
+        OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
         if (exit(uuid)) {
             log.info("Account " + player.getName() + " logged out.");
         }
