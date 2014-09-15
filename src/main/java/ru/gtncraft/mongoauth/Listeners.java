@@ -19,6 +19,7 @@ class Listeners implements Listener {
     private final AuthManager manager;
     private final Pattern pattern;
     private final boolean spawn;
+    private final boolean silentQuitJoin;
 
 	public Listeners(final MongoAuth instance) {
         Bukkit.getServer().getPluginManager().registerEvents(this, instance);
@@ -26,6 +27,7 @@ class Listeners implements Listener {
         manager = instance.getAuthManager();
         pattern = Pattern.compile(plugin.getConfig().getString("general.playernamePattern"));
         spawn = plugin.getConfig().getBoolean("spawn", true);
+        silentQuitJoin = plugin.getConfig().getBoolean("silentQuitJoin", true);
 	}
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -47,6 +49,17 @@ class Listeners implements Listener {
         }
         if (spawn) {
             player.teleport(event.getPlayer().getWorld().getSpawnLocation());
+        }
+        if (silentQuitJoin) {
+            event.setJoinMessage(null);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    @SuppressWarnings("unused")
+    void onPlayerQuit(final PlayerQuitEvent event) {
+        if (silentQuitJoin) {
+            event.setQuitMessage(null);
         }
     }
 
