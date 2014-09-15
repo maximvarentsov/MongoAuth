@@ -8,6 +8,7 @@ general:
     restoreSessions: true
     playernamePattern: ^[a-zA-Z0-9_]+$
     maxPerIp: 1
+    spawn: true
 messages:
    error_account_is_block: "&4Аккаунт заблокирован."
    error_account_is_auth: "&4Вы уже авторизованы."

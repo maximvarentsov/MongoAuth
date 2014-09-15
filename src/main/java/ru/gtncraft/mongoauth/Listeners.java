@@ -18,12 +18,14 @@ class Listeners implements Listener {
 	private final MongoAuth plugin;
     private final AuthManager manager;
     private final Pattern pattern;
+    private final boolean spawn;
 
 	public Listeners(final MongoAuth instance) {
         Bukkit.getServer().getPluginManager().registerEvents(this, instance);
         plugin = instance;
         manager = instance.getAuthManager();
         pattern = Pattern.compile(plugin.getConfig().getString("general.playernamePattern"));
+        spawn = plugin.getConfig().getBoolean("spawn", true);
 	}
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -42,6 +44,9 @@ class Listeners implements Listener {
         player.teleport(player.getWorld().getSpawnLocation());
         if (!manager.isAuth(player.getUniqueId())) {
             Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
+        }
+        if (spawn) {
+            player.teleport(event.getPlayer().getWorld().getSpawnLocation());
         }
     }
 
