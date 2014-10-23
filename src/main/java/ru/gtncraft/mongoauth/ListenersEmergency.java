@@ -9,10 +9,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 
-class EmergencyListeners implements Listener {
-    final String message;
+class ListenersEmergency implements Listener {
+    private final String message;
 
-    public EmergencyListeners(final MongoAuth plugin) {
+    public ListenersEmergency(final MongoAuth plugin) {
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
         message = Messages.get(Message.error_emergency);
     }

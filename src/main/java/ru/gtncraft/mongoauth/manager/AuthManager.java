@@ -6,8 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import ru.gtncraft.mongoauth.Account;
 import ru.gtncraft.mongoauth.MongoAuth;
-import ru.gtncraft.mongoauth.database.Database;
-import ru.gtncraft.mongoauth.database.MongoDB;
+import ru.gtncraft.mongoauth.Database;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +26,7 @@ public class AuthManager implements PluginMessageListener {
         this.sessions = new Sessions();
         this.file = new File(plugin.getDataFolder() + File.separator + "sessions.dat");
         this.maxPerIp = plugin.getConfig().getInt("general.maxPerIp", 1);
-        this.db = new MongoDB(plugin);
+        this.db = new Database(plugin);
         if (plugin.getConfig().getBoolean("general.restoreSessions", false)) {
             sessions.load(this.file);
         }
@@ -52,7 +51,7 @@ public class AuthManager implements PluginMessageListener {
      * Get Player Account.
      */
     public Account get(final UUID uuid) {
-        return db.get(uuid);
+        return db.findOne(uuid);
     }
 
     /**
@@ -100,7 +99,7 @@ public class AuthManager implements PluginMessageListener {
      *
      */
     public boolean registrationLimitMax(final Account account) {
-        long count = db.countIp(account.getIP()) + 1;
+        long count = db.countIp(account.getIp()) + 1;
         return count > maxPerIp;
     }
 

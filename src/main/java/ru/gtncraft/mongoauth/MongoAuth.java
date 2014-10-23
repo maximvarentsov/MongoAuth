@@ -4,8 +4,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import ru.gtncraft.mongoauth.commands.*;
 import ru.gtncraft.mongoauth.manager.AuthManager;
 
-import java.io.IOException;
-
 public final class MongoAuth extends JavaPlugin {
 
     private AuthManager authManager;
@@ -23,10 +21,9 @@ public final class MongoAuth extends JavaPlugin {
             new ChangePassword(this);
             new Register(this);
             new Unregister(this);
-        } catch (IOException ex) {
-            new EmergencyListeners(this);
-            getLogger().severe("Emergency mode!");
-            getLogger().severe(ex.getMessage());
+        } catch (Exception ex) {
+            new ListenersEmergency(this);
+            ex.printStackTrace();
         }
     }
 

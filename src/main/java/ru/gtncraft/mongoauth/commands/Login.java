@@ -26,7 +26,7 @@ public class Login extends Command {
             return Messages.get(Message.command_register_hint);
         }
 
-        if (account.isBlocked()) {
+        if (!account.isAllowed()) {
             return Messages.get(Message.error_account_is_block);
         }
 
