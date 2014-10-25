@@ -11,11 +11,11 @@ import org.bson.codecs.DocumentCodecProvider;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.configuration.RootCodecRegistry;
-import org.bukkit.entity.Player;
-import ru.gtncraft.mongoauth.commands.Command;
+import ru.gtncraft.mongoauth.Security;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,7 +55,9 @@ public class Database implements AutoCloseable {
         players.createIndex(new Document("ip", 1));
 
         logs = client.getDatabase(database, options).getCollection("logs", Log.class);
+        logs.createIndex(new Document("uuid", 1));
         logs.createIndex(new Document("ip", 1));
+        logs.createIndex(new Document("status", 1));
     }
 
     public Account getAccount(UUID id) {
@@ -76,6 +78,21 @@ public class Database implements AutoCloseable {
 
     public void log(UUID id, long ip, Log.Status status) {
         logs.insertOne(new Log(id, ip, status));
+    }
+
+    public long countAttempts(UUID id) {
+        Document query = new Document("uuid", id.toString());
+        query.append("status", Log.Status.BAD_LOGIN.getIntRepresentation());
+
+        Document between = new Document();
+        Date gte = new Date();
+        gte.setMinutes(gte.getMinutes() - Security.minutes);
+        between.append("$gte", gte);
+        between.append("$lte", new Date());
+
+        query.append("date", between);
+
+        return logs.count(query);
     }
 
     @Override

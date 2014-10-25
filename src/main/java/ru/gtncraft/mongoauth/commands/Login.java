@@ -32,14 +32,19 @@ public class Login extends Command {
             return Message.error_account_is_auth;
         }
 
+        if (getManager().countAttempts(player) > Security.attempts) {
+            return Message.error_password_brutforce;
+        }
+
         if (!account.getPassword().equals(encryptPassword(args[0]))) {
+            getManager().log(player, Log.Status.BAD_LOGIN);
             return Message.error_input_password_missmach;
         }
 
         getManager().login(player);
         getLogger().info("Player " + player.getName() + " logged in.");
 
-        getManager().log(player, Log.Status.DISCONNECT);
+        getManager().log(player, Log.Status.LOGIN);
 
         return Message.success_account_login;
     }

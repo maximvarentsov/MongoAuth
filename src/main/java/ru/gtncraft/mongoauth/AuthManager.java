@@ -122,6 +122,10 @@ public class AuthManager implements PluginMessageListener {
         db.log(id, ip, status);
     }
 
+    public long countAttempts(Player player) {
+        return db.countAttempts(player.getUniqueId());
+    }
+
     @Override
     public void onPluginMessageReceived(String channel, Player p, byte[] bytes) {
         UUID uuid = UUID.fromString(new String(bytes));

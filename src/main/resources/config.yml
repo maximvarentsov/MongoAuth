@@ -5,3 +5,7 @@ silentQuitJoin: true
 database:
     host: localhost:27017
     name: minecraft
+
+security:
+    attempts: 3
+    minutes: 10

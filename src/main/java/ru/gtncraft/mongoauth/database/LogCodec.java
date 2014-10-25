@@ -8,17 +8,18 @@ import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.bson.types.ObjectId;
 
+import java.util.Date;
 import java.util.UUID;
 
 class LogCodec implements CollectibleCodec<Log> {
     @Override
     public boolean documentHasId(final Log value) {
-        return true;
+        return false;
     }
 
     @Override
     public BsonObjectId getDocumentId(final Log value) {
-        return new BsonObjectId(value.getId());
+        return null;
     }
 
     @Override
@@ -28,7 +29,7 @@ class LogCodec implements CollectibleCodec<Log> {
     @Override
     public void encode(final BsonWriter writer, final Log value, final EncoderContext encoderContext) {
         writer.writeStartDocument();
-        writer.writeObjectId("id", value.getId());
+        writer.writeDateTime("date", value.getDate().getTime());
         writer.writeString("uuid", value.getPlayer().toString());
         writer.writeInt64("ip", value.getIp());
         writer.writeInt32("status", value.getStatus().getIntRepresentation());
@@ -38,12 +39,12 @@ class LogCodec implements CollectibleCodec<Log> {
     @Override
     public Log decode(final BsonReader reader, final DecoderContext decoderContext) {
         reader.readStartDocument();
-        ObjectId id = reader.readObjectId("id");
+        Date date = new Date(reader.readDateTime("date"));
         UUID uuid = UUID.fromString(reader.readString("uuid"));
         long ip = reader.readInt64();
         Log.Status status = Log.Status.fromInt(reader.readInt32("status"));
         reader.readEndDocument();
-        return new Log(id, uuid, ip, status);
+        return new Log(date, uuid, ip, status);
     }
 
     @Override

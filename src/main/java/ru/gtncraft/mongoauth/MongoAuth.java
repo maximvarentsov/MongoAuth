@@ -15,7 +15,7 @@ public final class MongoAuth extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     @SuppressWarnings("unused")
-    void onPreLogin(final AsyncPlayerPreLoginEvent event) {
+    public void onPreLogin(final AsyncPlayerPreLoginEvent event) {
         if (!pattern.matcher(event.getName()).matches()) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             event.setKickMessage(Translations.get(Message.error_input_invalid_login));
@@ -26,6 +26,10 @@ public final class MongoAuth extends JavaPlugin implements Listener {
 	public void onEnable() {
         saveDefaultConfig();
         getServer().getPluginManager().registerEvents(this, this);
+
+        Security.attempts = getConfig().getInt("security.attempts", 3);
+        Security.minutes = getConfig().getInt("security.minutes", 10);
+
         try {
             authManager = new AuthManager(this);
             new Listeners(this);
