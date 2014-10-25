@@ -2,7 +2,6 @@ package ru.gtncraft.mongoauth;
 
 import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoDatabaseOptions;
 import com.mongodb.client.model.CreateIndexOptions;
 
@@ -14,25 +13,17 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.configuration.RootCodecRegistry;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 class Database implements AutoCloseable {
+    private final static List<CodecProvider> codecs;
     private final MongoCollection<Account> players;
     private final MongoClient client;
 
-	public Database(final MongoAuth plugin) throws IOException {
-        List<ServerAddress> hosts = new ArrayList<ServerAddress>();
-        for (String host: plugin.getConfig().getStringList("database.hosts")) {
-            hosts.add(new ServerAddress(host));
-        }
-        client = new MongoClient(
-                hosts,
-                MongoClientOptions.builder().sslEnabled(plugin.getConfig().getBoolean("database.ssl", false)).build()
-        );
-        List<CodecProvider> codecs = Arrays.asList(new DocumentCodecProvider(),
+    static {
+        codecs = Arrays.asList(new DocumentCodecProvider(),
                 new CodecProvider() {
                     @Override
                     @SuppressWarnings("unchecked")
@@ -44,13 +35,18 @@ class Database implements AutoCloseable {
                     }
                 }
         );
-        MongoDatabaseOptions options = MongoDatabaseOptions.builder().codecRegistry(new RootCodecRegistry(codecs)).
-                readPreference(ReadPreference.nearest()).writeConcern(WriteConcern.SAFE).build();
-        MongoDatabase db = client.getDatabase(plugin.getConfig().getString("database.name", "minecraft"), options);
-        players = db.getCollection(plugin.getConfig().getString("database.collection", "players"), Account.class);
-        players.createIndex(new Document("ip", 1));
+    }
+
+	public Database(String host, String database, String collection) throws IOException {
+        MongoDatabaseOptions options = MongoDatabaseOptions.builder().
+                                       codecRegistry(new RootCodecRegistry(codecs)).
+                                       readPreference(ReadPreference.nearest()).
+                                       writeConcern(WriteConcern.SAFE).build();
+        client = new MongoClient(host);
+        players = client.getDatabase(database, options).getCollection(collection, Account.class);
         players.createIndex(new Document("uuid", new CreateIndexOptions().unique(true)));
-	}
+        players.createIndex(new Document("ip", 1));
+    }
 
     public Account findOne(UUID id) {
         return players.find(new Document("uuid", id.toString())).first();
@@ -60,7 +56,7 @@ class Database implements AutoCloseable {
         return players.findOneAndDelete(new Document("uuid", account.getId().toString()));
     }
 
-    public void save(final Account account) {
+    public void save(Account account) {
         players.insertOne(account);
     }
 

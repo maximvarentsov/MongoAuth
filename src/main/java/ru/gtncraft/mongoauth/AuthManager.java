@@ -27,7 +27,12 @@ public class AuthManager implements PluginMessageListener {
         log = plugin.getLogger();
         file = new File(plugin.getDataFolder(), "sessions.dat");
         maxPerIp = plugin.getConfig().getInt("general.maxPerIp", 1);
-        db = new Database(plugin);
+
+        String host = plugin.getConfig().getString("database.host", "127.0.0.1");
+        String database = plugin.getConfig().getString("database.collection", "players");
+        String collection = plugin.getConfig().getString("database.name", "minecraft");
+        db = new Database(host, database, collection);
+
         if (plugin.getConfig().getBoolean("general.restoreSessions", false)) {
             load(file);
         }
