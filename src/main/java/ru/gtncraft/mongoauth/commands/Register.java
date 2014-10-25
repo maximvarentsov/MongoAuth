@@ -1,6 +1,5 @@
 package ru.gtncraft.mongoauth.commands;
 
-import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
 
@@ -9,8 +8,7 @@ import java.util.UUID;
 public class Register extends Command {
 	public Register(final MongoAuth plugin) {
         super(plugin);
-        PluginCommand pluginCommand = plugin.getCommand("register");
-        pluginCommand.setExecutor(this);
+        plugin.getCommand("register").setExecutor(this);
 	}
 
     @Override

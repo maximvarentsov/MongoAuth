@@ -1,6 +1,5 @@
 package ru.gtncraft.mongoauth.commands;
 
-import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.Message;
 import ru.gtncraft.mongoauth.MongoAuth;
@@ -9,8 +8,7 @@ public class Logout extends Command {
 
 	public Logout(final MongoAuth plugin) {
         super(plugin);
-        PluginCommand pluginCommand = plugin.getCommand("logout");
-        pluginCommand.setExecutor(this);
+        plugin.getCommand("logout").setExecutor(this);
     }
 
     @Override

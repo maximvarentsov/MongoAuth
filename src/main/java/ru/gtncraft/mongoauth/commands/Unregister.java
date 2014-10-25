@@ -2,7 +2,6 @@ package ru.gtncraft.mongoauth.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
 
@@ -10,8 +9,7 @@ public class Unregister extends Command {
 
 	public Unregister(final MongoAuth plugin) {
         super(plugin);
-        PluginCommand pluginCommand = plugin.getCommand("unregister");
-        pluginCommand.setExecutor(this);
+        plugin.getCommand("unregister").setExecutor(this);
 	}
 
     @Override

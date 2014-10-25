@@ -1,6 +1,5 @@
 package ru.gtncraft.mongoauth.commands;
 
-import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.Account;
 import ru.gtncraft.mongoauth.Message;
@@ -10,8 +9,7 @@ public class ChangePassword extends Command {
 
 	public ChangePassword(final MongoAuth plugin) {
         super(plugin);
-        PluginCommand pluginCommand = plugin.getCommand("changepassword");
-        pluginCommand.setExecutor(this);
+        plugin.getCommand("changepassword").setExecutor(this);
 	}
 
     @Override

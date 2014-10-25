@@ -1,6 +1,5 @@
 package ru.gtncraft.mongoauth.commands;
 
-import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
 
@@ -8,8 +7,7 @@ public class Login extends Command {
 
     public Login(final MongoAuth plugin) {
         super(plugin);
-        PluginCommand pluginCommand = plugin.getCommand("login");
-        pluginCommand.setExecutor(this);
+        plugin.getCommand("login").setExecutor(this);
 	}
 
     @Override

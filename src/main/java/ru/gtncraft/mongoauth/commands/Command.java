@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 abstract class Command implements CommandExecutor, TabCompleter {
-
     private MongoAuth plugin;
 
     public Command(MongoAuth plugin) {
