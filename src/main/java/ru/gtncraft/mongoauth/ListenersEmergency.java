@@ -27,7 +27,7 @@ class ListenersEmergency implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
-    public void onPlayerMove(final PlayerMoveEvent event) {
+    public void onMove(final PlayerMoveEvent event) {
         Player player = event.getPlayer();
         player.sendMessage(message);
         event.setCancelled(true);
@@ -65,13 +65,13 @@ class ListenersEmergency implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
-    public void onPlayerPickupItem(final PlayerPickupItemEvent event) {
+    public void onPickupItem(final PlayerPickupItemEvent event) {
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
-    public void onPlayerBucketEmpty(final PlayerBucketEmptyEvent event) {
+    public void onBucketEmpty(final PlayerBucketEmptyEvent event) {
         event.setCancelled(true);
     }
 }
