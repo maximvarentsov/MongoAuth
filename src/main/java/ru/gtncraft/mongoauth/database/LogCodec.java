@@ -6,7 +6,6 @@ import org.bson.BsonWriter;
 import org.bson.codecs.CollectibleCodec;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
-import org.bson.types.ObjectId;
 
 import java.util.Date;
 import java.util.UUID;

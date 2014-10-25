@@ -2,7 +2,9 @@ package ru.gtncraft.mongoauth.database;
 
 import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoDatabaseOptions;
+import com.mongodb.client.model.CreateCollectionOptions;
 import com.mongodb.client.model.CreateIndexOptions;
 
 import org.bson.Document;
@@ -49,12 +51,14 @@ public class Database implements AutoCloseable {
                                        readPreference(ReadPreference.nearest()).
                                        writeConcern(WriteConcern.SAFE).build();
         client = new MongoClient(host);
+        MongoDatabase db = client.getDatabase(database, options);
 
-        players = client.getDatabase(database, options).getCollection("players", Account.class);
+        players = db.getCollection("players", Account.class);
         players.createIndex(new Document("uuid", new CreateIndexOptions().unique(true)));
         players.createIndex(new Document("ip", 1));
 
-        logs = client.getDatabase(database, options).getCollection("logs", Log.class);
+        db.createCollection("logs", new CreateCollectionOptions().capped(true).maxDocuments(1000000));
+        logs = db.getCollection("logs", Log.class);
         logs.createIndex(new Document("uuid", 1));
         logs.createIndex(new Document("ip", 1));
         logs.createIndex(new Document("status", 1));

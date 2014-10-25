@@ -12,7 +12,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import ru.gtncraft.mongoauth.database.Log;
 import ru.gtncraft.mongoauth.tasks.AuthMessage;
-import java.util.regex.Pattern;
 
 class Listeners implements Listener {
 	private final MongoAuth plugin;
