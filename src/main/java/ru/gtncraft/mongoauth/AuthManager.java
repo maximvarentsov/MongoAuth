@@ -30,9 +30,7 @@ public class AuthManager implements PluginMessageListener {
         String collection = plugin.getConfig().getString("database.name", "minecraft");
         db = new Database(host, database, collection);
 
-        if (plugin.getConfig().getBoolean("restoreSessions", false)) {
-            load(file);
-        }
+        restore();
         Bukkit.getServer().getMessenger().registerIncomingPluginChannel(plugin, channel, this);
     }
     /**
@@ -108,7 +106,7 @@ public class AuthManager implements PluginMessageListener {
         } catch (Exception ignore) {
         } finally {
             try {
-                save(file);
+                save();
             } catch (IOException ex) {
                 log.warning(ex.getMessage());
             }
@@ -124,7 +122,7 @@ public class AuthManager implements PluginMessageListener {
         }
     }
 
-    private void save(final File file) throws IOException {
+    private void save() throws IOException {
         if (sessions.isEmpty()) {
             return;
         }
@@ -138,7 +136,7 @@ public class AuthManager implements PluginMessageListener {
     }
 
     @SuppressWarnings("unchecked")
-    private void load(final File file) throws IOException {
+    private void restore() throws IOException {
         if (!file.exists()) {
             return;
         }
