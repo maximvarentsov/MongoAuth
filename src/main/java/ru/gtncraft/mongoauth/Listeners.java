@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 class Listeners implements Listener {
 	private final MongoAuth plugin;
     private final AuthManager manager;
-    private final Pattern pattern;
     private final boolean spawn;
     private final boolean silentQuitJoin;
 
@@ -24,19 +23,9 @@ class Listeners implements Listener {
         Bukkit.getServer().getPluginManager().registerEvents(this, instance);
         plugin = instance;
         manager = instance.getAuthManager();
-        pattern = Pattern.compile(plugin.getConfig().getString("playernamePattern"));
         spawn = plugin.getConfig().getBoolean("spawn", true);
         silentQuitJoin = plugin.getConfig().getBoolean("silentQuitJoin", true);
 	}
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    @SuppressWarnings("unused")
-    public void onPreLogin(final AsyncPlayerPreLoginEvent event) {
-        if (!pattern.matcher(event.getName()).matches()) {
-            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage(Translations.get(Message.error_input_invalid_login));
-        }
-    }
 
     @EventHandler(priority = EventPriority.MONITOR)
     @SuppressWarnings("unused")
