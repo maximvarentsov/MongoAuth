@@ -2,7 +2,6 @@ package ru.gtncraft.mongoauth;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.gtncraft.mongoauth.commands.*;
-import ru.gtncraft.mongoauth.manager.AuthManager;
 
 public final class MongoAuth extends JavaPlugin {
     private AuthManager authManager;

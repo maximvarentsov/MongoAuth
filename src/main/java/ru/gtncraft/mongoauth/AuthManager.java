@@ -1,4 +1,4 @@
-package ru.gtncraft.mongoauth.manager;
+package ru.gtncraft.mongoauth;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -8,26 +8,27 @@ import ru.gtncraft.mongoauth.Account;
 import ru.gtncraft.mongoauth.MongoAuth;
 import ru.gtncraft.mongoauth.Database;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.util.Collection;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.logging.Logger;
 
 public class AuthManager implements PluginMessageListener {
-    private final Sessions sessions;
+    private final Set<UUID> sessions = new ConcurrentSkipListSet<>();
     private final Logger log;
     private final Database db;
     private final File file;
     private final int maxPerIp;
 
     public AuthManager(final MongoAuth plugin) throws IOException {
-        this.log = plugin.getLogger();
-        this.sessions = new Sessions();
-        this.file = new File(plugin.getDataFolder() + File.separator + "sessions.dat");
-        this.maxPerIp = plugin.getConfig().getInt("general.maxPerIp", 1);
-        this.db = new Database(plugin);
+        log = plugin.getLogger();
+        file = new File(plugin.getDataFolder(), "sessions.dat");
+        maxPerIp = plugin.getConfig().getInt("general.maxPerIp", 1);
+        db = new Database(plugin);
         if (plugin.getConfig().getBoolean("general.restoreSessions", false)) {
-            sessions.load(this.file);
+            load(file);
         }
         Bukkit.getServer().getMessenger().registerIncomingPluginChannel(plugin, plugin.channel, this);
     }
@@ -100,15 +101,14 @@ public class AuthManager implements PluginMessageListener {
      */
     public void disable() {
         try {
-            sessions.save(file);
-        } catch (IOException ex) {
-            log.warning(ex.getMessage());
-        }
-
-        try {
             db.close();
-        } catch (Exception ex) {
-            log.warning(ex.getMessage());
+        } catch (Exception ignore) {
+        } finally {
+            try {
+                save(file);
+            } catch (IOException ex) {
+                log.warning(ex.getMessage());
+            }
         }
     }
 
@@ -118,6 +118,39 @@ public class AuthManager implements PluginMessageListener {
         OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
         if (exit(uuid)) {
             log.info("Account " + player.getName() + " logged out.");
+        }
+    }
+
+    private void save(final File file) throws IOException {
+        if (sessions.isEmpty()) {
+            return;
+        }
+        if (file.createNewFile()) {
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                try (ObjectOutputStream os = new ObjectOutputStream(fos)) {
+                    os.writeObject(sessions);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void load(final File file) throws IOException {
+        if (!file.exists()) {
+            return;
+        }
+        try (FileInputStream fis = new FileInputStream(file)) {
+            try (ObjectInputStream ois = new ObjectInputStream(fis)) {
+                for (UUID uuid : (Collection<UUID>) ois.readObject()) {
+                    // TODO: check another servers
+                    if (Bukkit.getPlayer(uuid) != null) {
+                        sessions.add(uuid);
+                    }
+                }
+            }
+        } catch (ClassNotFoundException ignore) {
+        } finally {
+            file.delete();
         }
     }
 }

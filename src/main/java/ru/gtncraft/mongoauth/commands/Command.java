@@ -10,7 +10,7 @@ import ru.gtncraft.mongoauth.Account;
 import ru.gtncraft.mongoauth.Message;
 import ru.gtncraft.mongoauth.Messages;
 import ru.gtncraft.mongoauth.MongoAuth;
-import ru.gtncraft.mongoauth.manager.AuthManager;
+import ru.gtncraft.mongoauth.AuthManager;
 
 import java.util.List;
 import java.util.logging.Logger;

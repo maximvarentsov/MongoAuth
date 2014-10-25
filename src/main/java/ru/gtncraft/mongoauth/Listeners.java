@@ -10,7 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
-import ru.gtncraft.mongoauth.manager.AuthManager;
 import ru.gtncraft.mongoauth.tasks.AuthMessage;
 import java.util.regex.Pattern;
 
