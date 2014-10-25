@@ -71,12 +71,6 @@ class ListenersEmergency implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
-    public void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
-        event.setCancelled(true);
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    @SuppressWarnings("unused")
     public void onPlayerBucketEmpty(final PlayerBucketEmptyEvent event) {
         event.setCancelled(true);
     }
