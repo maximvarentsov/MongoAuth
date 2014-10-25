@@ -6,8 +6,6 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
 
-import static ru.gtncraft.mongoauth.util.Strings.encryptPassword;
-
 public class Unregister extends Command {
 
 	public Unregister(final MongoAuth plugin) {

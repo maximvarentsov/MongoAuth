@@ -6,9 +6,6 @@ import ru.gtncraft.mongoauth.*;
 
 import java.util.UUID;
 
-import static ru.gtncraft.mongoauth.util.Strings.dot2LongIP;
-import static ru.gtncraft.mongoauth.util.Strings.encryptPassword;
-
 public class Register extends Command {
 	public Register(final MongoAuth plugin) {
         super(plugin);

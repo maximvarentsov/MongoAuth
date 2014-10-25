@@ -4,8 +4,6 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
 
-import static ru.gtncraft.mongoauth.util.Strings.encryptPassword;
-
 public class Login extends Command {
 
     public Login(final MongoAuth plugin) {

@@ -6,8 +6,6 @@ import ru.gtncraft.mongoauth.Account;
 import ru.gtncraft.mongoauth.Message;
 import ru.gtncraft.mongoauth.MongoAuth;
 
-import static ru.gtncraft.mongoauth.util.Strings.encryptPassword;
-
 public class ChangePassword extends Command {
 
 	public ChangePassword(final MongoAuth plugin) {
