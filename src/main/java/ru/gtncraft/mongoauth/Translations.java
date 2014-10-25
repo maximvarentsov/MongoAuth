@@ -9,19 +9,19 @@ import java.util.*;
 public class Translations {
     private static ResourceBundle bundle;
 
-    private static final ResourceBundle getBundle(String baseName) {
+    private static ResourceBundle getBundle(String baseName) {
         ResourceBundle bundle = ResourceBundle.getBundle(baseName);
-        if (!(bundle instanceof PropertyResourceBundle))
+        if (!(bundle instanceof PropertyResourceBundle)) {
             return bundle;
-
+        }
         return new UTF8PropertyResourceBundle((PropertyResourceBundle) bundle);
     }
 
-    private static final ResourceBundle getBundle(String baseName, Locale locale) {
+    private static ResourceBundle getBundle(String baseName, Locale locale) {
         ResourceBundle bundle = ResourceBundle.getBundle(baseName, locale);
-        if (!(bundle instanceof PropertyResourceBundle))
+        if (!(bundle instanceof PropertyResourceBundle)) {
             return bundle;
-
+        }
         return new UTF8PropertyResourceBundle((PropertyResourceBundle) bundle);
     }
 
