@@ -13,14 +13,15 @@ public final class MongoAuth extends JavaPlugin {
         try {
             authManager = new AuthManager(this);
             new Listeners(this);
+        } catch (Exception ex) {
+            new ListenersEmergency(this);
+            ex.printStackTrace();
+        } finally {
             new Login(this);
             new Logout(this);
             new ChangePassword(this);
             new Register(this);
             new Unregister(this);
-        } catch (Exception ex) {
-            new ListenersEmergency(this);
-            ex.printStackTrace();
         }
     }
 

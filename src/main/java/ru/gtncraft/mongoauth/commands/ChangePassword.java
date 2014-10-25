@@ -4,7 +4,6 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.Account;
 import ru.gtncraft.mongoauth.Message;
-import ru.gtncraft.mongoauth.Messages;
 import ru.gtncraft.mongoauth.MongoAuth;
 
 import static ru.gtncraft.mongoauth.util.Strings.encryptPassword;
