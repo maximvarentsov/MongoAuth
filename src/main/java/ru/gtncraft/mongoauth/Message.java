@@ -19,12 +19,6 @@ public enum Message {
             return "&4Account not register.";
         }
     },
-    error_account_online {
-        @Override
-        public String toString() {
-            return "&4Player %s is online.";
-        }
-    },
     error_account_exists {
         @Override
         public String toString() {
@@ -113,24 +107,6 @@ public enum Message {
         @Override
         public String toString() {
             return "&2Password changed.";
-        }
-    },
-    success_command_admin_changepassword {
-        @Override
-        public String toString() {
-            return "&2Password changed for player %s.";
-        }
-    },
-    success_command_admin_delete {
-        @Override
-        public String toString() {
-            return "&2Account %s deleted.";
-        }
-    },
-    success_command_admin_register {
-        @Override
-        public String toString() {
-            return "&2Account %s created.";
         }
     },
     command_register_hint {

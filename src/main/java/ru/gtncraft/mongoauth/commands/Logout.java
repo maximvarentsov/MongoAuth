@@ -15,18 +15,18 @@ public class Logout extends Command {
     }
 
     @Override
-    public String execute(Player player, String command, String[] args) {
+    public Message execute(Player player, String command, String[] args) {
         if (getAccount(player) == null) {
-            return Messages.get(Message.command_register_hint);
+            return Message.command_register_hint;
         }
 
         if (!isAuthorized(player)) {
-            return Messages.get(Message.command_login_hint);
+            return Message.command_login_hint;
         }
 
         logout(player);
         getLogger().info("Player " + player.getName() + " logout.");
 
-        return Messages.get(Message.success_account_logout);
+        return Message.success_account_logout;
     }
 }

@@ -17,23 +17,23 @@ public class Unregister extends Command {
 	}
 
     @Override
-    public String execute(Player player, String command, String[] args) {
+    public Message execute(Player player, String command, String[] args) {
         Account account = getAccount(player);
 
         if (account == null) {
-            return Messages.get(Message.command_register_hint);
+            return Message.command_register_hint;
         }
 
         if (!isAuthorized(player)) {
-            return Messages.get(Message.command_login_hint);
+            return Message.command_login_hint;
         }
 
         if (args.length < 1) {
-            return Messages.get(Message.error_input_password);
+            return Message.error_input_password;
         }
 
         if (!account.getPassword().equals(encryptPassword(args[0]))) {
-            return Messages.get(Message.error_input_password_missmach);
+            return Message.error_input_password_missmach;
         }
 
         getManager().unregister(account);
@@ -47,6 +47,6 @@ public class Unregister extends Command {
         player.setExp(0);
 
         getLogger().info("Account " + account + " unregistered.");
-        return Messages.get(Message.success_account_delete);
+        return Message.success_account_delete;
     }
 }

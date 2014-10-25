@@ -15,32 +15,32 @@ public class Login extends Command {
 	}
 
     @Override
-    public String execute(Player player, String command, String[] args) {
+    public Message execute(Player player, String command, String[] args) {
         if (args.length < 1) {
-            return Messages.get(Message.error_input_password);
+            return Message.error_input_password;
         }
 
         Account account = getAccount(player);
 
         if (account == null) {
-            return Messages.get(Message.command_register_hint);
+            return Message.command_register_hint;
         }
 
         if (!account.isAllowed()) {
-            return Messages.get(Message.error_account_is_block);
+            return Message.error_account_is_block;
         }
 
         if (isAuthorized(player)) {
-            return Messages.get(Message.error_account_is_auth);
+            return Message.error_account_is_auth;
         }
 
         if (!account.getPassword().equals(encryptPassword(args[0]))) {
-            return Messages.get(Message.error_input_password_missmach);
+            return Message.error_input_password_missmach;
         }
 
         getManager().login(player);
         getLogger().info("Player " + player.getName() + " logged in.");
 
-        return Messages.get(Message.success_account_login);
+        return Message.success_account_login;
     }
 }

@@ -17,17 +17,17 @@ public class Register extends Command {
 	}
 
     @Override
-    public String execute(Player player, String command, String[] args) {
+    public Message execute(Player player, String command, String[] args) {
         if (isAuthorized(player)) {
-            return Messages.get(Message.error_account_is_auth);
+            return Message.error_account_is_auth;
         }
 
         if (getAccount(player) != null) {
-            return Messages.get(Message.command_login_hint);
+            return Message.command_login_hint;
         }
 
         if (args.length < 1) {
-            return Messages.get(Message.error_input_password);
+            return Message.error_input_password;
         }
 
         UUID uuid = player.getUniqueId();
@@ -37,7 +37,7 @@ public class Register extends Command {
         Account account = new Account(uuid, ip, password);
 
         if (getManager().registrationLimitMax(account)) {
-            return Messages.get(Message.error_account_register_limit);
+            return Message.error_account_register_limit;
         }
 
         getManager().save(account);
@@ -45,6 +45,6 @@ public class Register extends Command {
 
         getLogger().info("New player " + player.getName() + " registered.");
 
-        return Messages.get(Message.success_account_create);
+        return Message.success_account_create;
     }
 }

@@ -47,7 +47,7 @@ abstract class Command implements CommandExecutor, TabCompleter {
         return getManager().logout(player.getUniqueId());
     }
 
-    public abstract String execute(Player player, String command, String[] args);
+    public abstract Message execute(Player player, String command, String[] args);
 
     @Override
     public boolean onCommand(final CommandSender sender, org.bukkit.command.Command command, final String s, final String[] args) {
@@ -59,7 +59,7 @@ abstract class Command implements CommandExecutor, TabCompleter {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                String message = execute((Player) sender, s, args);
+                String message = Messages.get(execute((Player) sender, s, args));
                 sender.sendMessage(message);
             }
         });

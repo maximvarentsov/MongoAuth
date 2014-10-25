@@ -18,34 +18,34 @@ public class ChangePassword extends Command {
 	}
 
     @Override
-    public String execute(Player player, String command, String[] args) {
+    public Message execute(Player player, String command, String[] args) {
         if (args.length < 1) {
-            return Messages.get(Message.error_input_password);
+            return Message.error_input_password;
         }
 
         if (args.length < 2) {
-            return Messages.get(Message.error_input_password_new);
+            return Message.error_input_password_new;
         }
 
         Account account = getAccount(player);
 
         if (account == null) {
-            return Messages.get(Message.command_register_hint);
+            return Message.command_register_hint;
         }
 
         if (isAuthorized(player)) {
-            return Messages.get(Message.command_login_hint);
+            return Message.command_login_hint;
         }
 
         String currentPassword = encryptPassword(args[0]);
         String newPassword = args[1];
 
         if (currentPassword.equals(args[0])) {
-            return Messages.get(Message.error_input_passwords_equals);
+            return Message.error_input_passwords_equals;
         }
 
         if (!account.getPassword().equals(currentPassword)) {
-            return Messages.get(Message.error_input_password_missmach);
+            return Message.error_input_password_missmach;
         }
 
         account.setPassword(newPassword);
@@ -53,6 +53,6 @@ public class ChangePassword extends Command {
 
         getLogger().info("Player " + player.getName() + " has changed password.");
 
-        return Messages.get(Message.success_change_password);
+        return Message.success_change_password;
     }
 }
