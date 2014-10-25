@@ -24,17 +24,17 @@ class Listeners implements Listener {
         Bukkit.getServer().getPluginManager().registerEvents(this, instance);
         plugin = instance;
         manager = instance.getAuthManager();
-        pattern = Pattern.compile(plugin.getConfig().getString("general.playernamePattern"));
+        pattern = Pattern.compile(plugin.getConfig().getString("playernamePattern"));
         spawn = plugin.getConfig().getBoolean("spawn", true);
         silentQuitJoin = plugin.getConfig().getBoolean("silentQuitJoin", true);
 	}
 
     @EventHandler(priority = EventPriority.MONITOR)
     @SuppressWarnings("unused")
-    void onPreLogin(final AsyncPlayerPreLoginEvent event) {
+    public void onPreLogin(final AsyncPlayerPreLoginEvent event) {
         if (!pattern.matcher(event.getName()).matches()) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage(Messages.get(Message.error_input_invalid_login));
+            event.setKickMessage(Translations.get(Message.error_input_invalid_login));
         }
     }
 

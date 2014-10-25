@@ -6,11 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import ru.gtncraft.mongoauth.Account;
-import ru.gtncraft.mongoauth.Message;
-import ru.gtncraft.mongoauth.Messages;
-import ru.gtncraft.mongoauth.MongoAuth;
-import ru.gtncraft.mongoauth.AuthManager;
+import ru.gtncraft.mongoauth.*;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -54,14 +50,14 @@ abstract class Command implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(final CommandSender sender, org.bukkit.command.Command command, final String s, final String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Messages.get(Message.error_command_sender));
+            sender.sendMessage(Translations.get(Message.error_command_sender));
             return false;
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                String message = Messages.get(execute((Player) sender, s, args));
+                String message = Translations.get(execute((Player) sender, s, args));
                 sender.sendMessage(message);
             }
         });

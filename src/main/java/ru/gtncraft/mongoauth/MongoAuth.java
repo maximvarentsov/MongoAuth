@@ -9,7 +9,6 @@ public final class MongoAuth extends JavaPlugin {
     @Override
 	public void onEnable() {
         saveDefaultConfig();
-        Messages.init(getConfig().getConfigurationSection("messages"));
         try {
             authManager = new AuthManager(this);
             new Listeners(this);

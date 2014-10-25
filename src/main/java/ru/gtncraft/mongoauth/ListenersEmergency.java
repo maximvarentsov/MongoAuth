@@ -14,7 +14,7 @@ class ListenersEmergency implements Listener {
 
     public ListenersEmergency(final MongoAuth plugin) {
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
-        message = Messages.get(Message.error_emergency);
+        message = Translations.get(Message.error_emergency);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
