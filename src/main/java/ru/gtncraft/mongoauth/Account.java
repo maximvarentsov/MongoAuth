@@ -1,71 +1,46 @@
 package ru.gtncraft.mongoauth;
 
-import org.bukkit.entity.Player;
-import org.mongodb.ConvertibleToDocument;
-import org.mongodb.Document;
-
-import java.util.Map;
 import java.util.UUID;
 
-import static ru.gtncraft.mongoauth.util.Strings.dot2LongIP;
-
-public class Account implements ConvertibleToDocument {
-    private final UUID uuid;
-    private final long ip;
-
+public class Account {
+    private UUID id;
+    private long ip;
     private boolean allowed;
     private String password;
 
-    public Account(final Player player) {
-        uuid = player.getUniqueId();
-        ip = dot2LongIP(player.getAddress().getAddress().getHostAddress());
-
-        setAllowed(true);
+    public Account(UUID id, long ip, String password) {
+        this(id, ip, password, true);
     }
 
-    public Account(final Map<String, Object> map) {
-        uuid = UUID.fromString((String) map.get("uuid"));
-        ip = (long) map.get("ip");
-
-        setPassword((String) map.get("password"));
-        setAllowed((boolean) map.get("allowed"));
+    public Account(UUID id, long ip, String password, boolean allowed) {
+        this.id = id;
+        this.ip = ip;
+        this.allowed = allowed;
+        this.password = password;
     }
 
-    public UUID getUUID() {
-        return uuid;
+    public UUID getId() {
+        return id;
     }
 
-    public long getIP() {
+    public long getIp() {
         return ip;
+    }
+
+    public boolean isAllowed() {
+        return allowed;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String value) {
-        password = value;
-    }
-
-    public boolean isBlocked() {
-        return ! allowed;
-    }
-
-    public void setAllowed(boolean value) {
-        allowed = value;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override
     public String toString() {
-        return uuid.toString();
-    }
-
-    @Override
-    public Document toDocument() {
-        Document document = new Document("uuid", uuid.toString());
-        document.put("ip", ip);
-        document.put("password", password);
-        document.put("allowed", allowed);
-        return document;
+        return id.toString();
     }
 }

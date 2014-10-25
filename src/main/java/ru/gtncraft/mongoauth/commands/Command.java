@@ -50,15 +50,18 @@ abstract class Command implements CommandExecutor, TabCompleter {
     public abstract String execute(Player player, String command, String[] args);
 
     @Override
-    public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String s, String[] strings) {
+    public boolean onCommand(final CommandSender sender, org.bukkit.command.Command command, final String s, final String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage(Messages.get(Message.error_command_sender));
             return false;
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            String message = execute((Player) sender, s, strings);
-            sender.sendMessage(message);
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                String message = execute((Player) sender, s, args);
+                sender.sendMessage(message);
+            }
         });
 
         return true;

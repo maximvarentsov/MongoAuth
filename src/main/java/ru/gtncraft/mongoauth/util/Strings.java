@@ -1,19 +1,10 @@
 package ru.gtncraft.mongoauth.util;
 
-import org.bukkit.util.StringUtil;
-
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class Strings {
-    public static List<String> partial(String token, Collection<String> from) {
-        return StringUtil.copyPartialMatches(token, from, new ArrayList<>(from.size()));
-    }
-
     public static String encryptPassword(final String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -27,7 +18,7 @@ public class Strings {
                 encrypted.append(hex);
             }
             return encrypted.toString();
-        } catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
+        } catch (UnsupportedEncodingException | NoSuchAlgorithmException ignore) {
             return null;
         }
     }
