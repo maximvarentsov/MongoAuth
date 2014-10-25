@@ -4,9 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
-import ru.gtncraft.mongoauth.Account;
-import ru.gtncraft.mongoauth.MongoAuth;
-import ru.gtncraft.mongoauth.Database;
 
 import java.io.*;
 import java.util.Collection;
