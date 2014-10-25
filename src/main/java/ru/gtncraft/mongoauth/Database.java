@@ -1,18 +1,17 @@
 package ru.gtncraft.mongoauth;
 
-import com.google.common.collect.ImmutableList;
 import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoDatabaseOptions;
 import com.mongodb.client.model.CreateIndexOptions;
+
 import org.bson.Document;
 import org.bson.codecs.Codec;
 import org.bson.codecs.DocumentCodecProvider;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.configuration.RootCodecRegistry;
-import org.bukkit.Location;
 
 import java.io.IOException;
 import java.util.ArrayList;

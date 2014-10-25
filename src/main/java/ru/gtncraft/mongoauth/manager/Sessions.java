@@ -7,7 +7,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 class Sessions extends AbstractSet<UUID> {
-
     private final Set<UUID> values;
 
     Sessions() {
