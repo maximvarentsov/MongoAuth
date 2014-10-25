@@ -4,6 +4,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import ru.gtncraft.mongoauth.commands.Command;
+import ru.gtncraft.mongoauth.database.Account;
+import ru.gtncraft.mongoauth.database.Database;
+import ru.gtncraft.mongoauth.database.Log;
 
 import java.io.*;
 import java.util.Collection;
@@ -26,9 +30,8 @@ public class AuthManager implements PluginMessageListener {
         maxPerIp = plugin.getConfig().getInt("maxPerIp", 1);
 
         String host = plugin.getConfig().getString("database.host", "127.0.0.1");
-        String database = plugin.getConfig().getString("database.collection", "players");
-        String collection = plugin.getConfig().getString("database.name", "minecraft");
-        db = new Database(host, database, collection);
+        String database = plugin.getConfig().getString("database.name", "minecraft");
+        db = new Database(host, database);
 
         restore();
         Bukkit.getServer().getMessenger().registerIncomingPluginChannel(plugin, channel, this);
@@ -51,21 +54,21 @@ public class AuthManager implements PluginMessageListener {
      * Get Player Account.
      */
     public Account get(final UUID uuid) {
-        return db.findOne(uuid);
+        return db.getAccount(uuid);
     }
     /**
      * Remove player account.
      *
      */
     public void unregister(final Account account) {
-        db.remove(account);
+        db.deleteAccount(account);
     }
     /**
      * Create/Update player account.
      *
      */
     public void save(final Account account) {
-        db.save(account);
+        db.saveAccount(account);
     }
     /**
      * Check player is authenticated.
@@ -111,6 +114,12 @@ public class AuthManager implements PluginMessageListener {
                 log.warning(ex.getMessage());
             }
         }
+    }
+
+    public void log(Player player, Log.Status status) {
+        UUID id = player.getUniqueId();
+        long ip = Command.dot2LongIP(player.getAddress().getAddress().getHostAddress());
+        db.log(id, ip, status);
     }
 
     @Override

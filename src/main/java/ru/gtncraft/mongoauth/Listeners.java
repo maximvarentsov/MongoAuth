@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
+import ru.gtncraft.mongoauth.database.Log;
 import ru.gtncraft.mongoauth.tasks.AuthMessage;
 import java.util.regex.Pattern;
 
@@ -41,6 +42,7 @@ class Listeners implements Listener {
         if (silentQuitJoin) {
             event.setJoinMessage(null);
         }
+        manager.log(player, Log.Status.CONNECT);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -49,6 +51,7 @@ class Listeners implements Listener {
         if (silentQuitJoin) {
             event.setQuitMessage(null);
         }
+        manager.log(event.getPlayer(), Log.Status.DISCONNECT);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)

@@ -2,6 +2,8 @@ package ru.gtncraft.mongoauth.commands;
 
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
+import ru.gtncraft.mongoauth.database.Account;
+import ru.gtncraft.mongoauth.database.Log;
 
 public class Login extends Command {
 
@@ -36,6 +38,8 @@ public class Login extends Command {
 
         getManager().login(player);
         getLogger().info("Player " + player.getName() + " logged in.");
+
+        getManager().log(player, Log.Status.DISCONNECT);
 
         return Message.success_account_login;
     }

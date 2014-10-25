@@ -2,6 +2,7 @@ package ru.gtncraft.mongoauth.commands;
 
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
+import ru.gtncraft.mongoauth.database.Account;
 
 import java.util.UUID;
 

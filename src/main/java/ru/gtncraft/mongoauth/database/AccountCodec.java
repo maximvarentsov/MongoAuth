@@ -1,4 +1,4 @@
-package ru.gtncraft.mongoauth;
+package ru.gtncraft.mongoauth.database;
 
 import org.bson.BsonObjectId;
 import org.bson.BsonReader;

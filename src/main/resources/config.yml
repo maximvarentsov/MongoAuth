@@ -5,5 +5,3 @@ silentQuitJoin: true
 database:
     host: localhost:27017
     name: minecraft
-    collection: players
-

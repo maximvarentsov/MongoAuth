@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
+import ru.gtncraft.mongoauth.database.Account;
 
 public class Unregister extends Command {
 

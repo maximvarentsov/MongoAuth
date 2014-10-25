@@ -1,4 +1,4 @@
-package ru.gtncraft.mongoauth;
+package ru.gtncraft.mongoauth.database;
 
 import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
@@ -11,15 +11,18 @@ import org.bson.codecs.DocumentCodecProvider;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.configuration.RootCodecRegistry;
+import org.bukkit.entity.Player;
+import ru.gtncraft.mongoauth.commands.Command;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-class Database implements AutoCloseable {
+public class Database implements AutoCloseable {
     private final static List<CodecProvider> codecs;
     private final MongoCollection<Account> players;
+    private final MongoCollection<Log> logs;
     private final MongoClient client;
 
     static {
@@ -31,37 +34,48 @@ class Database implements AutoCloseable {
                         if (clazz.equals(Account.class)) {
                             return (Codec<T>) new AccountCodec();
                         }
+                        if (clazz.equals(Log.class)) {
+                            return (Codec<T>) new LogCodec();
+                        }
                         return null;
                     }
                 }
         );
     }
 
-	public Database(String host, String database, String collection) throws IOException {
+	public Database(String host, String database) throws IOException {
         MongoDatabaseOptions options = MongoDatabaseOptions.builder().
                                        codecRegistry(new RootCodecRegistry(codecs)).
                                        readPreference(ReadPreference.nearest()).
                                        writeConcern(WriteConcern.SAFE).build();
         client = new MongoClient(host);
-        players = client.getDatabase(database, options).getCollection(collection, Account.class);
+
+        players = client.getDatabase(database, options).getCollection("players", Account.class);
         players.createIndex(new Document("uuid", new CreateIndexOptions().unique(true)));
         players.createIndex(new Document("ip", 1));
+
+        logs = client.getDatabase(database, options).getCollection("logs", Log.class);
+        logs.createIndex(new Document("ip", 1));
     }
 
-    public Account findOne(UUID id) {
+    public Account getAccount(UUID id) {
         return players.find(new Document("uuid", id.toString())).first();
     }
 
-    public Account remove(Account account) {
+    public Account deleteAccount(Account account) {
         return players.findOneAndDelete(new Document("uuid", account.getId().toString()));
     }
 
-    public void save(Account account) {
+    public void saveAccount(Account account) {
         players.insertOne(account);
     }
 
     public long countIp(long ip) {
         return players.count(new Document("ip", ip));
+    }
+
+    public void log(UUID id, long ip, Log.Status status) {
+        logs.insertOne(new Log(id, ip, status));
     }
 
     @Override

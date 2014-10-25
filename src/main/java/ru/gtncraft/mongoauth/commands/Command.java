@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
+import ru.gtncraft.mongoauth.database.Account;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -14,7 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.logging.Logger;
 
-abstract class Command implements CommandExecutor, TabCompleter {
+public abstract class Command implements CommandExecutor, TabCompleter {
     private MongoAuth plugin;
 
     public Command(MongoAuth plugin) {

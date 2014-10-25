@@ -1,4 +1,4 @@
-package ru.gtncraft.mongoauth;
+package ru.gtncraft.mongoauth.database;
 
 import java.util.UUID;
 

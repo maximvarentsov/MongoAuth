@@ -1,7 +1,7 @@
 package ru.gtncraft.mongoauth.tasks;
 
 import org.bukkit.entity.Player;
-import ru.gtncraft.mongoauth.Account;
+import ru.gtncraft.mongoauth.database.Account;
 import ru.gtncraft.mongoauth.Message;
 import ru.gtncraft.mongoauth.MongoAuth;
 import ru.gtncraft.mongoauth.Translations;
