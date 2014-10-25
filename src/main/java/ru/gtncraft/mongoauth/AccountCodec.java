@@ -9,7 +9,7 @@ import org.bson.codecs.EncoderContext;
 
 import java.util.UUID;
 
-public class AccountCodec implements CollectibleCodec<Account> {
+class AccountCodec implements CollectibleCodec<Account> {
     @Override
     public boolean documentHasId(final Account value) {
         return false;

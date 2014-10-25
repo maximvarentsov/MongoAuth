@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-public class Database implements AutoCloseable {
+class Database implements AutoCloseable {
     private final MongoCollection<Account> players;
     private final MongoClient client;
 
