@@ -5,7 +5,6 @@ import ru.gtncraft.mongoauth.commands.*;
 
 public final class MongoAuth extends JavaPlugin {
     private AuthManager authManager;
-    public final String channel = "mongoauth";
 
     @Override
 	public void onEnable() {

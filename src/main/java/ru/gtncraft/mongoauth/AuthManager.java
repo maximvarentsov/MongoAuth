@@ -21,6 +21,7 @@ public class AuthManager implements PluginMessageListener {
     private final Database db;
     private final File file;
     private final int maxPerIp;
+    private final String channel = "mongoauth";
 
     public AuthManager(final MongoAuth plugin) throws IOException {
         log = plugin.getLogger();
@@ -30,7 +31,7 @@ public class AuthManager implements PluginMessageListener {
         if (plugin.getConfig().getBoolean("general.restoreSessions", false)) {
             load(file);
         }
-        Bukkit.getServer().getMessenger().registerIncomingPluginChannel(plugin, plugin.channel, this);
+        Bukkit.getServer().getMessenger().registerIncomingPluginChannel(plugin, channel, this);
     }
     /**
      * Logout player.
