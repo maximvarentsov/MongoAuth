@@ -2,29 +2,29 @@ package ru.gtncraft.mongoauth.commands;
 
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
-import ru.gtncraft.mongoauth.database.Account;
-import ru.gtncraft.mongoauth.database.Log;
 
 public class Login extends Command {
+    private final int maxAttempts;
 
     public Login(final MongoAuth plugin) {
         super(plugin);
+        maxAttempts = plugin.getConfig().getInt("session.attempts", 3);
         plugin.getCommand("login").setExecutor(this);
 	}
 
     @Override
-    public Message execute(Player player, String command, String[] args) {
+    public Message execute(Player player, String[] args) {
         if (args.length < 1) {
             return Message.error_input_password;
         }
 
-        Account account = getAccount(player);
+        Session session = getSession(player);
 
-        if (account == null) {
+        if (!session.isRegister()) {
             return Message.command_register_hint;
         }
 
-        if (!account.isAllowed()) {
+        if (!session.getAccount().isAllowed()) {
             return Message.error_account_is_block;
         }
 
@@ -32,20 +32,22 @@ public class Login extends Command {
             return Message.error_account_is_auth;
         }
 
-        if (getManager().countAttempts(player) > Security.attempts) {
+        if (!checkAttempts(session)) {
             return Message.error_password_brutforce;
         }
 
-        if (!account.getPassword().equals(encryptPassword(args[0]))) {
-            getManager().log(player, Log.Status.BAD_LOGIN);
+        String password = args[0];
+        if (!session.checkPassword(password)) {
             return Message.error_input_password_missmach;
         }
 
-        getManager().login(player);
+        login(player);
         getLogger().info("Player " + player.getName() + " logged in.");
 
-        getManager().log(player, Log.Status.LOGIN);
-
         return Message.success_account_login;
+    }
+
+    private boolean checkAttempts(Session session) {
+        return session.getAttempts() <= maxAttempts;
     }
 }

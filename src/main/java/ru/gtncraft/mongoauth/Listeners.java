@@ -10,19 +10,20 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
-import ru.gtncraft.mongoauth.database.Log;
 import ru.gtncraft.mongoauth.tasks.AuthMessage;
+
+import java.util.UUID;
 
 class Listeners implements Listener {
 	private final MongoAuth plugin;
-    private final AuthManager manager;
+    private final Sessions sessions;
     private final boolean spawn;
     private final boolean silentQuitJoin;
 
 	public Listeners(final MongoAuth instance) {
         Bukkit.getServer().getPluginManager().registerEvents(this, instance);
         plugin = instance;
-        manager = instance.getAuthManager();
+        sessions = instance.getSessions();
         spawn = plugin.getConfig().getBoolean("spawn", true);
         silentQuitJoin = plugin.getConfig().getBoolean("silentQuitJoin", true);
 	}
@@ -32,7 +33,7 @@ class Listeners implements Listener {
     public void onJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
         player.teleport(player.getWorld().getSpawnLocation());
-        if (!manager.isAuth(player.getUniqueId())) {
+        if (sessions.notAuthenticated(player.getUniqueId())) {
             Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
         }
         if (spawn) {
@@ -41,7 +42,6 @@ class Listeners implements Listener {
         if (silentQuitJoin) {
             event.setJoinMessage(null);
         }
-        manager.log(player, Log.Status.CONNECT);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -50,7 +50,6 @@ class Listeners implements Listener {
         if (silentQuitJoin) {
             event.setQuitMessage(null);
         }
-        manager.log(event.getPlayer(), Log.Status.DISCONNECT);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -62,7 +61,7 @@ class Listeners implements Listener {
         if (plugin.getCommand(rootCommand) != null && !plugin.getCommand(rootCommand).equals(plugin.getCommand("mongoauth"))) {
             return;
         }
-        if (!manager.isAuth(player.getUniqueId())) {
+        if (sessions.notAuthenticated(player.getUniqueId())) {
             Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
             event.setCancelled(true);
         }
@@ -72,7 +71,7 @@ class Listeners implements Listener {
     @SuppressWarnings("unused")
     public void onChat(final AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        if (!manager.isAuth(player.getUniqueId())) {
+        if (sessions.notAuthenticated(player.getUniqueId())) {
             Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
             event.setCancelled(true);
         }
@@ -82,7 +81,7 @@ class Listeners implements Listener {
     @SuppressWarnings("unused")
     public void onMove(final PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        if (!manager.isAuth(player.getUniqueId())) {
+        if (sessions.notAuthenticated(player.getUniqueId())) {
             Location from = event.getFrom();
             Location to = event.getTo();
             if (to.getX() != from.getX() || to.getY() > from.getY() || to.getZ() != from.getZ()) {
@@ -96,8 +95,8 @@ class Listeners implements Listener {
     public void onEntityDamage(final EntityDamageEvent event) {
         Entity entity = event.getEntity();
         if (entity instanceof Player) {
-            final Player player = (Player) entity;
-            if (!manager.isAuth(player.getUniqueId())) {
+            UUID player = entity.getUniqueId();
+            if (sessions.notAuthenticated(player)) {
                 event.setCancelled(true);
             }
         }
@@ -106,7 +105,7 @@ class Listeners implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onInventoryInteract(final InventoryClickEvent event) {
-        if (!manager.isAuth(event.getWhoClicked().getUniqueId())) {
+        if (sessions.notAuthenticated(event.getWhoClicked().getUniqueId())) {
             event.setCancelled(true);
         }
     }
@@ -114,7 +113,7 @@ class Listeners implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onItemDrop(final PlayerDropItemEvent event) {
-		if (!manager.isAuth(event.getPlayer().getUniqueId())) {
+		if (sessions.notAuthenticated(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
 	}
@@ -122,7 +121,7 @@ class Listeners implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onInteract(final PlayerInteractEvent event) {
-		if (!manager.isAuth(event.getPlayer().getUniqueId())) {
+		if (sessions.notAuthenticated(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
 	}
@@ -130,7 +129,7 @@ class Listeners implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onEntityInteract(final PlayerInteractEntityEvent event) {
-		if (!manager.isAuth(event.getPlayer().getUniqueId())) {
+		if (sessions.notAuthenticated(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
     }
@@ -138,7 +137,7 @@ class Listeners implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onPickupItem(final PlayerPickupItemEvent event) {
-        if (!manager.isAuth(event.getPlayer().getUniqueId())) {
+        if (sessions.notAuthenticated(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
     }
@@ -146,7 +145,7 @@ class Listeners implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onBukkitEmpty(final PlayerBucketEmptyEvent event) {
-        if (!manager.isAuth(event.getPlayer().getUniqueId())) {
+        if (sessions.notAuthenticated(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
     }

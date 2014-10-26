@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
-import ru.gtncraft.mongoauth.database.Account;
 
 public class Unregister extends Command {
 
@@ -14,14 +13,14 @@ public class Unregister extends Command {
 	}
 
     @Override
-    public Message execute(Player player, String command, String[] args) {
-        Account account = getAccount(player);
+    public Message execute(Player player, String[] args) {
+        Session session = getSession(player);
 
-        if (account == null) {
+        if (session == null) {
             return Message.command_register_hint;
         }
 
-        if (!isAuthorized(player)) {
+        if (session.isRegister()) {
             return Message.command_login_hint;
         }
 
@@ -29,11 +28,11 @@ public class Unregister extends Command {
             return Message.error_input_password;
         }
 
-        if (!account.getPassword().equals(encryptPassword(args[0]))) {
+        if (!session.checkPassword(args[0])) {
             return Message.error_input_password_missmach;
         }
 
-        getManager().unregister(account);
+        getDatabase().deleteAccount(player.getUniqueId());
         logout(player);
 
         player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
@@ -43,7 +42,7 @@ public class Unregister extends Command {
         player.setFoodLevel(20);
         player.setExp(0);
 
-        getLogger().info("Account " + account + " unregistered.");
+        getLogger().info("Account " + player.getName() + " unregistered.");
         return Message.success_account_delete;
     }
 }

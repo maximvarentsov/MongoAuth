@@ -7,46 +7,49 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
-import ru.gtncraft.mongoauth.database.Account;
+import ru.gtncraft.mongoauth.database.Database;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.logging.Logger;
 
 public abstract class Command implements CommandExecutor, TabCompleter {
     private MongoAuth plugin;
+    private Database database;
 
     public Command(MongoAuth plugin) {
         this.plugin = plugin;
+        this.database = plugin.getDB();
     }
 
-    public MongoAuth getPlugin() {
-        return plugin;
+    public Database getDatabase() {
+        return database;
     }
 
     public Logger getLogger() {
-        return getPlugin().getLogger();
+        return plugin.getLogger();
     }
 
-    public AuthManager getManager() {
-        return getPlugin().getAuthManager();
+    public Session getSession(Player player) {
+        return plugin.getSessions().get(player.getUniqueId());
     }
 
-    public Account getAccount(final Player player) {
-        return getManager().get(player.getUniqueId());
+    public boolean isAuthorized(Player player) {
+        return ! plugin.getSessions().notAuthenticated(player.getUniqueId());
     }
 
-    public boolean isAuthorized(final Player player) {
-        return getManager().isAuth(player.getUniqueId());
+    public void logout(Player player) {
+        plugin.getSessions().quit(player.getUniqueId());
     }
 
-    public boolean logout(final Player player) {
-        return getManager().logout(player.getUniqueId());
+    public void login(Player player) {
+        plugin.getSessions().join(player.getUniqueId());
     }
 
-    public abstract Message execute(Player player, String command, String[] args);
+    public boolean checkRegistrationLimit(long ip) {
+        return plugin.getSessions().checkRegistrationLimit(ip);
+    }
+
+    public abstract Message execute(Player player, String[] args);
 
     @Override
     public boolean onCommand(final CommandSender sender, org.bukkit.command.Command command, final String s, final String[] args) {
@@ -58,7 +61,7 @@ public abstract class Command implements CommandExecutor, TabCompleter {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                String message = Translations.get(execute((Player) sender, s, args));
+                String message = Translations.get(execute((Player) sender, args));
                 sender.sendMessage(message);
             }
         });
@@ -69,24 +72,6 @@ public abstract class Command implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, org.bukkit.command.Command command, String s, String[] strings) {
         return ImmutableList.of();
-    }
-
-    public static String encryptPassword(final String password) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(password.getBytes("UTF-8"));
-            StringBuilder encrypted = new StringBuilder();
-            for (byte aHash : hash) {
-                String hex = Integer.toHexString(0xff & aHash);
-                if (hex.length() == 1) {
-                    encrypted.append('0');
-                }
-                encrypted.append(hex);
-            }
-            return encrypted.toString();
-        } catch (UnsupportedEncodingException | NoSuchAlgorithmException ignore) {
-            return null;
-        }
     }
 
     public static long dot2LongIP(final String dottedIP) {

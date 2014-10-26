@@ -10,11 +10,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 
 class ListenersEmergency implements Listener {
-    private final String message;
+    private final String message = Translations.get(Message.error_emergency);
 
     public ListenersEmergency(final MongoAuth plugin) {
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
-        message = Translations.get(Message.error_emergency);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)

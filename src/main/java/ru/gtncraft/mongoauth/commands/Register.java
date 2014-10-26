@@ -6,6 +6,8 @@ import ru.gtncraft.mongoauth.database.Account;
 
 import java.util.UUID;
 
+import static ru.gtncraft.mongoauth.util.Password.encrypt;
+
 public class Register extends Command {
 	public Register(final MongoAuth plugin) {
         super(plugin);
@@ -13,31 +15,35 @@ public class Register extends Command {
 	}
 
     @Override
-    public Message execute(Player player, String command, String[] args) {
-        if (isAuthorized(player)) {
-            return Message.error_account_is_auth;
-        }
-
-        if (getAccount(player) != null) {
-            return Message.command_login_hint;
-        }
-
+    public Message execute(Player player, String[] args) {
         if (args.length < 1) {
             return Message.error_input_password;
         }
 
+        Session session = getSession(player);
+
+        if (isAuthorized(player)) {
+            return Message.error_account_is_auth;
+        }
+
+        if (session.isRegister()) {
+            return Message.command_login_hint;
+        }
+
         UUID uuid = player.getUniqueId();
         long ip = dot2LongIP(player.getAddress().getAddress().getHostAddress());
-        String password = encryptPassword(args[0]);
+        String password = encrypt(args[0]);
 
         Account account = new Account(uuid, ip, password);
 
-        if (getManager().registrationLimitMax(account)) {
+        if (checkRegistrationLimit(ip)) {
             return Message.error_account_register_limit;
         }
 
-        getManager().save(account);
-        getManager().login(player);
+        session.setAccount(account);
+        getDatabase().saveAccount(account);
+        login(player);
+
 
         getLogger().info("New player " + player.getName() + " registered.");
 

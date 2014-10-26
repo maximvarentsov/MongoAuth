@@ -6,12 +6,15 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.gtncraft.mongoauth.commands.*;
+import ru.gtncraft.mongoauth.database.Database;
 
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 public final class MongoAuth extends JavaPlugin implements Listener {
     private final Pattern pattern = Pattern.compile("^[a-zA-Z0-9_]+$");
-    private AuthManager authManager;
+    private Sessions sessions;
+    private Database database;
 
     @EventHandler(priority = EventPriority.MONITOR)
     @SuppressWarnings("unused")
@@ -24,34 +27,53 @@ public final class MongoAuth extends JavaPlugin implements Listener {
 
     @Override
 	public void onEnable() {
-        saveDefaultConfig();
         getServer().getPluginManager().registerEvents(this, this);
 
-        Security.attempts = getConfig().getInt("security.attempts", 3);
-        Security.minutes = getConfig().getInt("security.minutes", 10);
+        saveDefaultConfig();
 
         try {
-            authManager = new AuthManager(this);
-            new Listeners(this);
+            sessions.restore();
+        } catch (IOException ignore) {
+        }
+
+        String host = getConfig().getString("database.host", "127.0.0.1");
+        String dbname = getConfig().getString("database.name", "minecraft");
+
+        try {
+            database = new Database(host, dbname);
         } catch (Exception ex) {
             new ListenersEmergency(this);
-            ex.printStackTrace();
-        } finally {
-            new Login(this);
-            new Logout(this);
-            new ChangePassword(this);
-            new Register(this);
-            new Unregister(this);
+            return;
         }
+
+        sessions = new Sessions(this);
+        new SessionWatcher(this);
+
+        new Listeners(this);
+
+        new Login(this);
+        new Logout(this);
+        new ChangePassword(this);
+        new Register(this);
+        new Unregister(this);
+
+        new AutoKick(this);
     }
 
     @Override
     public void onDisable() {
-        authManager.disable();
         getServer().getScheduler().cancelTasks(this);
+        try {
+            sessions.save();
+        } catch (IOException ignore) {
+        }
     }
 
-    public AuthManager getAuthManager() {
-        return authManager;
+    public Sessions getSessions() {
+        return sessions;
+    }
+
+    public Database getDB() {
+        return database;
     }
 }
