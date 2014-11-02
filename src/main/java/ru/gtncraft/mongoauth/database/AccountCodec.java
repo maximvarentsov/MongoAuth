@@ -6,6 +6,7 @@ import org.bson.BsonWriter;
 import org.bson.codecs.CollectibleCodec;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
+import org.bson.types.ObjectId;
 
 import java.util.UUID;
 
@@ -27,7 +28,8 @@ class AccountCodec implements CollectibleCodec<Account> {
     @Override
     public void encode(final BsonWriter writer, final Account value, final EncoderContext encoderContext) {
         writer.writeStartDocument();
-        writer.writeString("uuid", value.getId().toString());
+        System.out.println(value.toString());
+        writer.writeString("login", value.getLogin().toLowerCase());
         writer.writeInt64("ip", value.getIp());
         writer.writeBoolean("allowed", value.isAllowed());
         writer.writeString("password", value.getPassword());
@@ -37,12 +39,12 @@ class AccountCodec implements CollectibleCodec<Account> {
     @Override
     public Account decode(final BsonReader reader, final DecoderContext decoderContext) {
         reader.readStartDocument();
-        UUID id = UUID.fromString(reader.readString("uuid"));
+        String login = reader.readString("login");
         long ip = reader.readInt64("ip");
         boolean allowed = reader.readBoolean("allowed");
         String password = reader.readString("password");
         reader.readEndDocument();
-        return new Account(id, ip, password, allowed);
+        return new Account(login, ip, password, allowed);
     }
 
     @Override

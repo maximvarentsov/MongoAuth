@@ -28,7 +28,6 @@ class ListenersEmergency implements Listener {
     @SuppressWarnings("unused")
     public void onMove(final PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        player.sendMessage(message);
         event.setCancelled(true);
     }
 

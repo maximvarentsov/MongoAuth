@@ -31,22 +31,24 @@ public final class MongoAuth extends JavaPlugin implements Listener {
 
         saveDefaultConfig();
 
-        try {
-            sessions.restore();
-        } catch (IOException ignore) {
-        }
-
         String host = getConfig().getString("database.host", "127.0.0.1");
         String dbname = getConfig().getString("database.name", "minecraft");
 
         try {
             database = new Database(host, dbname);
         } catch (Exception ex) {
+            ex.printStackTrace();
             new ListenersEmergency(this);
             return;
         }
 
         sessions = new Sessions(this);
+
+        try {
+            sessions.restore();
+        } catch (Exception ignore) {
+        }
+
         new SessionWatcher(this);
 
         new Listeners(this);

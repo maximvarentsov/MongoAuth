@@ -4,6 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
+import ru.gtncraft.mongoauth.database.Account;
+
+import static ru.gtncraft.mongoauth.util.Password.encrypt;
 
 public class Unregister extends Command {
 
@@ -14,25 +17,27 @@ public class Unregister extends Command {
 
     @Override
     public Message execute(Player player, String[] args) {
-        Session session = getSession(player);
-
-        if (session == null) {
-            return Message.command_register_hint;
-        }
-
-        if (session.isRegister()) {
-            return Message.command_login_hint;
-        }
-
         if (args.length < 1) {
             return Message.error_input_password;
         }
 
-        if (!session.checkPassword(args[0])) {
+        Account account = getDatabase().getAccount(player);
+
+        if (account == null) {
+            return Message.command_register_hint;
+        }
+
+        if (!isAuthorized(player)) {
+            return Message.command_login_hint;
+        }
+
+        String password = encrypt(args[0]);
+
+        if (!account.getPassword().equals(password)) {
             return Message.error_input_password_missmach;
         }
 
-        getDatabase().deleteAccount(player.getUniqueId());
+        getDatabase().deleteAccount(player);
         logout(player);
 
         player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());

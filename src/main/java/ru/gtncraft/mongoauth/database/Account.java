@@ -1,26 +1,32 @@
 package ru.gtncraft.mongoauth.database;
 
-import java.util.UUID;
+import org.bson.Document;
 
 public class Account {
-    private UUID id;
-    private long ip;
-    private boolean allowed;
+    private final String login;
+    private final long ip;
+    private final boolean allowed;
+
     private String password;
 
-    public Account(UUID id, long ip, String password) {
-        this(id, ip, password, true);
+    public Account(Document document) {
+        this(
+                document.getString("login"),
+                document.getLong("ip"),
+                document.getString("passowrd"),
+                document.getBoolean("allowed")
+        );
     }
 
-    public Account(UUID id, long ip, String password, boolean allowed) {
-        this.id = id;
+    public Account(String login,  long ip, String password, boolean allowed) {
+        this.login = login;
         this.ip = ip;
         this.allowed = allowed;
         this.password = password;
     }
 
-    public UUID getId() {
-        return id;
+    public String getLogin() {
+        return login;
     }
 
     public long getIp() {
@@ -41,6 +47,14 @@ public class Account {
 
     @Override
     public String toString() {
-        return id.toString();
+        return getLogin();
+    }
+
+    public Document toDocument() {
+        Document document = new Document("login", this.getLogin());
+        document.append("ip", getIp());
+        document.append("password", getPassword());
+        document.append("allowed", isAllowed());
+        return document;
     }
 }

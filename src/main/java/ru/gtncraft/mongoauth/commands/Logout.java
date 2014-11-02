@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.Message;
 import ru.gtncraft.mongoauth.MongoAuth;
 import ru.gtncraft.mongoauth.Session;
+import ru.gtncraft.mongoauth.database.Account;
 
 public class Logout extends Command {
 
@@ -14,9 +15,9 @@ public class Logout extends Command {
 
     @Override
     public Message execute(Player player, String[] args) {
-        Session session = getSession(player);
+        Account account = getDatabase().getAccount(player);
 
-        if (!session.isRegister()) {
+        if (account == null) {
             return Message.command_register_hint;
         }
 

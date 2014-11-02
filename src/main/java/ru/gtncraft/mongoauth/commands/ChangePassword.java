@@ -1,9 +1,11 @@
 package ru.gtncraft.mongoauth.commands;
 
 import org.bukkit.entity.Player;
-import ru.gtncraft.mongoauth.Session;
 import ru.gtncraft.mongoauth.Message;
 import ru.gtncraft.mongoauth.MongoAuth;
+import ru.gtncraft.mongoauth.database.Account;
+
+import static ru.gtncraft.mongoauth.util.Password.encrypt;
 
 public class ChangePassword extends Command {
 
@@ -22,9 +24,9 @@ public class ChangePassword extends Command {
             return Message.error_input_password_new;
         }
 
-        Session session = getSession(player);
+        Account account = getDatabase().getAccount(player);
 
-        if (!session.isRegister()) {
+        if (account == null) {
             return Message.command_register_hint;
         }
 
@@ -32,19 +34,19 @@ public class ChangePassword extends Command {
             return Message.command_login_hint;
         }
 
-        String currentPassword = args[0];
-        String newPassword = args[1];
+        String currentPassword = encrypt(args[0]);
+        String newPassword = encrypt(args[1]);
 
         if (currentPassword.equals(newPassword)) {
             return Message.error_input_passwords_equals;
         }
 
-        if (!session.checkPassword(currentPassword)) {
+        if (!account.getPassword().equals(currentPassword)) {
             return Message.error_input_password_missmach;
         }
 
-        session.getAccount().setPassword(newPassword);
-        getDatabase().saveAccount(session.getAccount());
+        account.setPassword(newPassword);
+        getDatabase().saveAccount(account);
 
         getLogger().info("Player " + player.getName() + " has changed password.");
 

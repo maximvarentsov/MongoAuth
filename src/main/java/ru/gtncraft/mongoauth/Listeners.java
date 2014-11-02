@@ -32,13 +32,18 @@ class Listeners implements Listener {
     @SuppressWarnings("unused")
     public void onJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        player.teleport(player.getWorld().getSpawnLocation());
-        if (sessions.notAuthenticated(player.getUniqueId())) {
+        UUID id = player.getUniqueId();
+
+        Session session = sessions.join(id);
+
+        if (sessions.isGuest(id)) {
             Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
         }
+
         if (spawn) {
             player.teleport(event.getPlayer().getWorld().getSpawnLocation());
         }
+
         if (silentQuitJoin) {
             event.setJoinMessage(null);
         }
@@ -61,7 +66,7 @@ class Listeners implements Listener {
         if (plugin.getCommand(rootCommand) != null && !plugin.getCommand(rootCommand).equals(plugin.getCommand("mongoauth"))) {
             return;
         }
-        if (sessions.notAuthenticated(player.getUniqueId())) {
+        if (sessions.isGuest(player.getUniqueId())) {
             Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
             event.setCancelled(true);
         }
@@ -71,7 +76,7 @@ class Listeners implements Listener {
     @SuppressWarnings("unused")
     public void onChat(final AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        if (sessions.notAuthenticated(player.getUniqueId())) {
+        if (sessions.isGuest(player.getUniqueId())) {
             Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
             event.setCancelled(true);
         }
@@ -81,7 +86,7 @@ class Listeners implements Listener {
     @SuppressWarnings("unused")
     public void onMove(final PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        if (sessions.notAuthenticated(player.getUniqueId())) {
+        if (sessions.isGuest(player.getUniqueId())) {
             Location from = event.getFrom();
             Location to = event.getTo();
             if (to.getX() != from.getX() || to.getY() > from.getY() || to.getZ() != from.getZ()) {
@@ -96,7 +101,7 @@ class Listeners implements Listener {
         Entity entity = event.getEntity();
         if (entity instanceof Player) {
             UUID player = entity.getUniqueId();
-            if (sessions.notAuthenticated(player)) {
+            if (sessions.isGuest(player)) {
                 event.setCancelled(true);
             }
         }
@@ -105,7 +110,7 @@ class Listeners implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onInventoryInteract(final InventoryClickEvent event) {
-        if (sessions.notAuthenticated(event.getWhoClicked().getUniqueId())) {
+        if (sessions.isGuest(event.getWhoClicked().getUniqueId())) {
             event.setCancelled(true);
         }
     }
@@ -113,7 +118,7 @@ class Listeners implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onItemDrop(final PlayerDropItemEvent event) {
-		if (sessions.notAuthenticated(event.getPlayer().getUniqueId())) {
+		if (sessions.isGuest(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
 	}
@@ -121,7 +126,7 @@ class Listeners implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onInteract(final PlayerInteractEvent event) {
-		if (sessions.notAuthenticated(event.getPlayer().getUniqueId())) {
+		if (sessions.isGuest(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
 	}
@@ -129,7 +134,7 @@ class Listeners implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onEntityInteract(final PlayerInteractEntityEvent event) {
-		if (sessions.notAuthenticated(event.getPlayer().getUniqueId())) {
+		if (sessions.isGuest(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
     }
@@ -137,7 +142,7 @@ class Listeners implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onPickupItem(final PlayerPickupItemEvent event) {
-        if (sessions.notAuthenticated(event.getPlayer().getUniqueId())) {
+        if (sessions.isGuest(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
     }
@@ -145,7 +150,7 @@ class Listeners implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     @SuppressWarnings("unused")
     public void onBukkitEmpty(final PlayerBucketEmptyEvent event) {
-        if (sessions.notAuthenticated(event.getPlayer().getUniqueId())) {
+        if (sessions.isGuest(event.getPlayer().getUniqueId())) {
             event.setCancelled(true);
         }
     }

@@ -4,8 +4,6 @@ import org.bukkit.entity.Player;
 import ru.gtncraft.mongoauth.*;
 import ru.gtncraft.mongoauth.database.Account;
 
-import java.util.UUID;
-
 import static ru.gtncraft.mongoauth.util.Password.encrypt;
 
 public class Register extends Command {
@@ -20,32 +18,28 @@ public class Register extends Command {
             return Message.error_input_password;
         }
 
-        Session session = getSession(player);
-
         if (isAuthorized(player)) {
             return Message.error_account_is_auth;
         }
 
-        if (session.isRegister()) {
+        if (getDatabase().getAccount(player) != null) {
             return Message.command_login_hint;
         }
 
-        UUID uuid = player.getUniqueId();
         long ip = dot2LongIP(player.getAddress().getAddress().getHostAddress());
-        String password = encrypt(args[0]);
-
-        Account account = new Account(uuid, ip, password);
-
         if (checkRegistrationLimit(ip)) {
             return Message.error_account_register_limit;
         }
 
-        session.setAccount(account);
-        getDatabase().saveAccount(account);
+        String login = player.getName();
+        String password = encrypt(args[0]);
+
+        Account account = new Account(login, ip, password, true);
+
+        getDatabase().insert(account);
         login(player);
 
-
-        getLogger().info("New player " + player.getName() + " registered.");
+        getLogger().info("New player " + login + " registered.");
 
         return Message.success_account_create;
     }

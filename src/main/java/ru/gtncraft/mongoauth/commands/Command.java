@@ -34,7 +34,7 @@ public abstract class Command implements CommandExecutor, TabCompleter {
     }
 
     public boolean isAuthorized(Player player) {
-        return ! plugin.getSessions().notAuthenticated(player.getUniqueId());
+        return ! plugin.getSessions().isGuest(player.getUniqueId());
     }
 
     public void logout(Player player) {
@@ -42,7 +42,7 @@ public abstract class Command implements CommandExecutor, TabCompleter {
     }
 
     public void login(Player player) {
-        plugin.getSessions().join(player.getUniqueId());
+        plugin.getSessions().login(player.getUniqueId());
     }
 
     public boolean checkRegistrationLimit(long ip) {

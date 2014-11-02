@@ -1,7 +1,6 @@
 package ru.gtncraft.mongoauth;
 
 import org.bukkit.Bukkit;
-import ru.gtncraft.mongoauth.database.Account;
 import ru.gtncraft.mongoauth.database.Database;
 
 import java.io.*;
@@ -26,9 +25,10 @@ public class Sessions implements Iterable<Session> {
     }
 
     public Session join(UUID player) {
-        Account account = database.getAccount(player);
-        Session session = new Session(account);
-        sessions.put(player, session);
+        Session session = sessions.get(player);
+        if (session == null) {
+            session = sessions.put(player, new Session(player));
+        }
         return session;
     }
 
@@ -41,7 +41,7 @@ public class Sessions implements Iterable<Session> {
         return logged.remove(player);
     }
 
-    public boolean notAuthenticated(UUID player) {
+    public boolean isGuest(UUID player) {
         return ! logged.contains(player);
     }
 
