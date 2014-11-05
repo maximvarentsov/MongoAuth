@@ -19,7 +19,6 @@ public class AutoKick {
                     if (plugin.getSessions().isGuest(id)) {
                         long diff = System.currentTimeMillis() - session.getConnected().getTime();
                         long seconds = TimeUnit.MILLISECONDS.toSeconds(diff);
-                        System.out.println("sec:" + seconds);
                         if (seconds > autokick) {
                             OfflinePlayer player = Bukkit.getServer().getOfflinePlayer(id);
                             if (player.isOnline()) {

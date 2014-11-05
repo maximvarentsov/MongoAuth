@@ -31,6 +31,10 @@ public class Login extends Command {
             return Message.command_register_hint;
         }
 
+        if (player.getUniqueId().equals(account.getId())) {
+            return Message.error_invalid_uuid;
+        }
+
         if (!account.isAllowed()) {
             return Message.error_account_is_block;
         }
