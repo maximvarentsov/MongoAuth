@@ -1,11 +1,16 @@
 package ru.gtncraft.mongoauth.database;
 
-import com.mongodb.*;
+import com.mongodb.DBObjectCodecProvider;
+import com.mongodb.DBRefCodecProvider;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.CreateIndexOptions;
-
 import org.bson.Document;
-import org.bson.codecs.*;
+import org.bson.codecs.BsonValueCodecProvider;
+import org.bson.codecs.Codec;
+import org.bson.codecs.DocumentCodecProvider;
+import org.bson.codecs.ValueCodecProvider;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.configuration.RootCodecRegistry;
@@ -18,11 +23,13 @@ public class Database implements AutoCloseable {
     private final MongoClient client;
 
 	public Database(String host, String database) throws Exception {
+
         MongoClientOptions options = MongoClientOptions.builder().codecRegistry(
                 new RootCodecRegistry(
                         Arrays.asList(
                                 new ValueCodecProvider(),
                                 new DocumentCodecProvider(),
+                                new BsonValueCodecProvider(),
                                 new CodecProvider() {
                                     @Override
                                     @SuppressWarnings("unchecked")
@@ -30,12 +37,15 @@ public class Database implements AutoCloseable {
                                         if (clazz.equals(Account.class)) {
                                             return (Codec<T>) new AccountCodec();
                                         }
+
                                         return null;
                                     }
                                 }
                         )
                 )
         ).build();
+
+
 
         client = new MongoClient(host, options);
 
@@ -49,13 +59,13 @@ public class Database implements AutoCloseable {
     }
 
     public Account getAccount(Player player) {
-        Document query = new Document("login", player.getName().toLowerCase());
-        return players.find(query).first();
+        Document filter = new Document("login", player.getName().toLowerCase());
+        return players.find(filter).first();
     }
 
     public Account deleteAccount(Account account) {
-        Document query = new Document("login", account.getLogin());
-        return players.find(query).first();
+        Document filter = new Document("login", account.getLogin());
+        return players.find(filter).first();
     }
 
     public void saveAccount(Account account) {

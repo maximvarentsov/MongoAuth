@@ -6,16 +6,17 @@ import org.bson.BsonWriter;
 import org.bson.codecs.CollectibleCodec;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
+import org.bson.types.ObjectId;
 
 class AccountCodec implements CollectibleCodec<Account> {
     @Override
     public boolean documentHasId(final Account value) {
-        return false;
+        return true;
     }
 
     @Override
     public BsonObjectId getDocumentId(final Account value) {
-        return null;
+        return new BsonObjectId(value.getId());
     }
 
     @Override
@@ -25,20 +26,22 @@ class AccountCodec implements CollectibleCodec<Account> {
     @Override
     public void encode(final BsonWriter writer, final Account value, final EncoderContext encoderContext) {
         writer.writeStartDocument();
-        writer.writeString("login", value.getLogin().toLowerCase());
+        writer.writeObjectId("_id", value.getId());
         writer.writeInt64("ip", value.getIp());
         writer.writeString("password", value.getPassword());
+        writer.writeString("login", value.getLogin());
         writer.writeEndDocument();
     }
 
     @Override
     public Account decode(final BsonReader reader, final DecoderContext decoderContext) {
         reader.readStartDocument();
-        String login = reader.readString("login");
+        ObjectId id = reader.readObjectId("_id");
         long ip = reader.readInt64("ip");
         String password = reader.readString("password");
+        String login = reader.readString("login");
         reader.readEndDocument();
-        return new Account(login, ip, password);
+        return new Account(id, login, ip, password);
     }
 
     @Override
