@@ -16,7 +16,6 @@ public enum Message {
     error_emergency,
     error_password_brutforce,
     error_autokick,
-    error_invalid_uuid,
     success_account_create,
     success_account_logout,
     success_account_delete,
