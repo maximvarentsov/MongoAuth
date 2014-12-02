@@ -1,5 +1,4 @@
 maxPerIp: 1
-spawn: true
 silentQuitJoin: true
 
 database:

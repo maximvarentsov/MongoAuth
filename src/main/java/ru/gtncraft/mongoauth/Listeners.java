@@ -17,14 +17,12 @@ import java.util.UUID;
 class Listeners implements Listener {
 	private final MongoAuth plugin;
     private final Sessions sessions;
-    private final boolean spawn;
     private final boolean silentQuitJoin;
 
 	public Listeners(final MongoAuth instance) {
         Bukkit.getServer().getPluginManager().registerEvents(this, instance);
         plugin = instance;
         sessions = instance.getSessions();
-        spawn = plugin.getConfig().getBoolean("spawn", true);
         silentQuitJoin = plugin.getConfig().getBoolean("silentQuitJoin", true);
 	}
 
@@ -38,10 +36,6 @@ class Listeners implements Listener {
 
         if (sessions.isGuest(id)) {
             Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, new AuthMessage(plugin, player));
-        }
-
-        if (spawn) {
-            player.teleport(event.getPlayer().getWorld().getSpawnLocation());
         }
 
         if (silentQuitJoin) {
