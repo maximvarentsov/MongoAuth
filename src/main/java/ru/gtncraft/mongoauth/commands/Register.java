@@ -31,10 +31,10 @@ public class Register extends Command {
             return Message.error_account_register_limit;
         }
 
-        String login = player.getName();
+        String login = player.getName().toLowerCase();
         String password = encrypt(args[0]);
 
-        Account account = new Account(player.getUniqueId(), login, ip, password, true);
+        Account account = new Account(login, ip, password, true);
 
         getDatabase().createAccount(account);
         login(player);

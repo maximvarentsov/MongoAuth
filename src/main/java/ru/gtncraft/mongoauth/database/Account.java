@@ -1,24 +1,16 @@
 package ru.gtncraft.mongoauth.database;
 
-import java.util.UUID;
-
 public class Account {
-    private final UUID uuid;
     private final String login;
     private final long ip;
     private final boolean allowed;
     private String password;
 
-    public Account(UUID uuid, String login, long ip, String password, boolean allowed) {
-        this.uuid = uuid;
+    public Account(String login, long ip, String password, boolean allowed) {
         this.login = login;
         this.ip = ip;
         this.allowed = allowed;
         this.password = password;
-    }
-
-    public UUID getId() {
-        return uuid;
     }
 
     public String getLogin() {

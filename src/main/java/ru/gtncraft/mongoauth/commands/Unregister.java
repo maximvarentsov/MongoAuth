@@ -37,7 +37,7 @@ public class Unregister extends Command {
             return Message.error_input_password_missmach;
         }
 
-        getDatabase().deleteAccount(player);
+        getDatabase().deleteAccount(account);
         logout(player);
 
         player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());

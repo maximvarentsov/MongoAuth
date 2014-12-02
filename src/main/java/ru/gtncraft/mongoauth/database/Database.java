@@ -53,13 +53,13 @@ public class Database implements AutoCloseable {
         return players.find(query).first();
     }
 
-    public Account deleteAccount(Player player) {
-        Document query = new Document("login", player.getName().toLowerCase());
+    public Account deleteAccount(Account account) {
+        Document query = new Document("login", account.getLogin());
         return players.find(query).first();
     }
 
     public void saveAccount(Account account) {
-        Document query = new Document("login", account.getLogin().toLowerCase());
+        Document query = new Document("login", account.getLogin());
         players.updateOne(query, account);
     }
 
