@@ -59,8 +59,8 @@ public class Database implements AutoCloseable {
     }
 
     public void saveAccount(Account account) {
-        Document query = new Document("login", account.getLogin());
-        players.updateOne(query, account);
+        Document filter = new Document("login", account.getLogin());
+        players.updateOne(filter, account);
     }
 
     public void createAccount(Account account) {
