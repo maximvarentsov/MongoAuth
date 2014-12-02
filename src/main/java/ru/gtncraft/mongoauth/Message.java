@@ -1,7 +1,6 @@
 package ru.gtncraft.mongoauth;
 
 public enum Message {
-    error_account_is_block,
     error_account_is_auth,
     error_account_not_registred,
     error_account_exists,

@@ -27,7 +27,6 @@ class AccountCodec implements CollectibleCodec<Account> {
         writer.writeStartDocument();
         writer.writeString("login", value.getLogin().toLowerCase());
         writer.writeInt64("ip", value.getIp());
-        writer.writeBoolean("allowed", value.isAllowed());
         writer.writeString("password", value.getPassword());
         writer.writeEndDocument();
     }
@@ -37,10 +36,9 @@ class AccountCodec implements CollectibleCodec<Account> {
         reader.readStartDocument();
         String login = reader.readString("login");
         long ip = reader.readInt64("ip");
-        boolean allowed = reader.readBoolean("allowed");
         String password = reader.readString("password");
         reader.readEndDocument();
-        return new Account(login, ip, password, allowed);
+        return new Account(login, ip, password);
     }
 
     @Override

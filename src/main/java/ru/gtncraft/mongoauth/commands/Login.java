@@ -31,10 +31,6 @@ public class Login extends Command {
             return Message.command_register_hint;
         }
 
-        if (!account.isAllowed()) {
-            return Message.error_account_is_block;
-        }
-
         Session session = getSession(player);
 
         if (!checkAttempts(session)) {

@@ -34,7 +34,7 @@ public class Register extends Command {
         String login = player.getName().toLowerCase();
         String password = encrypt(args[0]);
 
-        Account account = new Account(login, ip, password, true);
+        Account account = new Account(login, ip, password);
 
         getDatabase().createAccount(account);
         login(player);
